@@ -9,8 +9,7 @@ namespace SelfHost
     {
         static void Main(string[] args)
         {
-            string url = ConfigurationManager.AppSettings["REstate.url"];
-
+            var url = ConfigurationManager.AppSettings["REstate.url"];
 
             Startup.PassPhrase = ConfigurationManager.AppSettings["REstate.passphrase"];
 

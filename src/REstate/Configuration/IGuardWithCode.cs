@@ -19,8 +19,6 @@
 
         string SqlDatabaseDescription { get; set; }
 
-        int SqlDatabaseProviderId { get; set; }
-
         string ProviderName { get; set; }
 
         string ProviderDescription { get; set; }

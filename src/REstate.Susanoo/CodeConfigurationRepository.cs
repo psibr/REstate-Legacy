@@ -150,12 +150,12 @@ namespace REstate.Susanoo
             if (databaseDefinition == null) throw new ArgumentNullException(nameof(databaseDefinition));
             if (string.IsNullOrWhiteSpace(databaseDefinition.SqlDatabaseName)) throw new ArgumentException("SqlDatabaseName is a required property.", nameof(databaseDefinition));
             if (string.IsNullOrWhiteSpace(databaseDefinition.ConnectionString)) throw new ArgumentException("ConnectionString is a required property.", nameof(databaseDefinition));
-            if (databaseDefinition.SqlDatabaseProviderId <= 0) throw new ArgumentException("SqlDatabaseProviderId is a required property.", nameof(databaseDefinition));
+            if (string.IsNullOrWhiteSpace(databaseDefinition.ProviderName)) throw new ArgumentException("ProviderName is a required property.", nameof(databaseDefinition));
 
             return (await CommandManager.Instance
                 .DefineCommand<ISqlDatabaseDefinition>(
                     "INSERT INTO SqlDatabaseDefinitions \n" +
-                    "VALUES(@SqlDatabaseName, @SqlDatabaseDescription, @ConnectionString, @SqlDatabaseProviderId);" +
+                    "VALUES(@SqlDatabaseName, @SqlDatabaseDescription, @ConnectionString, @ProviderName);" +
                     "\n\nSELECT * FROM SqlDatabaseDefinitionsAndProvider WHERE SqlDatabaseDefinitionId = @@IDENTITY", CommandType.Text)
                 .DefineResults<SqlDatabaseDefinitionAndProvider>()
                 .Realize()
@@ -169,7 +169,7 @@ namespace REstate.Susanoo
             if (databaseDefinition.SqlDatabaseDefinitionId <= 0) throw new ArgumentException("SqlDatabaseDefinitionId is a required property.", nameof(databaseDefinition));
             if (string.IsNullOrWhiteSpace(databaseDefinition.SqlDatabaseName)) throw new ArgumentException("SqlDatabaseName is a required property.", nameof(databaseDefinition));
             if (string.IsNullOrWhiteSpace(databaseDefinition.ConnectionString)) throw new ArgumentException("ConnectionString is a required property.", nameof(databaseDefinition));
-            if (databaseDefinition.SqlDatabaseProviderId <= 0) throw new ArgumentException("SqlDatabaseProviderId is a required property.", nameof(databaseDefinition));
+            if (string.IsNullOrWhiteSpace(databaseDefinition.ProviderName)) throw new ArgumentException("ProviderName is a required property.", nameof(databaseDefinition));
 
             return (await CommandManager.Instance
                 .DefineCommand<ISqlDatabaseDefinition>(
@@ -177,7 +177,7 @@ namespace REstate.Susanoo
                     "\nSqlDatabaseName = @SqlDatabaseName," +
                     "\nSqlDatabaseDescription = @SqlDatabaseDescription," +
                     "\nConnectionString = @ConnectionString," +
-                    "\nSqlDatabaseProviderId = SqlDatabaseProviderId" +
+                    "\nProviderName = @ProviderName" +
                     "\nWHERE SqlDatabaseDefinitionId = @SqlDatabaseDefinitionId" +
                     "\n\nSELECT * FROM SqlDatabaseDefinitionsAndProvider WHERE SqlDatabaseDefinitionId = @SqlDatabaseDefinitionId",
                     CommandType.Text)
