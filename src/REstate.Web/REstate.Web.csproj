@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{26E79ED3-3D6C-4099-BF3D-1653E4F5626E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>REstate.Web</RootNamespace>
+    <AssemblyName>REstate.Web</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Nancy, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.1.4.2\lib\net40\Nancy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nancy.Authentication.Stateless, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Authentication.Stateless.1.4.1\lib\net40\Nancy.Authentication.Stateless.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="REstateBootstrapper.cs" />
+    <Compile Include="Requests\ApiKeyAuthenticationRequest.cs" />
+    <Compile Include="Requests\CredentialAuthenticationRequest.cs" />
+    <Compile Include="Modules\AuthenticationModule.cs" />
+    <Compile Include="Modules\CodeElementsModule.cs" />
+    <Compile Include="Modules\ConfigurationModule.cs" />
+    <Compile Include="Modules\HomeModule.cs" />
+    <Compile Include="Modules\MachineDefinitionsModule.cs" />
+    <Compile Include="Modules\MachinesModule.cs" />
+    <Compile Include="Modules\SecuredModule.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Requests\TriggerFireRequest.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="UserIdentityExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nancy.EmbeddedContent\Nancy.EmbeddedContent.csproj">
+      <Project>{d8eba39b-63ae-4a66-bd0e-f7f95e572135}</Project>
+      <Name>Nancy.EmbeddedContent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.Auth\REstate.Auth.csproj">
+      <Project>{276af764-e2ba-4434-b6d2-799bfc4f340c}</Project>
+      <Name>REstate.Auth</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.RoslynScripting\REstate.RoslynScripting.csproj">
+      <Project>{310a26d6-518b-41a6-b5db-0b4a1b4a84c9}</Project>
+      <Name>REstate.RoslynScripting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.Stateless\REstate.Stateless.csproj">
+      <Project>{7ae96174-718f-45a2-8389-0a1e982dce82}</Project>
+      <Name>REstate.Stateless</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.Susanoo.Auth\REstate.Susanoo.Auth.csproj">
+      <Project>{b1a411e0-e8bf-4d8c-b327-2c171e2e60bc}</Project>
+      <Name>REstate.Susanoo.Auth</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.Susanoo\REstate.Susanoo.csproj">
+      <Project>{95d7fb41-1d52-467a-873e-c2c31926b209}</Project>
+      <Name>REstate.Susanoo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate\REstate.csproj">
+      <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>
+      <Name>REstate</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\login.html" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
