@@ -74,7 +74,7 @@ namespace REstate.Web.Modules
             Patch["ToggleMachineDefinitionActive", "/{MachineDefinitionId:int}/toggle/{IsActive:bool}", true] =
                 async (parameters, ct) =>
                 {
-                    int machineDefinitionId = parameters.MachineDefintionId;
+                    int machineDefinitionId = parameters.MachineDefinitionId;
                     bool isActive = parameters.IsActive;
 
                     IMachineDefinition machineDefinition;

@@ -170,7 +170,7 @@ namespace REstate.Stateless
 
         protected void ConfigureOnEntryFromAction(string apiKey, IStateMachine stateMachine, IStateMachineConfiguration configuration, IStateConfiguration stateConfiguration, StateMachine<State, Trigger>.StateConfiguration stateSettings)
         {
-            if (stateConfiguration.OnExitAction.CodeElementId == null) return;
+            if (stateConfiguration.OnEntryFromAction.CodeElementId == null) return;
             var codeElement = configuration.CodeElements.SingleOrDefault(ce =>
                 ce.CodeElementId == stateConfiguration.OnEntryFromAction.CodeElementId);
 

@@ -18,7 +18,9 @@ namespace REstate.Web.Modules
         /// </summary>
         public UiModule()
         {
-                Get["/"] = _ => Response.AsRedirect("/REstate/login");
+                Get["/"] = _ => Context.CurrentUser == null 
+                    ? Response.AsRedirect("/REstate/login") 
+                    : 200;
         }
     }
 }
