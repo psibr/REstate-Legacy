@@ -7,6 +7,7 @@
             IsActive = true;
         }
 
+        public string GuardName { get; set; }
         public int MachineDefinitionId { get; set; }
 
         public string StateName { get; set; }
@@ -14,8 +15,6 @@
         public string TriggerName { get; set; }
 
         public string ResultantStateName { get; set; }
-
-        public int? GuardId { get; set; }
 
         public bool IsActive { get; set; }
     }

@@ -40,14 +40,13 @@
     <Compile Include="Configuration\CodeTypes.cs" />
     <Compile Include="Configuration\CodeUsage.cs" />
     <Compile Include="Configuration\Guard.cs" />
-    <Compile Include="Configuration\GuardWithCode.cs" />
     <Compile Include="Configuration\ICodeElement.cs" />
     <Compile Include="Configuration\ICodeWithDatabaseConfiguration.cs" />
     <Compile Include="Configuration\IgnoreRule.cs" />
     <Compile Include="Configuration\IGuard.cs" />
-    <Compile Include="Configuration\IGuardWithCode.cs" />
     <Compile Include="Configuration\IIgnoreRule.cs" />
     <Compile Include="Configuration\IMachineDefinition.cs" />
+    <Compile Include="Configuration\IMachineDefinitionDependent.cs" />
     <Compile Include="Configuration\ISqlDatabaseDefinition.cs" />
     <Compile Include="Configuration\ISqlDatabaseDefinitionAndProvider.cs" />
     <Compile Include="Configuration\ISqlDatabaseProvider.cs" />

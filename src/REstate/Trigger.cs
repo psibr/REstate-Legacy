@@ -26,9 +26,9 @@ namespace REstate
             TriggerName = statePair.Value;
         }
 
-        public int MachineDefinitionId { get; }
+        public virtual int MachineDefinitionId { get; }
 
-        public string TriggerName { get; }
+        public virtual string TriggerName { get; }
 
         public override string ToString()
         {

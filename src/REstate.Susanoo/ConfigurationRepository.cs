@@ -105,7 +105,7 @@ namespace REstate.Susanoo
             CancellationToken cancellationToken)
         {
             IStateMachineConfiguration configuration;
-            using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
+            using (var scope = new TransactionScope(TransactionScopeOption.Required,
                 new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
                 TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -140,6 +140,7 @@ namespace REstate.Susanoo
                 .ExcludeProperty(o => o.MachineDefinitionId)
                 .ExcludeProperty(o => o.InitialStateName)
                 .ExcludeProperty(o => o.IsActive)
+                .SendNullValues()
                 .DefineResults<MachineDefinition>()
                 .Realize()
                 .ExecuteAsync(DatabaseManagerPool.DatabaseManager, machineDefinition, cancellationToken))
@@ -161,7 +162,7 @@ namespace REstate.Susanoo
 
             var newStates = Enumerable.Empty<IState>();
 
-            using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
+            using (var scope = new TransactionScope(TransactionScopeOption.Required,
                 new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
                 TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -188,12 +189,13 @@ namespace REstate.Susanoo
                     "INSERT INTO Triggers VALUES(@MachineDefinitionId, @TriggerName, @TriggerDescription, @IsActive);\n\n" +
                     "SELECT * FROM Triggers WHERE MachineDefinitionId = @MachineDefinitionId AND TriggerName = @TriggerName;",
                     CommandType.Text)
+                .SendNullValues()
                 .DefineResults<Configuration.Trigger>()
                 .Realize();
 
             var newTriggers = Enumerable.Empty<ITrigger>();
 
-            using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
+            using (var scope = new TransactionScope(TransactionScopeOption.Required,
                 new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
                 TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -218,7 +220,7 @@ namespace REstate.Susanoo
         {
             var command = CommandManager.Instance
                 .DefineCommand<ITransition>(
-                    "INSERT INTO Transitions VALUES(@MachineDefinitionId, @StateName, @TriggerName, @ResultantStateName, @GuardId, @IsActive);\n\n" +
+                    "INSERT INTO Transitions VALUES(@MachineDefinitionId, @StateName, @TriggerName, @ResultantStateName, @GuardName, @IsActive);\n\n" +
                     "SELECT * FROM Transitions WHERE MachineDefinitionId = @MachineDefinitionId AND StateName = @StateName AND TriggerName = @TriggerName;",
                     CommandType.Text)
                 .SendNullValues()
@@ -227,7 +229,7 @@ namespace REstate.Susanoo
 
             var newTransitions = Enumerable.Empty<ITransition>();
 
-            using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
+            using (var scope = new TransactionScope(TransactionScopeOption.Required,
                 new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
                 TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -291,7 +293,8 @@ namespace REstate.Susanoo
                 .Realize()
                 .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new
                 {
-                    InitialStateName = initialStateName, MachineDefinitionId = machineDefinitionId
+                    InitialStateName = initialStateName,
+                    MachineDefinitionId = machineDefinitionId
                 },
                     cancellationToken))
                 .Single();
@@ -302,17 +305,16 @@ namespace REstate.Susanoo
         {
             var command = CommandManager.Instance
                 .DefineCommand<IGuard>(
-                    "INSERT INTO Guards VALUES(@GuardName, @GuardDescription, @CodeElementId);\n\n" +
-                    "SELECT * FROM Guards WHERE GuardId = @@IDENTITY;",
+                    "INSERT INTO Guards VALUES(@MachineDefinitionId, @GuardName, @GuardDescription, @CodeElementId);\n\n" +
+                    "SELECT * FROM Guards WHERE MachineDefinitionId = @MachineDefinitionId AND GuardName = @GuardName;",
                     CommandType.Text)
-                .ExcludeProperty(o => o.GuardId)
                 .SendNullValues()
                 .DefineResults<Guard>()
                 .Realize();
 
             var newGuards = Enumerable.Empty<IGuard>();
 
-            using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
+            using (var scope = new TransactionScope(TransactionScopeOption.Required,
                 new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
                 TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -357,15 +359,15 @@ namespace REstate.Susanoo
         public async Task<IGuard> UpdateGuard(IGuard guard, CancellationToken cancellationToken)
         {
             if (guard == null) throw new ArgumentNullException(nameof(guard));
-            if (guard.GuardId <= 0) throw new ArgumentException("GuardId is a required property.", nameof(guard));
+            if (guard.MachineDefinitionId <= 0) throw new ArgumentException("MachineDefinitionId is a required property.", nameof(guard));
             if (string.IsNullOrWhiteSpace(guard.GuardName))
                 throw new ArgumentException("GuardName is a required property.", nameof(guard));
 
             return (await CommandManager.Instance
                 .DefineCommand<IGuard>(
-                    "UPDATE Guards SET GuardName = @GuardName, GuardDescription = @GuardDescription, CodeElementId = @CodeElementId\n" +
-                    "WHERE GuardId = @GuardId;\n\n" +
-                    "SELECT * FROM Guards WHERE GuardId = @GuardId;", CommandType.Text)
+                    "UPDATE Guards SET GuardDescription = @GuardDescription, CodeElementId = @CodeElementId\n" +
+                    "WHERE MachineDefinitionId = @MachineDefinitionId AND GuardName = @GuardName;\n\n" +
+                    "SELECT * FROM Guards WHERE MachineDefinitionId = @MachineDefinitionId AND GuardName = @GuardName;", CommandType.Text)
                 .SendNullValues()
                 .DefineResults<Guard>()
                 .Realize()
@@ -382,7 +384,7 @@ namespace REstate.Susanoo
             return (await CommandManager.Instance
                 .DefineCommand("UPDATE MachineDefinitions SET IsActive = @IsActive\n" +
                                "WHERE MachineDefinitionId = @MachineDefinitionId;\n\n" +
-                               "SELECT* FROM MachineDefinitions WHERE MachineDefinitionId = @MachineDefinitionId; ",
+                               "SELECT * FROM MachineDefinitions WHERE MachineDefinitionId = @MachineDefinitionId; ",
                     CommandType.Text)
                 .DefineResults<MachineDefinition>()
                 .Realize()
@@ -414,6 +416,108 @@ namespace REstate.Susanoo
                 .Realize()
                 .ExecuteAsync(DatabaseManagerPool.DatabaseManager, machineDefinition, cancellationToken))
                 .Single();
+        }
+
+        public async Task<IStateMachineConfiguration> DefineStateMachine(IStateMachineConfiguration stateMachineConfiguration, int previousVersionId,
+            CancellationToken cancellationToken)
+        {
+            int newId;
+            using (var transaction = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
+                { IsolationLevel = IsolationLevel.ReadCommitted }, TransactionScopeAsyncFlowOption.Enabled))
+            {
+                var newDefinition = await DefineMachine(stateMachineConfiguration.MachineDefinition, cancellationToken);
+
+                newId = newDefinition.MachineDefinitionId;
+
+                var states = stateMachineConfiguration.StateConfigurations
+                    .Select(sc => sc.State).ToList();
+
+                var triggers = stateMachineConfiguration.Triggers;
+
+                var ignoreRules = stateMachineConfiguration.StateConfigurations
+                    .SelectMany(sc => sc.IgnoreRules).ToList();
+
+                var guards = stateMachineConfiguration.Guards;
+
+                var transitions = stateMachineConfiguration.StateConfigurations
+                    .SelectMany(sc => sc.Transitions).ToList();
+
+                var stateActions = stateMachineConfiguration.StateConfigurations
+                    .SelectMany(sc => new[] { sc.OnEntryAction, sc.OnEntryFromAction, sc.OnExitAction })
+                    .Where(sa => sa != null)
+                    .ToList();
+
+                states.Cast<IMachineDefinitionDependent>()
+                    .Union(triggers)
+                    .Union(ignoreRules)
+                    .Union(guards)
+                    .Union(transitions)
+                    .Union(stateActions)
+                    .ToList()
+                    .ForEach(e => e.MachineDefinitionId = newId);
+
+                //TODO: Here we should indicate this as the new version of the machine definition.
+
+
+                await DefineStates(states, cancellationToken);
+
+                await DefineTriggers(triggers, cancellationToken);
+
+                await DefineIgnoreRules(ignoreRules, cancellationToken);
+                
+                await DefineGuards(guards, cancellationToken);
+
+                await DefineTransitions(transitions, cancellationToken);
+
+                await DefineStateActions(stateActions, cancellationToken);
+
+                await SetInitialState(newId, stateMachineConfiguration.MachineDefinition.InitialStateName, cancellationToken);
+
+                await ToggleMachineDefinitionActive(newId, true, cancellationToken);
+
+                transaction.Complete();
+            }
+
+            var newConfiguration = await RetrieveMachineConfiguration(newId, cancellationToken);
+
+            return newConfiguration;
+        }
+
+        public async Task<IStateMachineConfiguration> DefineStateMachine(IStateMachineConfiguration stateMachineConfiguration, CancellationToken cancellationToken)
+        {
+            return await DefineStateMachine(stateMachineConfiguration, stateMachineConfiguration.MachineDefinition.MachineDefinitionId, cancellationToken);
+        }
+
+        public async Task<ICollection<IStateAction>> DefineStateActions(ICollection<IStateAction> stateActions, CancellationToken cancellationToken)
+        {
+            var command = CommandManager.Instance
+                .DefineCommand<IStateAction>(
+                    "INSERT INTO StateActions VALUES (@MachineDefinitionId, @StateName, @PurposeName, @TriggerName, @StateActionDescription, @CodeElementId);\n\n" +
+                    "SELECT * FROM StateActions WHERE MachineDefinitionId = @MachineDefinitionId AND StateName = @StateName AND PurposeName = @PurposeName;",
+                    CommandType.Text)
+                .SendNullValues()
+                .DefineResults<StateAction>()
+                .Realize();
+
+            var newStateActions = Enumerable.Empty<IStateAction>();
+
+            using (var scope = new TransactionScope(TransactionScopeOption.Required,
+                new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
+                TransactionScopeAsyncFlowOption.Enabled))
+            {
+                // ReSharper disable once LoopCanBeConvertedToQuery
+                // Cannot await in a linq expression.
+                foreach (var stateAction in stateActions)
+                {
+                    newStateActions = newStateActions.Union(
+                        await command.ExecuteAsync(DatabaseManagerPool.DatabaseManager,
+                            stateAction, cancellationToken));
+                }
+
+                scope.Complete();
+            }
+
+            return newStateActions.ToList();
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿namespace REstate.Configuration
 {
-    public interface IGuard
+    public interface IGuard : IMachineDefinitionDependent
     {
-        int GuardId { get; set; }
-
         string GuardName { get; set; }
 
         string GuardDescription { get; set; }

@@ -1,8 +1,7 @@
 ﻿namespace REstate.Configuration
 {
-    public interface IState
+    public interface IState : IMachineDefinitionDependent
     {
-        int MachineDefinitionId { get; set; }
         string ParentStateName { get; set; }
         string StateDescription { get; set; }
         string StateName { get; set; }

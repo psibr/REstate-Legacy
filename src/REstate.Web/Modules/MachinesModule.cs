@@ -98,7 +98,7 @@ namespace REstate.Web.Modules
                 var currentState = machine.GetCurrentState();
 
                 return Negotiate
-                    .WithModel(new { currentState })
+                    .WithModel(currentState)
                     .WithAllowedMediaRange(new MediaRange("application/json"));
             };
 
@@ -158,7 +158,7 @@ namespace REstate.Web.Modules
                         .WithAllowedMediaRange(new MediaRange("application/json"));
 
                 return Negotiate
-                    .WithModel(new { currentState })
+                    .WithModel(currentState)
                     .WithAllowedMediaRange(new MediaRange("application/json"));
             };
 

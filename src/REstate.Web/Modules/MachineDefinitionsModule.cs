@@ -6,6 +6,7 @@ using Nancy.Responses.Negotiation;
 using REstate.Configuration;
 using REstate.Repositories;
 using REstate.Services;
+using REstate.Web.Requests;
 
 namespace REstate.Web.Modules
 {
@@ -24,7 +25,7 @@ namespace REstate.Web.Modules
             IStateMachineFactory stateMachineFactory)
             : base("/machinedefinitions", "machineBuilder")
         {
-            GetMachineDefinition(repositoryContextFactory);
+            GetMachine(repositoryContextFactory);
 
             GetDiagramForDefinition(repositoryContextFactory, stateMachineFactory);
 
@@ -49,11 +50,53 @@ namespace REstate.Web.Modules
             ToggleMachineDefinitionActive(repositoryContextFactory);
 
             UpdateMachineDefinition(repositoryContextFactory);
+
+            DefineStateActions(repositoryContextFactory);
+
+            DefineStateMachine(repositoryContextFactory);
+        }
+
+        private void DefineStateMachine(IRepositoryContextFactory repositoryContextFactory)
+        {
+            Post["DefineStateMachine", "/", true] = async (parameters, ct) =>
+            {
+                StateMachineConfiguration stateMachineConfiguration = this.Bind<StateMachineConfigurationRequest>();
+                IStateMachineConfiguration newMachineConfiguration;
+                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                {
+                    newMachineConfiguration = await repository.Configuration.DefineStateMachine(stateMachineConfiguration, ct);
+                }
+
+                return Negotiate
+                    .WithModel(newMachineConfiguration)
+                    .WithAllowedMediaRange(new MediaRange("application/json"));
+            };
+        }
+
+        private void DefineStateActions(IRepositoryContextFactory repositoryContextFactory)
+        {
+            Post["DefineStateActions", "/stateactions/", true] = async (parameters, ct) =>
+            {
+                ICollection<IStateAction> requestedStateActions = this.Bind<List<StateAction>>()
+                    .Cast<IStateAction>()
+                    .ToList();
+
+                ICollection<IStateAction> newStateActions;
+
+                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                {
+                    newStateActions = await repository.Configuration.DefineStateActions(requestedStateActions, ct);
+                }
+
+                return Negotiate
+                    .WithModel(newStateActions)
+                    .WithAllowedMediaRange(new MediaRange("application/json"));
+            };
         }
 
         private void UpdateMachineDefinition(IRepositoryContextFactory repositoryContextFactory)
         {
-            Put["UpdateMachineDefinition", "/", true] = async (parameters, ct) =>
+            Put["UpdateMachineDefinition", "/definition", true] = async (parameters, ct) =>
             {
                 IMachineDefinition machineDefinition = this.Bind<MachineDefinition>();
 
@@ -222,7 +265,7 @@ namespace REstate.Web.Modules
 
         private void DefineMachine(IRepositoryContextFactory repositoryContextFactory)
         {
-            Post["DefineMachine", "/", true] = async (parameters, ct) =>
+            Post["DefineMachine", "/definition", true] = async (parameters, ct) =>
             {
                 IMachineDefinition definiton = this.Bind<MachineDefinition>(BindingConfig.Default,
                     "MachineDefinitionId", "InitialStateName", "IsActive");
@@ -260,8 +303,8 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void GetMachineDefinition(IRepositoryContextFactory repositoryContextFactory) =>
-            Get["GetMachineDefinition", "/{MachineDefinitionId:int}", true] = async (parameters, ct) =>
+        private void GetMachine(IRepositoryContextFactory repositoryContextFactory) =>
+            Get["GetMachine", "/{MachineDefinitionId:int}", true] = async (parameters, ct) =>
             {
                 int machineDefinitionId = parameters.MachineDefinitionId;
                 IStateMachineConfiguration configuration;

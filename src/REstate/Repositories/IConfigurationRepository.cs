@@ -39,5 +39,12 @@ namespace REstate.Repositories
 
         Task<IMachineDefinition> UpdateMachineDefinition(IMachineDefinition machineDefinition,
             CancellationToken cancellationToken);
+
+        Task<IStateMachineConfiguration> DefineStateMachine(IStateMachineConfiguration stateMachineConfiguration, int previousVersionId, CancellationToken cancellationToken);
+
+        Task<IStateMachineConfiguration> DefineStateMachine(IStateMachineConfiguration stateMachineConfiguration, CancellationToken cancellationToken);
+
+        Task<ICollection<IStateAction>> DefineStateActions(ICollection<IStateAction> stateActions,
+            CancellationToken cancellationToken);
     }
 }

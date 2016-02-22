@@ -76,7 +76,7 @@ namespace REstate.Stateless
                 foreach (var transition in stateConfiguration.Transitions)
                 {
 
-                    if (transition.GuardId == null)
+                    if (transition.GuardName == null)
                         if (transition.StateName != transition.ResultantStateName)
                             stateSettings.Permit(new Trigger(transition.MachineDefinitionId, transition.TriggerName),
                                 new State(transition.MachineDefinitionId, transition.ResultantStateName));
@@ -85,7 +85,7 @@ namespace REstate.Stateless
                     else
                     {
                         //Retrieve guard definition and construct
-                        var guardDefinition = configuration.Guards.Single(d => d.GuardId == transition.GuardId);
+                        var guardDefinition = configuration.Guards.Single(d => d.GuardName == transition.GuardName);
                         var guard = CreateGuardClause(apiKey, stateMachine, configuration, guardDefinition);
 
                         if (transition.StateName != transition.ResultantStateName)

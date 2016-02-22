@@ -45,6 +45,8 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Requests\StateConfiguration.cs" />
+    <Compile Include="Requests\StateMachineConfigurationRequest.cs" />
     <Compile Include="REstateBootstrapper.cs" />
     <Compile Include="Requests\ApiKeyAuthenticationRequest.cs" />
     <Compile Include="Requests\CredentialAuthenticationRequest.cs" />

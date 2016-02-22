@@ -1,9 +1,8 @@
 ﻿namespace REstate.Configuration
 {
-    public interface ITrigger
+    public interface ITrigger : IMachineDefinitionDependent
     {
         bool IsActive { get; set; }
-        int MachineDefinitionId { get; set; }
         string TriggerDescription { get; set; }
         string TriggerName { get; set; }
     }

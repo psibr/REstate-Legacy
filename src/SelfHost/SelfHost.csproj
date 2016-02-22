@@ -75,6 +75,10 @@
       <Project>{276af764-e2ba-4434-b6d2-799bfc4f340c}</Project>
       <Name>REstate.Auth</Name>
     </ProjectReference>
+    <ProjectReference Include="..\REstate.Client\REstate.Client.csproj">
+      <Project>{bc6e21a3-4200-4681-b74a-b30b6f46bace}</Project>
+      <Name>REstate.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\REstate.Owin\REstate.Owin.csproj">
       <Project>{c011084b-65ef-43c6-af70-0d1fe8f16662}</Project>
       <Name>REstate.Owin</Name>
