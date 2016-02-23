@@ -8,6 +8,7 @@ using System.Transactions;
 using REstate.Configuration;
 using REstate.Repositories;
 using Susanoo;
+using Susanoo.SqlServer;
 using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace REstate.Susanoo
@@ -151,101 +152,51 @@ namespace REstate.Susanoo
         public async Task<ICollection<IState>> DefineStates(ICollection<IState> states,
             CancellationToken cancellationToken)
         {
-            var command = CommandManager.Instance
-                .DefineCommand<IState>(
-                    "INSERT INTO States VALUES(@MachineDefinitionId, @StateName, @ParentStateName, @StateDescription);\n\n" +
-                    "SELECT * FROM States WHERE MachineDefinitionId = @MachineDefinitionId AND StateName = @StateName;",
-                    CommandType.Text)
-                .SendNullValues()
+            var newStates = (await CommandManager.Instance
+                .DefineCommand("dbo.DefineStates", CommandType.StoredProcedure)
+                .IncludePropertyAsStructured("States", "StateTable")
                 .DefineResults<Configuration.State>()
-                .Realize();
+                .Realize()
+                .ExecuteAsync(DatabaseManagerPool.DatabaseManager,
+                    new { States = states }, cancellationToken))
+                .Cast<IState>()
+                .ToList();
 
-            var newStates = Enumerable.Empty<IState>();
+            return newStates;
 
-            using (var scope = new TransactionScope(TransactionScopeOption.Required,
-                new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
-                TransactionScopeAsyncFlowOption.Enabled))
-            {
-                // ReSharper disable once LoopCanBeConvertedToQuery
-                // Cannot await in a linq expression.
-                foreach (var state in states.OrderBy(o => o.ParentStateName))
-                {
-                    newStates = newStates.Union(
-                        await command.ExecuteAsync(DatabaseManagerPool.DatabaseManager,
-                            state, cancellationToken));
-                }
-
-                scope.Complete();
-            }
-
-            return newStates.ToList();
         }
 
         public async Task<ICollection<ITrigger>> DefineTriggers(ICollection<ITrigger> triggers,
             CancellationToken cancellationToken)
         {
-            var command = CommandManager.Instance
-                .DefineCommand<ITrigger>(
-                    "INSERT INTO Triggers VALUES(@MachineDefinitionId, @TriggerName, @TriggerDescription, @IsActive);\n\n" +
-                    "SELECT * FROM Triggers WHERE MachineDefinitionId = @MachineDefinitionId AND TriggerName = @TriggerName;",
-                    CommandType.Text)
-                .SendNullValues()
+            var newTriggers = (await CommandManager.Instance
+                .DefineCommand("dbo.DefineTriggers", CommandType.StoredProcedure)
+                .IncludePropertyAsStructured("Triggers", "TriggerTable")
                 .DefineResults<Configuration.Trigger>()
-                .Realize();
+                .Realize()
+                .ExecuteAsync(DatabaseManagerPool.DatabaseManager,
+                    new { Triggers = triggers }, cancellationToken))
+                .Cast<ITrigger>()
+                .ToList();
 
-            var newTriggers = Enumerable.Empty<ITrigger>();
-
-            using (var scope = new TransactionScope(TransactionScopeOption.Required,
-                new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
-                TransactionScopeAsyncFlowOption.Enabled))
-            {
-                // ReSharper disable once LoopCanBeConvertedToQuery
-                // Cannot await in a linq expression.
-                foreach (var trigger in triggers)
-                {
-                    newTriggers = newTriggers.Union(
-                        await command.ExecuteAsync(DatabaseManagerPool.DatabaseManager,
-                            trigger, cancellationToken));
-                }
-
-                scope.Complete();
-            }
-
-            return newTriggers.ToList();
-
+            return newTriggers;
         }
 
         public async Task<ICollection<ITransition>> DefineTransitions(ICollection<ITransition> transitions,
             CancellationToken cancellationToken)
         {
-            var command = CommandManager.Instance
-                .DefineCommand<ITransition>(
-                    "INSERT INTO Transitions VALUES(@MachineDefinitionId, @StateName, @TriggerName, @ResultantStateName, @GuardName, @IsActive);\n\n" +
-                    "SELECT * FROM Transitions WHERE MachineDefinitionId = @MachineDefinitionId AND StateName = @StateName AND TriggerName = @TriggerName;",
-                    CommandType.Text)
-                .SendNullValues()
-                .DefineResults<Transition>()
-                .Realize();
+                var newTransitions = (await CommandManager.Instance
+                    .DefineCommand("dbo.DefineTransitions", CommandType.StoredProcedure)
+                    .IncludePropertyAsStructured("Transitions", "TransitionTable")
+                    .SendNullValues()
+                    .DefineResults<Transition>()
+                    .Realize()
+                    .ExecuteAsync(DatabaseManagerPool.DatabaseManager,
+                        new { Transitions = transitions }, cancellationToken))
+                    .Cast<ITransition>()
+                    .ToList();
 
-            var newTransitions = Enumerable.Empty<ITransition>();
-
-            using (var scope = new TransactionScope(TransactionScopeOption.Required,
-                new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
-                TransactionScopeAsyncFlowOption.Enabled))
-            {
-                // ReSharper disable once LoopCanBeConvertedToQuery
-                // Cannot await in a linq expression.
-                foreach (var transition in transitions)
-                {
-                    newTransitions = newTransitions.Union(
-                        await command.ExecuteAsync(DatabaseManagerPool.DatabaseManager,
-                            transition, cancellationToken));
-                }
-
-                scope.Complete();
-            }
-
-            return newTransitions.ToList();
+                return newTransitions;
         }
 
         public async Task<ICollection<IIgnoreRule>> DefineIgnoreRules(ICollection<IIgnoreRule> ignoreRules,
@@ -423,7 +374,7 @@ namespace REstate.Susanoo
         {
             int newId;
             using (var transaction = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
-                { IsolationLevel = IsolationLevel.ReadCommitted }, TransactionScopeAsyncFlowOption.Enabled))
+            { IsolationLevel = IsolationLevel.ReadCommitted }, TransactionScopeAsyncFlowOption.Enabled))
             {
                 var newDefinition = await DefineMachine(stateMachineConfiguration.MachineDefinition, cancellationToken);
 
@@ -453,25 +404,24 @@ namespace REstate.Susanoo
                     .Union(guards)
                     .Union(transitions)
                     .Union(stateActions)
+                    .AsParallel()
                     .ToList()
                     .ForEach(e => e.MachineDefinitionId = newId);
 
                 //TODO: Here we should indicate this as the new version of the machine definition.
 
+                Task.WaitAll(
+                    DefineStates(states, cancellationToken),
+                    DefineTriggers(triggers, cancellationToken));
 
-                await DefineStates(states, cancellationToken);
+                Task.WaitAll(
+                    DefineIgnoreRules(ignoreRules, cancellationToken),
+                    DefineGuards(guards, cancellationToken));
 
-                await DefineTriggers(triggers, cancellationToken);
-
-                await DefineIgnoreRules(ignoreRules, cancellationToken);
-                
-                await DefineGuards(guards, cancellationToken);
-
-                await DefineTransitions(transitions, cancellationToken);
-
-                await DefineStateActions(stateActions, cancellationToken);
-
-                await SetInitialState(newId, stateMachineConfiguration.MachineDefinition.InitialStateName, cancellationToken);
+                Task.WaitAll(
+                    DefineTransitions(transitions, cancellationToken),
+                    DefineStateActions(stateActions, cancellationToken),
+                    SetInitialState(newId, stateMachineConfiguration.MachineDefinition.InitialStateName, cancellationToken));
 
                 await ToggleMachineDefinitionActive(newId, true, cancellationToken);
 

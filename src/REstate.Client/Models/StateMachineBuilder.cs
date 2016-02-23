@@ -4,7 +4,7 @@ using REstate.Configuration;
 
 namespace REstate.Client.Models
 {
-    public class StateMachineBuilder
+    internal class StateMachineBuilder
     {
         private readonly IMachineDefinition _definition;
         private readonly List<State> _states = new List<State>();

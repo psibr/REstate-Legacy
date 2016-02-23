@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Owin.Hosting;
 using REstate.Owin;
@@ -23,25 +24,27 @@ namespace SelfHost
                 var client = new REstateClient("http://localhost/restate/");
                 using (var session = client.GetAuthenticatedSession("98EC17D7-7F31-4A44-A911-6B4D10B3DC2E").Result)
                 {
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
                     var result = session.GetStateMachineConfiguration(1).Result;
 
-                    var diagramForDefinition = session.GetMachineDiagram(1).Result;
+                    sw.Stop();
 
-                    var guid = session.InstantiateMachine(1).Result;
+                    Console.WriteLine($"{sw.ElapsedMilliseconds}ms");
 
-                    var diagramForInstance = session.GetMachineDiagram(guid).Result;
-
-                    var triggers = session.GetAvailableTriggers(guid).Result;
-
-                    var currentState = session.GetMachineState(guid).Result;
-
-                    var isInState = session.IsMachineInState(guid, currentState.StateName).Result;
-
-                    currentState = session.FireTrigger(guid, triggers.First().TriggerName).Result;
-
-                    session.DeleteInstance(guid).Wait();
-
+                    sw.Restart();
                     var newMachine = session.DefineStateMachine(result).Result;
+
+                    sw.Stop();
+
+                    Console.WriteLine($"{sw.ElapsedMilliseconds}ms");
+
+                    sw.Restart();
+                    var newMachine2 = session.DefineStateMachine(result).Result;
+
+                    sw.Stop();
+
+                    Console.WriteLine($"{sw.ElapsedMilliseconds}ms");
                 }
 
                 Console.ReadLine();
