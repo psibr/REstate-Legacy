@@ -3,13 +3,13 @@ using Susanoo;
 
 namespace REstate.Susanoo
 {
-    public class RepositoryContextFactory
-        : IRepositoryContextFactory
+    public class InstanceRepositoryContextFactory
+        : IInstanceRepositoryContextFactory
     {
 
-        public IRepository OpenRepositoryContext(string apiKey)
+        public IInstanceRepository OpenInstanceRepositoryContext(string apiKey)
         {
-            return new Repository(
+            return new InstanceRepository(
                 new DatabaseManagerPool(
                     CommandManager.ResolveDatabaseManagerFactory(),
                     factory => factory.CreateFromConnectionStringName("REstate")),

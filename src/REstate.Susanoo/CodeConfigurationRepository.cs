@@ -11,9 +11,9 @@ using Susanoo;
 namespace REstate.Susanoo
 {
     public class CodeConfigurationRepository
-        : REstateContextualRepository, ICodeConfigurationRepository
+        : ConfigurationContextualRepository, ICodeConfigurationRepository
     {
-        public CodeConfigurationRepository(Repository root)
+        public CodeConfigurationRepository(ConfigurationRepository root)
             : base(root)
         {
         }

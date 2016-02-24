@@ -1,7 +1,7 @@
 ﻿namespace REstate.Repositories
 {
-    public interface IRepositoryContextFactory
+    public interface IConfigurationRepositoryContextFactory
     {
-        IRepository OpenRepositoryContext(string apiKey);
+        IConfigurationRepository OpenConfigurationRepositoryContext(string apiKey);
     }
 }

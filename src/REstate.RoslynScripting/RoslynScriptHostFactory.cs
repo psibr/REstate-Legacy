@@ -6,9 +6,9 @@ namespace REstate.RoslynScripting
     public class RoslynScriptHostFactory
         : IScriptHostFactory
     {
-        public Task<IScriptHost> BuildScriptHost()
+        public Task<IScriptHost> BuildScriptHost(string apiKey)
         {
-            return Task.FromResult<IScriptHost>(new RoslynScriptHost());
+            return Task.FromResult<IScriptHost>(new RoslynScriptHost(apiKey));
         }
     }
 }

@@ -2,19 +2,17 @@
 
 namespace REstate.Susanoo
 {
-    public class Repository
-        : IRepository
+    public class InstanceRepository
+        : IInstanceRepository
     {
-        public Repository(IDatabaseManagerPool databaseManagerPool, string apiKey)
+        public InstanceRepository(IDatabaseManagerPool databaseManagerPool, string apiKey)
         {
             DatabaseManagerPool = databaseManagerPool;
             ApiKey = apiKey;
-            Configuration = new ConfigurationRepository(this);
-            MachineFunctions = new MachineFunctionsRepository(this);
             MachineInstances = new MachineInstancesRepository(this);
         }
 
-        public IRepository Root => this;
+        public IInstanceRepository Root => this;
 
         /// <summary>
         /// Gets the API key.
@@ -35,10 +33,6 @@ namespace REstate.Susanoo
         {
             DatabaseManagerPool.Dispose();
         }
-
-        public IConfigurationRepository Configuration { get; }
-
-        public IMachineFunctionsRepository MachineFunctions { get; }
 
         public IMachineInstancesRepository MachineInstances { get; }
     }

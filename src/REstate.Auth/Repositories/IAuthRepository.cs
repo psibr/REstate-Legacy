@@ -5,7 +5,7 @@ using REstate.Repositories;
 namespace REstate.Auth.Repositories
 {
     public interface IAuthRepository
-        : IContextualRepository
+        : IConfigurationContextualRepository
     {
         Task<IPrincipal> LoadPrincipalByApiKey(string apiKey, CancellationToken cancellationToken);
 

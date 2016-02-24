@@ -4,6 +4,6 @@ namespace REstate.Services
 {
     public interface IScriptHostFactory
     {
-        Task<IScriptHost> BuildScriptHost();
+        Task<IScriptHost> BuildScriptHost(string apiKey);
     }
 }

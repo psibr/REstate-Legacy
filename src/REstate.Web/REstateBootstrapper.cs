@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using Nancy;
@@ -11,6 +12,7 @@ using Nancy.EmbeddedContent.Conventions;
 using Nancy.Owin;
 using Nancy.Responses.Negotiation;
 using Nancy.TinyIoc;
+using REstate.Chrono;
 using REstate.Repositories;
 using REstate.RoslynScripting;
 using REstate.Services;
@@ -31,14 +33,26 @@ namespace REstate.Web
         {
             base.ApplicationStartup(container, pipelines);
 
-            container.Register<IRepositoryContextFactory>(
-                (cContainer, overloads) => new RepositoryContextFactory());
+            container.Register<IConfigurationRepositoryContextFactory>(
+                (cContainer, overloads) => new ConfigurationRepositoryContextFactory());
 
-            container.Register<IScriptHostFactory>(
-                (cContainer, overloads) => new RoslynScriptHostFactory());
+            container.Register<IInstanceRepositoryContextFactory>(
+                (cContainer, overloads) => new InstanceRepositoryContextFactory());
+
+            container.Register<IScriptHostFactoryResolver>((cContainer, overloads) =>
+                new DefaultScriptHostFactoryResolver(new Dictionary<int, IScriptHostFactory>
+                {
+                    { 1, new SusanooScriptHostFactory() },
+                    { 2, new SusanooScriptHostFactory() },
+                    { 3, new RoslynScriptHostFactory() },
+                    { 4, new RoslynScriptHostFactory() },
+                    { 5, new ChronoTriggerScriptHostFactory() }
+                }));
 
             container.Register<IStateMachineFactory>((cContainer, overloads) =>
-                new StatelessStateMachineFactory(container.Resolve<IRepositoryContextFactory>(), container.Resolve<IScriptHostFactory>()));
+                new StatelessStateMachineFactory(container.Resolve<IConfigurationRepositoryContextFactory>(),
+                    container.Resolve<IInstanceRepositoryContextFactory>(),
+                    container.Resolve<IScriptHostFactoryResolver>()));
 
             StatelessAuthentication.Enable(pipelines, new StatelessAuthenticationConfiguration(ctx =>
             {

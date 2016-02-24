@@ -16,41 +16,42 @@ namespace REstate.Web.Modules
         /// <summary>
         /// Registers routes for modifying executable code.
         /// </summary>
-        /// <param name="repositoryContextFactory">The repository context factory.</param>
-        public CodeElementsModule(IRepositoryContextFactory repositoryContextFactory)
+        /// <param name="configurationRepositoryContextFactory">The repository context factory.</param>
+        public CodeElementsModule(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
             : base("/code", "developer")
         {
-            GetCodeUsages(repositoryContextFactory);
+            GetCodeUsages(configurationRepositoryContextFactory);
 
-            GetCodeTypes(repositoryContextFactory);
+            GetCodeTypes(configurationRepositoryContextFactory);
 
-            GetCodeTypesByUsageId(repositoryContextFactory);
+            GetCodeTypesByUsageId(configurationRepositoryContextFactory);
 
-            GetCodeTypesByUsageName(repositoryContextFactory);
+            GetCodeTypesByUsageName(configurationRepositoryContextFactory);
 
-            CreateCodeElement(repositoryContextFactory);
+            CreateCodeElement(configurationRepositoryContextFactory);
 
-            UpdateCodeElement(repositoryContextFactory);
+            UpdateCodeElement(configurationRepositoryContextFactory);
 
-            GetDatabaseDefinitions(repositoryContextFactory);
+            GetDatabaseDefinitions(configurationRepositoryContextFactory);
 
-            GetDatabaseProviders(repositoryContextFactory);
+            GetDatabaseProviders(configurationRepositoryContextFactory);
 
-            DefineDatabaseDefinition(repositoryContextFactory);
+            DefineDatabaseDefinition(configurationRepositoryContextFactory);
 
-            UpdateDatabaseDefinition(repositoryContextFactory);
+            UpdateDatabaseDefinition(configurationRepositoryContextFactory);
         }
 
-        private void UpdateDatabaseDefinition(IRepositoryContextFactory repositoryContextFactory)
+        private void UpdateDatabaseDefinition(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Put["UpdateDatabaseDefinition", "/databasedefinitions/", true] = async (parameters, ct) =>
             {
                 ISqlDatabaseDefinition defintion = this.Bind<SqlDatabaseDefinition>();
 
                 ISqlDatabaseDefinitionAndProvider databaseDefinitionAndProvider;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    databaseDefinitionAndProvider = await repository.Configuration.Code.UpdateDatabaseDefinition(defintion, ct);
+                    databaseDefinitionAndProvider = await repository.Code.UpdateDatabaseDefinition(defintion, ct);
                 }
 
                 return Negotiate
@@ -59,16 +60,17 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void DefineDatabaseDefinition(IRepositoryContextFactory repositoryContextFactory)
+        private void DefineDatabaseDefinition(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Post["DefineDatabaseDefinition", "/databasedefinitions/", true] = async (parameters, ct) =>
             {
                 ISqlDatabaseDefinition defintion = this.Bind<SqlDatabaseDefinition>(/*ignore: */ (o) => o.SqlDatabaseDefinitionId);
 
                 ISqlDatabaseDefinitionAndProvider databaseDefinitionAndProvider;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    databaseDefinitionAndProvider = await repository.Configuration.Code.DefineDatabaseDefinition(defintion, ct);
+                    databaseDefinitionAndProvider = await repository.Code.DefineDatabaseDefinition(defintion, ct);
                 }
 
                 return Negotiate
@@ -77,14 +79,15 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void GetDatabaseProviders(IRepositoryContextFactory repositoryContextFactory)
+        private void GetDatabaseProviders(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Get["GetDatabaseProviders", "/databaseproviders/", true] = async (parameters, ct) =>
             {
                 ICollection<ISqlDatabaseProvider> sqlDatabaseProviders;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    sqlDatabaseProviders = await repository.Configuration.Code.GetDatabaseProviders(ct);
+                    sqlDatabaseProviders = await repository.Code.GetDatabaseProviders(ct);
                 }
 
                 return Negotiate
@@ -93,14 +96,15 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void GetDatabaseDefinitions(IRepositoryContextFactory repositoryContextFactory)
+        private void GetDatabaseDefinitions(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Get["GetDatabaseDefinitions", "/databasedefinitions/", true] = async (parameters, ct) =>
             {
                 ICollection<ISqlDatabaseDefinitionAndProvider> databaseDefinition;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    databaseDefinition = await repository.Configuration.Code.GetDatabaseDefinitions(ct);
+                    databaseDefinition = await repository.Code.GetDatabaseDefinitions(ct);
                 }
 
                 return Negotiate
@@ -109,16 +113,17 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void UpdateCodeElement(IRepositoryContextFactory repositoryContextFactory)
+        private void UpdateCodeElement(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Put["UpdateCodeElement", "/elements/", true] = async (parameters, ct) =>
             {
                 var codeElement = this.Bind<CodeElement>();
 
                 CodeElement newCodeElement;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    newCodeElement = await repository.Configuration.Code.UpdateCodeElement(codeElement, ct);
+                    newCodeElement = await repository.Code.UpdateCodeElement(codeElement, ct);
                 }
 
                 return Negotiate
@@ -127,16 +132,17 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void CreateCodeElement(IRepositoryContextFactory repositoryContextFactory)
+        private void CreateCodeElement(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Post["DefineCodeElement", "/elements/", true] = async (parameters, ct) =>
             {
                 var codeElement = this.Bind<CodeElement>(/*ignore: */ e => e.CodeElementId);
 
                 CodeElement newCodeElement;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    newCodeElement = await repository.Configuration.Code.DefineCodeElement(codeElement, ct);
+                    newCodeElement = await repository.Code.DefineCodeElement(codeElement, ct);
                 }
 
                 return Negotiate
@@ -145,16 +151,17 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void GetCodeTypesByUsageName(IRepositoryContextFactory repositoryContextFactory)
+        private void GetCodeTypesByUsageName(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Get["GetCodeTypesByUsageName", "/types/{CodeUsageName}", true] = async (parameters, ct) =>
             {
                 string codeUsageName = parameters.CodeUsageName;
 
                 ICollection<CodeType> codeTypes;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    codeTypes = await repository.Configuration.Code.GetCodeTypes(codeUsageName, ct);
+                    codeTypes = await repository.Code.GetCodeTypes(codeUsageName, ct);
                 }
 
                 return Negotiate
@@ -163,16 +170,17 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void GetCodeTypesByUsageId(IRepositoryContextFactory repositoryContextFactory)
+        private void GetCodeTypesByUsageId(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Get["GetCodeTypesByUsageId", "/types/{CodeUsageId:int}", true] = async (parameters, ct) =>
             {
                 int codeUsageId = parameters.CodeUsageId;
 
                 ICollection<CodeType> codeTypes;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    codeTypes = await repository.Configuration.Code.GetCodeTypes(codeUsageId, ct);
+                    codeTypes = await repository.Code.GetCodeTypes(codeUsageId, ct);
                 }
 
                 return Negotiate
@@ -181,14 +189,15 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void GetCodeTypes(IRepositoryContextFactory repositoryContextFactory)
+        private void GetCodeTypes(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Get["GetCodeTypes", "/types", true] = async (parameters, ct) =>
             {
                 ICollection<CodeType> codeTypes;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    codeTypes = await repository.Configuration.Code.GetCodeTypes(ct);
+                    codeTypes = await repository.Code.GetCodeTypes(ct);
                 }
 
                 return Negotiate
@@ -197,14 +206,15 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void GetCodeUsages(IRepositoryContextFactory repositoryContextFactory)
+        private void GetCodeUsages(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Get["GetCodeUsages", "/usages", true] = async (parameters, ct) =>
             {
                 ICollection<CodeUsage> codeUsages;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    codeUsages = await repository.Configuration.Code.GetCodeUsages(ct);
+                    codeUsages = await repository.Code.GetCodeUsages(ct);
                 }
 
                 return Negotiate

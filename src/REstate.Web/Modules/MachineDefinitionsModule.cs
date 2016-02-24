@@ -19,52 +19,53 @@ namespace REstate.Web.Modules
         /// <summary>
         /// Registers routes for defining new machines.
         /// </summary>
-        /// <param name="repositoryContextFactory">The repository context factory.</param>
+        /// <param name="configurationRepositoryContextFactory">The repository context factory.</param>
         /// <param name="stateMachineFactory">The state machine factory.</param>
-        public MachineDefinitionsModule(IRepositoryContextFactory repositoryContextFactory,
+        public MachineDefinitionsModule(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
             IStateMachineFactory stateMachineFactory)
             : base("/machinedefinitions", "machineBuilder")
         {
-            GetMachine(repositoryContextFactory);
+            GetMachine(configurationRepositoryContextFactory);
 
-            GetDiagramForDefinition(repositoryContextFactory, stateMachineFactory);
+            GetDiagramForDefinition(configurationRepositoryContextFactory, stateMachineFactory);
 
-            DefineMachine(repositoryContextFactory);
+            DefineMachine(configurationRepositoryContextFactory);
 
-            DefineStates(repositoryContextFactory);
+            DefineStates(configurationRepositoryContextFactory);
 
-            DefineTriggers(repositoryContextFactory);
+            DefineTriggers(configurationRepositoryContextFactory);
 
-            DefineTransitions(repositoryContextFactory);
+            DefineTransitions(configurationRepositoryContextFactory);
 
-            DefineIgnoreRules(repositoryContextFactory);
+            DefineIgnoreRules(configurationRepositoryContextFactory);
 
-            SetInitialState(repositoryContextFactory);
+            SetInitialState(configurationRepositoryContextFactory);
 
-            DefineGuards(repositoryContextFactory);
+            DefineGuards(configurationRepositoryContextFactory);
 
-            UpdateTransition(repositoryContextFactory);
+            UpdateTransition(configurationRepositoryContextFactory);
 
-            UpdateGuard(repositoryContextFactory);
+            UpdateGuard(configurationRepositoryContextFactory);
 
-            ToggleMachineDefinitionActive(repositoryContextFactory);
+            ToggleMachineDefinitionActive(configurationRepositoryContextFactory);
 
-            UpdateMachineDefinition(repositoryContextFactory);
+            UpdateMachineDefinition(configurationRepositoryContextFactory);
 
-            DefineStateActions(repositoryContextFactory);
+            DefineStateActions(configurationRepositoryContextFactory);
 
-            DefineStateMachine(repositoryContextFactory);
+            DefineStateMachine(configurationRepositoryContextFactory);
         }
 
-        private void DefineStateMachine(IRepositoryContextFactory repositoryContextFactory)
+        private void DefineStateMachine(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Post["DefineStateMachine", "/", true] = async (parameters, ct) =>
             {
                 StateMachineConfiguration stateMachineConfiguration = this.Bind<StateMachineConfigurationRequest>();
                 IStateMachineConfiguration newMachineConfiguration;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    newMachineConfiguration = await repository.Configuration.DefineStateMachine(stateMachineConfiguration, ct);
+                    newMachineConfiguration = await repository.Machines.DefineStateMachine(stateMachineConfiguration, ct);
                 }
 
                 return Negotiate
@@ -73,7 +74,7 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void DefineStateActions(IRepositoryContextFactory repositoryContextFactory)
+        private void DefineStateActions(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Post["DefineStateActions", "/stateactions/", true] = async (parameters, ct) =>
             {
@@ -83,9 +84,10 @@ namespace REstate.Web.Modules
 
                 ICollection<IStateAction> newStateActions;
 
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    newStateActions = await repository.Configuration.DefineStateActions(requestedStateActions, ct);
+                    newStateActions = await repository.Machines.DefineStateActions(requestedStateActions, ct);
                 }
 
                 return Negotiate
@@ -94,16 +96,17 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void UpdateMachineDefinition(IRepositoryContextFactory repositoryContextFactory)
+        private void UpdateMachineDefinition(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Put["UpdateMachineDefinition", "/definition", true] = async (parameters, ct) =>
             {
                 IMachineDefinition machineDefinition = this.Bind<MachineDefinition>();
 
                 IMachineDefinition newMachineDefinition;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    newMachineDefinition = await repository.Configuration.UpdateMachineDefinition(machineDefinition, ct);
+                    newMachineDefinition = await repository.Machines.UpdateMachineDefinition(machineDefinition, ct);
                 }
 
                 return Negotiate
@@ -112,7 +115,7 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void ToggleMachineDefinitionActive(IRepositoryContextFactory repositoryContextFactory)
+        private void ToggleMachineDefinitionActive(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Patch["ToggleMachineDefinitionActive", "/{MachineDefinitionId:int}/toggle/{IsActive:bool}", true] =
                 async (parameters, ct) =>
@@ -122,9 +125,10 @@ namespace REstate.Web.Modules
 
                     IMachineDefinition machineDefinition;
 
-                    using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                    using (var repository = configurationRepositoryContextFactory
+                        .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                     {
-                        machineDefinition = await repository.Configuration.ToggleMachineDefinitionActive(machineDefinitionId, isActive, ct);
+                        machineDefinition = await repository.Machines.ToggleMachineDefinitionActive(machineDefinitionId, isActive, ct);
                     }
 
                     return Negotiate
@@ -133,16 +137,17 @@ namespace REstate.Web.Modules
                 };
         }
 
-        private void UpdateGuard(IRepositoryContextFactory repositoryContextFactory)
+        private void UpdateGuard(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Put["UpdateGuard", "/guards/", true] = async (parameters, ct) =>
             {
                 IGuard guard = this.Bind<Guard>();
 
                 IGuard newGuard;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    newGuard = await repository.Configuration.UpdateGuard(guard, ct);
+                    newGuard = await repository.Machines.UpdateGuard(guard, ct);
                 }
 
                 return Negotiate
@@ -151,16 +156,17 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void UpdateTransition(IRepositoryContextFactory repositoryContextFactory)
+        private void UpdateTransition(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Put["UpdateTransition", "/transitions/", true] = async (parameters, ct) =>
             {
                 ITransition transition = this.Bind<Transition>();
 
                 ITransition newTransition;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    newTransition = await repository.Configuration.UpdateTransition(transition, ct);
+                    newTransition = await repository.Machines.UpdateTransition(transition, ct);
                 }
 
                 return Negotiate
@@ -169,7 +175,7 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void DefineGuards(IRepositoryContextFactory repositoryContextFactory)
+        private void DefineGuards(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Post["DefineGuards", "/guards/", true] = async (parameters, ct) =>
             {
@@ -179,9 +185,10 @@ namespace REstate.Web.Modules
 
                 ICollection<IGuard> newGuards;
 
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    newGuards = await repository.Configuration.DefineGuards(requestedGuards, ct);
+                    newGuards = await repository.Machines.DefineGuards(requestedGuards, ct);
                 }
 
                 return Negotiate
@@ -190,7 +197,7 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void SetInitialState(IRepositoryContextFactory repositoryContextFactory)
+        private void SetInitialState(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Patch["SetInitialState", "/{MachineDefinitionId:int}/initialstate/{InitialStateName}", true] = async (parameters, ct) =>
             {
@@ -198,9 +205,10 @@ namespace REstate.Web.Modules
                 string initialStateName = parameters.InitialStateName;
                 IMachineDefinition machineDefinition;
 
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    machineDefinition = await repository.Configuration.SetInitialState(machineDefinitionId, initialStateName, ct);
+                    machineDefinition = await repository.Machines.SetInitialState(machineDefinitionId, initialStateName, ct);
                 }
 
                 return Negotiate
@@ -209,16 +217,17 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void DefineIgnoreRules(IRepositoryContextFactory repositoryContextFactory)
+        private void DefineIgnoreRules(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Post["DefineIgnoreRules", "/ignorerules", true] = async (parameters, ct) =>
             {
                 var requestedIgnoreRules = this.Bind<IgnoreRule[]>();
                 ICollection<IIgnoreRule> newIgnoreRules;
 
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    newIgnoreRules = await repository.Configuration.DefineIgnoreRules(requestedIgnoreRules, ct);
+                    newIgnoreRules = await repository.Machines.DefineIgnoreRules(requestedIgnoreRules, ct);
                 }
 
                 return Negotiate
@@ -227,16 +236,17 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void DefineTransitions(IRepositoryContextFactory repositoryContextFactory)
+        private void DefineTransitions(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Post["DefineTransitions", "/{MachineDefinitionId:int}/transitions", true] = async (parameters, ct) =>
             {
                 var requestedTransitions = this.Bind<Transition[]>();
                 ICollection<ITransition> newTransitions;
 
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    newTransitions = await repository.Configuration.DefineTransitions(requestedTransitions, ct);
+                    newTransitions = await repository.Machines.DefineTransitions(requestedTransitions, ct);
                 }
 
                 return Negotiate
@@ -245,16 +255,17 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void DefineTriggers(IRepositoryContextFactory repositoryContextFactory)
+        private void DefineTriggers(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Post["DefineTriggers", "/{MachineDefinitionId:int}/triggers", true] = async (parameters, ct) =>
             {
                 var requestedTriggers = this.Bind<Configuration.Trigger[]>();
                 ICollection<ITrigger> newTriggers;
 
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    newTriggers = await repository.Configuration.DefineTriggers(requestedTriggers, ct);
+                    newTriggers = await repository.Machines.DefineTriggers(requestedTriggers, ct);
                 }
 
                 return Negotiate
@@ -263,16 +274,17 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void DefineMachine(IRepositoryContextFactory repositoryContextFactory)
+        private void DefineMachine(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Post["DefineMachine", "/definition", true] = async (parameters, ct) =>
             {
                 IMachineDefinition definiton = this.Bind<MachineDefinition>(BindingConfig.Default,
                     "MachineDefinitionId", "InitialStateName", "IsActive");
 
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    definiton = await repository.Configuration
+                    definiton = await repository.Machines
                         .DefineMachine(definiton, ct);
                 }
 
@@ -282,7 +294,7 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void DefineStates(IRepositoryContextFactory repositoryContextFactory)
+        private void DefineStates(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
             Post["DefineStates", "/{MachineDefinitionId:int}/states", true] = async (parameters, ct) =>
             {
@@ -292,9 +304,10 @@ namespace REstate.Web.Modules
 
                 ICollection<IState> newStates;
 
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    newStates = await repository.Configuration.DefineStates(requestedStates, ct);
+                    newStates = await repository.Machines.DefineStates(requestedStates, ct);
                 }
 
                 return Negotiate
@@ -303,15 +316,16 @@ namespace REstate.Web.Modules
             };
         }
 
-        private void GetMachine(IRepositoryContextFactory repositoryContextFactory) =>
+        private void GetMachine(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory) =>
             Get["GetMachine", "/{MachineDefinitionId:int}", true] = async (parameters, ct) =>
             {
                 int machineDefinitionId = parameters.MachineDefinitionId;
                 IStateMachineConfiguration configuration;
 
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    configuration = await repository.Configuration
+                    configuration = await repository.Machines
                         .RetrieveMachineConfiguration(machineDefinitionId, ct);
                 }
 
@@ -329,18 +343,21 @@ namespace REstate.Web.Modules
                     .WithAllowedMediaRange(new MediaRange("application/json"));
             };
 
-        private void GetDiagramForDefinition(IRepositoryContextFactory repositoryContextFactory, IStateMachineFactory stateMachineFactory) =>
+        private void GetDiagramForDefinition(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
+            IStateMachineFactory stateMachineFactory) =>
             Get["GetDiagramForDefinition", "/{MachineDefinitionId:int}/diagram", true] = async (parameters, ct) =>
             {
                 int machineDefinitionId = parameters.MachineDefinitionId;
                 IStateMachineConfiguration configuration;
 
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    configuration = await repository.Configuration.RetrieveMachineConfiguration(machineDefinitionId, ct);
+                    configuration = await repository.Machines.RetrieveMachineConfiguration(machineDefinitionId, ct);
                 }
 
-                var machine = stateMachineFactory.ConstructFromConfiguration(Context.CurrentUser.GetApiKey(), configuration);
+                var machine = stateMachineFactory
+                    .ConstructFromConfiguration(Context.CurrentUser.GetApiKey(), configuration);
 
                 return Response.AsText(machine.ToString(), "text/plain");
             };

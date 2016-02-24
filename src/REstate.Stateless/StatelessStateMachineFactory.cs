@@ -11,18 +11,23 @@ namespace REstate.Stateless
     public class StatelessStateMachineFactory
         : IStateMachineFactory
     {
-        private readonly IRepositoryContextFactory _repositoryContextFactory;
-        private readonly IScriptHostFactory _scriptHostFactory;
+        private readonly IConfigurationRepositoryContextFactory _configurationRepositoryContextFactory;
+        private readonly IInstanceRepositoryContextFactory _instanceRepositoryContextFactory;
+        private readonly IScriptHostFactoryResolver _scriptHostFactoryResolver;
 
-        public StatelessStateMachineFactory(IRepositoryContextFactory repositoryContextFactory, IScriptHostFactory scriptHostFactory)
+        public StatelessStateMachineFactory(
+            IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
+            IInstanceRepositoryContextFactory instanceRepositoryContextFactory,
+            IScriptHostFactoryResolver scriptHostFactoryResolver)
         {
-            _repositoryContextFactory = repositoryContextFactory;
-            _scriptHostFactory = scriptHostFactory;
+            _configurationRepositoryContextFactory = configurationRepositoryContextFactory;
+            _instanceRepositoryContextFactory = instanceRepositoryContextFactory;
+            _scriptHostFactoryResolver = scriptHostFactoryResolver;
         }
 
         public IStateMachine ConstructFromConfiguration(string apiKey, Guid machineInstanceGuid, IStateMachineConfiguration configuration)
         {
-            var accessorMutator = new PersistentStateAccessorMutator(_repositoryContextFactory, apiKey, machineInstanceGuid);
+            var accessorMutator = new PersistentStateAccessorMutator(_instanceRepositoryContextFactory, apiKey, machineInstanceGuid);
 
             return ConstructFromConfiguration(apiKey, accessorMutator, configuration);
         }
@@ -105,6 +110,7 @@ namespace REstate.Stateless
             return stateMachine;
         }
 
+
         protected Func<bool> CreateGuardClause(string apiKey, IStateMachine stateMachine, IStateMachineConfiguration configuration, IGuard guardDefinition)
         {
             if (guardDefinition.CodeElementId == null) return () => false; //No code found, assume this is an unsafe operation.
@@ -114,61 +120,38 @@ namespace REstate.Stateless
 
             if (codeElement == null) throw new ArgumentException($"CodeElement with Id {guardDefinition.CodeElementId} was not found.");
 
-            Func<bool> guard;
-            switch (codeElement.CodeTypeId)
-            {
-                case (int)CodeTypes.SqlScalarBool:
-
-                    guard = () => EvaluateGuardClause(apiKey, codeElement);
-                    break;
-                case (int)CodeTypes.ScriptPredicate:
-                    guard = () =>
-                    {
-                        using (var scriptHost = _scriptHostFactory.BuildScriptHost().Result)
-                            return scriptHost
-                                .BuildAsyncPredicateScript(stateMachine, codeElement.CodeBody)
-                                .Invoke(CancellationToken.None).Result;
-                    };
-                    break;
-                default:
-                    throw new NotSupportedException("CodeTypeId provided is not supported.");
-            }
+            var hostFactory = _scriptHostFactoryResolver.ResolveScriptHostFactory(codeElement.CodeTypeId);
+            Func<bool> guard = () =>
+                hostFactory.BuildScriptHost(apiKey).Result
+                    .BuildAsyncPredicateScript(stateMachine, codeElement)
+                    .Invoke(CancellationToken.None).Result;
 
             return guard;
         }
 
-        protected void ConfigureOnExitAction(string apiKey, IStateMachine stateMachine, IStateMachineConfiguration configuration, IStateConfiguration stateConfiguration, StateMachine<State, Trigger>.StateConfiguration stateSettings)
+        protected void ConfigureOnExitAction(string apiKey,
+            IStateMachine stateMachine, IStateMachineConfiguration configuration,
+            IStateConfiguration stateConfiguration,
+            StateMachine<State, Trigger>.StateConfiguration stateSettings)
         {
             if (stateConfiguration.OnExitAction.CodeElementId == null) return;
-            var codeElement = configuration.CodeElements.SingleOrDefault(ce => 
+            var codeElement = configuration.CodeElements.SingleOrDefault(ce =>
                 ce.CodeElementId == stateConfiguration.OnExitAction.CodeElementId);
 
-            if(codeElement == null) throw new ArgumentException($"CodeElement with Id {stateConfiguration.OnExitAction.CodeElementId} was not found.");
+            if (codeElement == null) throw new ArgumentException($"CodeElement with Id {stateConfiguration.OnExitAction.CodeElementId} was not found.");
 
-            switch (codeElement.CodeTypeId)
-            {
-                case (int)CodeTypes.SqlAction:
-                    stateSettings.OnEntry(() => EvaluateActionClause(apiKey, codeElement),
-                        stateConfiguration.OnExitAction.StateActionDescription
-                            ?? codeElement.CodeElementDescription);
-                    break;
-                case (int)CodeTypes.ScriptAction:
-                    stateSettings.OnEntry(() =>
-                    {
-                        using (var host = _scriptHostFactory.BuildScriptHost().Result)
-                        {
-                            host.BuildAsyncActionScript(stateMachine, codeElement.CodeBody)
-                                .Invoke(CancellationToken.None);
-                        }
-                    }, stateConfiguration.OnExitAction.StateActionDescription
-                        ?? codeElement.CodeElementDescription);
-                    break;
-                default:
-                    throw new NotSupportedException("CodeTypeId provided is not supported.");
-            }
+            var hostFactory = _scriptHostFactoryResolver.ResolveScriptHostFactory(codeElement.CodeTypeId);
+            stateSettings.OnExit(() =>
+                hostFactory.BuildScriptHost(apiKey).Result
+                    .BuildAsyncActionScript(stateMachine, codeElement)
+                    .Invoke(CancellationToken.None)
+            , stateConfiguration.OnExitAction.StateActionDescription ?? codeElement.CodeElementDescription);
         }
 
-        protected void ConfigureOnEntryFromAction(string apiKey, IStateMachine stateMachine, IStateMachineConfiguration configuration, IStateConfiguration stateConfiguration, StateMachine<State, Trigger>.StateConfiguration stateSettings)
+        protected void ConfigureOnEntryFromAction(string apiKey,
+            IStateMachine stateMachine, IStateMachineConfiguration configuration,
+            IStateConfiguration stateConfiguration,
+            StateMachine<State, Trigger>.StateConfiguration stateSettings)
         {
             if (stateConfiguration.OnEntryFromAction.CodeElementId == null) return;
             var codeElement = configuration.CodeElements.SingleOrDefault(ce =>
@@ -176,39 +159,21 @@ namespace REstate.Stateless
 
             if (codeElement == null) throw new ArgumentException($"CodeElement with Id {stateConfiguration.OnEntryFromAction.CodeElementId} was not found.");
 
-            switch (codeElement.CodeTypeId)
-            {
-                case (int)CodeTypes.SqlAction:
-                    stateSettings.OnEntryFrom(
-                        new StateMachine<State, Trigger>.TriggerWithParameters<string>(
-                            new Trigger(stateConfiguration.State.MachineDefinitionId, stateConfiguration.OnEntryFromAction.TriggerName)), payload =>
-                            {
-                                EvaluateActionClause(apiKey, codeElement, payload);
-                            }, stateConfiguration.OnEntryFromAction.StateActionDescription
-                            ?? codeElement.CodeElementDescription);
+            var hostFactory = _scriptHostFactoryResolver.ResolveScriptHostFactory(codeElement.CodeTypeId);
+            stateSettings.OnEntryFrom(
+                new StateMachine<State, Trigger>.TriggerWithParameters<string>(
+                    new Trigger(stateConfiguration.State.MachineDefinitionId, stateConfiguration.OnEntryFromAction.TriggerName)), payload =>
+                        hostFactory.BuildScriptHost(apiKey).Result
+                            .BuildAsyncActionScript(stateMachine, payload, codeElement)
+                            .Invoke(CancellationToken.None),
+                stateConfiguration.OnEntryFromAction.StateActionDescription ?? codeElement.CodeElementDescription);
 
-                    break;
-                case (int)CodeTypes.ScriptAction:
-                    stateSettings.OnEntryFrom(
-                        new StateMachine<State, Trigger>.TriggerWithParameters<string>(
-                            new Trigger(stateConfiguration.State.MachineDefinitionId, stateConfiguration.OnEntryFromAction.TriggerName)), payload =>
-                            {
-                                using (var host = _scriptHostFactory.BuildScriptHost().Result)
-                                {
-                                    host.BuildAsyncActionScript(stateMachine, payload,
-                                        codeElement.CodeBody)
-                                        .Invoke(CancellationToken.None);
-                                }
-                            },
-                        stateConfiguration.OnEntryFromAction.StateActionDescription
-                            ?? codeElement.CodeElementDescription);
-                    break;
-                default:
-                    throw new NotSupportedException("CodeTypeId provided is not supported.");
-            }
         }
 
-        protected void ConfigureOnEntryAction(string apiKey, IStateMachine stateMachine, IStateMachineConfiguration configuration, IStateConfiguration stateConfiguration, StateMachine<State, Trigger>.StateConfiguration stateSettings)
+        protected void ConfigureOnEntryAction(string apiKey,
+            IStateMachine stateMachine, IStateMachineConfiguration configuration,
+            IStateConfiguration stateConfiguration,
+            StateMachine<State, Trigger>.StateConfiguration stateSettings)
         {
             if (stateConfiguration.OnEntryAction.CodeElementId == null) return;
             var codeElement = configuration.CodeElements.SingleOrDefault(ce =>
@@ -216,50 +181,12 @@ namespace REstate.Stateless
 
             if (codeElement == null) throw new ArgumentException($"CodeElement with Id {stateConfiguration.OnEntryFromAction.CodeElementId} was not found.");
 
-            switch (codeElement.CodeTypeId)
-            {
-                case (int)CodeTypes.SqlAction:
-                    stateSettings.OnEntry(() => EvaluateActionClause(apiKey, codeElement),
-                        stateConfiguration.OnEntryAction.StateActionDescription
-                            ?? codeElement.CodeElementDescription);
-                    break;
-                case (int)CodeTypes.ScriptAction:
-                    stateSettings.OnEntry(() =>
-                    {
-                        using (var host = _scriptHostFactory.BuildScriptHost().Result)
-                        {
-                            host.BuildAsyncActionScript(stateMachine, codeElement.CodeBody)
-                                .Invoke(CancellationToken.None);
-                        }
-                    }, stateConfiguration.OnEntryAction.StateActionDescription
-                        ?? codeElement.CodeElementDescription);
-                    break;
-                default:
-                    throw new NotSupportedException("CodeTypeId provided is not supported.");
-            }
-        }
-
-        protected bool EvaluateGuardClause(string apiKey, ICodeWithDatabaseConfiguration code)
-        {
-            bool result;
-
-            using (var repository = _repositoryContextFactory.OpenRepositoryContext(apiKey))
-            {
-                result = repository.MachineFunctions.ExecuteGuardClause(code, CancellationToken.None).Result;
-            }
-
-            return result;
-        }
-
-        protected void EvaluateActionClause(string apiKey, ICodeWithDatabaseConfiguration actionCode, string payload = null)
-        {
-            using (var repository = _repositoryContextFactory.OpenRepositoryContext(apiKey))
-            {
-                if (payload == null)
-                    repository.MachineFunctions.ExecuteActionClause(actionCode, CancellationToken.None).Wait();
-                else
-                    repository.MachineFunctions.ExecuteActionClause(actionCode, payload, CancellationToken.None).Wait();
-            }
+            var hostFactory = _scriptHostFactoryResolver.ResolveScriptHostFactory(codeElement.CodeTypeId);
+            stateSettings.OnEntry(() =>
+                hostFactory.BuildScriptHost(apiKey).Result
+                    .BuildAsyncActionScript(stateMachine, codeElement)
+                    .Invoke(CancellationToken.None),
+                stateConfiguration.OnEntryAction.StateActionDescription ?? codeElement.CodeElementDescription);
         }
 
         protected interface IStateAccessorMutator
@@ -270,20 +197,20 @@ namespace REstate.Stateless
 
         protected class PersistentStateAccessorMutator : IStateAccessorMutator
         {
-            private readonly IRepositoryContextFactory _repositoryContextFactory;
+            private readonly IInstanceRepositoryContextFactory _instanceRepositoryContextFactory;
             private readonly string _apiKey;
             private readonly Guid _machineInstanceGuid;
 
-            public PersistentStateAccessorMutator(IRepositoryContextFactory repositoryContextFactory, string apiKey, Guid machineInstanceGuid)
+            public PersistentStateAccessorMutator(IInstanceRepositoryContextFactory instanceRepositoryContextFactory, string apiKey, Guid machineInstanceGuid)
             {
-                _repositoryContextFactory = repositoryContextFactory;
+                _instanceRepositoryContextFactory = instanceRepositoryContextFactory;
                 _apiKey = apiKey;
                 _machineInstanceGuid = machineInstanceGuid;
             }
 
             public State Accessor()
             {
-                using (var repository = _repositoryContextFactory.OpenRepositoryContext(_apiKey))
+                using (var repository = _instanceRepositoryContextFactory.OpenInstanceRepositoryContext(_apiKey))
                 {
                     return repository.MachineInstances.GetInstanceState(_machineInstanceGuid, CancellationToken.None).Result;
                 }
@@ -291,7 +218,7 @@ namespace REstate.Stateless
 
             public void Mutator(State state)
             {
-                using (var repository = _repositoryContextFactory.OpenRepositoryContext(_apiKey))
+                using (var repository = _instanceRepositoryContextFactory.OpenInstanceRepositoryContext(_apiKey))
                 {
                     repository.MachineInstances.SetInstanceState(_machineInstanceGuid, state, CancellationToken.None);
                 }

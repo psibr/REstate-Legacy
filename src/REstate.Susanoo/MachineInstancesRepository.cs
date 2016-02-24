@@ -10,9 +10,9 @@ using Susanoo;
 namespace REstate.Susanoo
 {
     public class MachineInstancesRepository
-        : REstateContextualRepository, IMachineInstancesRepository
+        : InstanceContextualRepository, IMachineInstancesRepository
     {
-        public MachineInstancesRepository(Repository root)
+        public MachineInstancesRepository(InstanceRepository root)
             : base(root)
         {
         }

@@ -77,6 +77,10 @@
       <Project>{276af764-e2ba-4434-b6d2-799bfc4f340c}</Project>
       <Name>REstate.Auth</Name>
     </ProjectReference>
+    <ProjectReference Include="..\REstate.Chrono\REstate.Chrono.csproj">
+      <Project>{6ee10dc1-eaa1-4754-b207-d4c4b86eab9f}</Project>
+      <Name>REstate.Chrono</Name>
+    </ProjectReference>
     <ProjectReference Include="..\REstate.RoslynScripting\REstate.RoslynScripting.csproj">
       <Project>{310a26d6-518b-41a6-b5db-0b4a1b4a84c9}</Project>
       <Name>REstate.RoslynScripting</Name>

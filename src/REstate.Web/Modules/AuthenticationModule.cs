@@ -19,7 +19,7 @@ namespace REstate.Web.Modules
     {
         protected static IHmacProvider HashProvider;
 
-        public AuthenticationModule(IRepositoryContextFactory repositoryContextFactory)
+        public AuthenticationModule(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
 
             Get["/login", true] = async (parameters, ct) =>
@@ -45,7 +45,7 @@ namespace REstate.Web.Modules
 
 
                 IPrincipal principal;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(null))
+                using (var repository = configurationRepositoryContextFactory.OpenConfigurationRepositoryContext(null))
                 {
                     principal = await repository.GetAuthRepository()
                         .LoadPrincipalByCredentials(credentials.Username, passwordHash, ct);
@@ -74,7 +74,7 @@ namespace REstate.Web.Modules
                 var signInDelegate = (SignInDelegate)environment["jwtandcookie.signin"];
 
                 IPrincipal principal;
-                using (var repository = repositoryContextFactory.OpenRepositoryContext(apiKey))
+                using (var repository = configurationRepositoryContextFactory.OpenConfigurationRepositoryContext(apiKey))
                 {
                     principal = await repository.GetAuthRepository().LoadPrincipalByApiKey(apiKey, ct);
                 }

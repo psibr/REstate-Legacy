@@ -11,10 +11,10 @@ namespace REstate.Susanoo.Auth
 {
 
     public class AuthRepository
-        : REstateContextualRepository, IAuthRepository
+        : ConfigurationContextualRepository, IAuthRepository
     {
 
-        public AuthRepository(Repository root)
+        public AuthRepository(ConfigurationRepository root)
             : base(root)
         {
         }
