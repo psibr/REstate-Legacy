@@ -3,9 +3,11 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using REstate.Configuration;
 using REstate.Repositories;
 using Susanoo;
+using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace REstate.Susanoo
 {
@@ -58,17 +60,40 @@ namespace REstate.Susanoo
             return result != null ? new State(result.MachineDefinitionId, result.StateName) : null;
         }
 
-        public async Task SetInstanceState(Guid machineInstanceGuid, State state, CancellationToken cancellationToken)
+        public async Task SetInstanceState(Guid machineInstanceGuid, State state, State lastState, CancellationToken cancellationToken)
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
 
-            await CommandManager.Instance
-                .DefineCommand(
-                    "UPDATE MachineInstances SET StateName = @StateName WHERE MachineInstanceId = @machineInstanceGuid",
-                    CommandType.Text)
-                .Realize()
-                .ExecuteNonQueryAsync(DatabaseManagerPool.DatabaseManager, new { machineInstanceGuid, state.StateName },
-                    null, cancellationToken);
+            var manager = DatabaseManagerPool.DatabaseManager;
+
+            using (var transaction = new TransactionScope(TransactionScopeOption.Required,
+                new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
+                TransactionScopeAsyncFlowOption.Enabled))
+            {
+                manager.OpenConnection();
+                var results = await CommandManager.Instance
+                    .DefineCommand(
+                        "EXEC sp_getapplock @Resource = @machineInstanceGuid, @LockMode='Update', @LockTimeout='2000'" +
+                        "\n\n" +
+                        "UPDATE MachineInstances SET StateName = @StateName \n" +
+                        "WHERE MachineInstanceId = @machineInstanceGuid AND StateName = @LastStateName;" +
+                        "\n\n" +
+                        "EXEC sp_releaseapplock @Resource = @machineInstanceGuid",
+
+                        CommandType.Text)
+                    .Realize()
+                    .SetTimeout(TimeSpan.FromSeconds(3))
+                    .ExecuteNonQueryAsync(manager,
+                        new { machineInstanceGuid, state.StateName, LastStateName = lastState.StateName },
+                        null, cancellationToken);
+
+                if(results <= 0)
+                    throw new StateConflictException("State did not reflect original state when attempting to transition.");
+
+
+                transaction.Complete();
+            }
+            manager.CloseConnection();
         }
     }
 }

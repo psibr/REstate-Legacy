@@ -1,8 +1,9 @@
 using System;
 using REstate.Auth.Repositories;
 using REstate.Repositories;
+using REstate.Susanoo;
 
-namespace REstate.Susanoo.Auth
+namespace REstate.Auth.Susanoo
 {
     public static class REstateRepositoryExtensions
     {

@@ -149,7 +149,13 @@ namespace REstate.Client
                         new StringContent($"{{ \"payload\": \"{payload}\" }}", Encoding.UTF8, "application/json"));
 
 
-                if (response.StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.Unauthorized:
+                        throw new UnauthorizedException();
+                    case HttpStatusCode.Conflict:
+                        throw new StateConflictException();
+                }
 
                 return await response.Content.ReadAsStringAsync();
             });

@@ -1,7 +1,6 @@
 ﻿using System;
-using Susanoo;
 
-namespace REstate.Susanoo
+namespace Susanoo.ConnectionPooling
 {
     public interface IDatabaseManagerPool
         : IDisposable

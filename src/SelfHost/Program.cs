@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Owin.Hosting;
+using REstate.Chrono.Susanoo;
 using REstate.Owin;
 using REstate.Client;
 
@@ -16,7 +17,7 @@ namespace SelfHost
 
             Startup.PassPhrase = ConfigurationManager.AppSettings["REstate.passphrase"];
 
-            using (WebApp.Start<Startup>(url))
+            using (var app = WebApp.Start<Startup>(url))
             {
                 Console.WriteLine("Running on {0}", url);
                 Console.WriteLine("Press enter to exit");
@@ -24,30 +25,16 @@ namespace SelfHost
                 var client = new REstateClient("http://localhost/restate/");
                 using (var session = client.GetAuthenticatedSession("98EC17D7-7F31-4A44-A911-6B4D10B3DC2E").Result)
                 {
-                    Stopwatch sw = new Stopwatch();
-                    sw.Start();
-                    var result = session.GetStateMachineConfiguration(1).Result;
+                    var engine = new ChronoEngineFactory().CreateEngine();
+                    var consumer = new ChronoConsumer(engine, session);
 
-                    sw.Stop();
+                    consumer.Start();
 
-                    Console.WriteLine($"{sw.ElapsedMilliseconds}ms");
+                    Console.ReadLine();
 
-                    sw.Restart();
-                    var newMachine = session.DefineStateMachine(result).Result;
+                    consumer.Stop();
 
-                    sw.Stop();
-
-                    Console.WriteLine($"{sw.ElapsedMilliseconds}ms");
-
-                    sw.Restart();
-                    var newMachine2 = session.DefineStateMachine(result).Result;
-
-                    sw.Stop();
-
-                    Console.WriteLine($"{sw.ElapsedMilliseconds}ms");
                 }
-
-                Console.ReadLine();
             }
         }
     }

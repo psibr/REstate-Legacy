@@ -14,6 +14,6 @@ namespace REstate.Repositories
 
         Task<State> GetInstanceState(Guid machineInstanceGuid, CancellationToken cancellationToken);
 
-        Task SetInstanceState(Guid machineInstanceGuid, State state, CancellationToken cancellationToken);
+        Task SetInstanceState(Guid machineInstanceGuid, State state, State lastState, CancellationToken cancellationToken);
     }
 }

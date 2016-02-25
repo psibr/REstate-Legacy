@@ -78,11 +78,13 @@
     <Compile Include="Repositories\IMachineFunctionsRepository.cs" />
     <Compile Include="Repositories\IRepositoryContextFactory.cs" />
     <Compile Include="Services\DefaultScriptHostFactoryResolver.cs" />
+    <Compile Include="Services\IJsonSerializer.cs" />
     <Compile Include="Services\IScriptHost.cs" />
     <Compile Include="Services\IScriptHostFactory.cs" />
     <Compile Include="Services\IScriptHostResolver.cs" />
     <Compile Include="Services\IStateMachineFactory.cs" />
     <Compile Include="State.cs" />
+    <Compile Include="StateConflictException.cs" />
     <Compile Include="Trigger.cs" />
   </ItemGroup>
   <ItemGroup />

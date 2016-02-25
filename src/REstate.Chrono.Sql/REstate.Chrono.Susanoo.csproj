@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B1A411E0-E8BF-4D8C-B327-2C171E2E60BC}</ProjectGuid>
+    <ProjectGuid>{43C30519-A517-44E5-9767-79B90B0CE3EB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>REstate.Susanoo.Auth</RootNamespace>
-    <AssemblyName>REstate.Susanoo.Auth</AssemblyName>
+    <RootNamespace>REstate.Chrono.Susanoo</RootNamespace>
+    <AssemblyName>REstate.Chrono.Susanoo</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -36,6 +36,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,26 +45,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthRepository.cs" />
-    <Compile Include="PersistateRepositoryExtensions.cs" />
+    <Compile Include="ChronoConsumer.cs" />
+    <Compile Include="ChronoEngine.cs" />
+    <Compile Include="ChronoEngineFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\REstate.Auth\REstate.Auth.csproj">
-      <Project>{276af764-e2ba-4434-b6d2-799bfc4f340c}</Project>
-      <Name>REstate.Auth</Name>
+    <ProjectReference Include="..\REstate.Chrono\REstate.Chrono.csproj">
+      <Project>{6ee10dc1-eaa1-4754-b207-d4c4b86eab9f}</Project>
+      <Name>REstate.Chrono</Name>
     </ProjectReference>
-    <ProjectReference Include="..\REstate.Susanoo\REstate.Susanoo.csproj">
-      <Project>{95d7fb41-1d52-467a-873e-c2c31926b209}</Project>
-      <Name>REstate.Susanoo</Name>
+    <ProjectReference Include="..\REstate.Client\REstate.Client.csproj">
+      <Project>{bc6e21a3-4200-4681-b74a-b30b6f46bace}</Project>
+      <Name>REstate.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate\REstate.csproj">
       <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>
       <Name>REstate</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Susanoo.ConnectionPooling\Susanoo.ConnectionPooling.csproj">
+      <Project>{4f2bfbb1-9b5b-4626-84a0-195a863a7c21}</Project>
+      <Name>Susanoo.ConnectionPooling</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -44,7 +44,8 @@ namespace REstate.Stateless
         {
             var machine = new StateMachine<State, Trigger>(accessorMutator.Accessor, accessorMutator.Mutator);
 
-            var stateMachine = new StatelessStateMachineAdapter(machine);
+            var stateMachine = new StatelessStateMachineAdapter(machine, 
+                configuration.MachineDefinition.MachineDefinitionId, accessorMutator.MachineInstanceId);
 
             if (configuration.MachineDefinition.AutoIgnoreNotConfiguredTriggers)
                 machine.OnUnhandledTrigger((i, i1) => { /* ignore */ });
@@ -191,7 +192,10 @@ namespace REstate.Stateless
 
         protected interface IStateAccessorMutator
         {
+            Guid MachineInstanceId { get; }
+
             State Accessor();
+
             void Mutator(State state);
         }
 
@@ -199,29 +203,43 @@ namespace REstate.Stateless
         {
             private readonly IInstanceRepositoryContextFactory _instanceRepositoryContextFactory;
             private readonly string _apiKey;
-            private readonly Guid _machineInstanceGuid;
+            private State _lastState = null;
 
             public PersistentStateAccessorMutator(IInstanceRepositoryContextFactory instanceRepositoryContextFactory, string apiKey, Guid machineInstanceGuid)
             {
                 _instanceRepositoryContextFactory = instanceRepositoryContextFactory;
                 _apiKey = apiKey;
-                _machineInstanceGuid = machineInstanceGuid;
+                MachineInstanceId = machineInstanceGuid;
             }
+
+            public Guid MachineInstanceId { get; }
 
             public State Accessor()
             {
                 using (var repository = _instanceRepositoryContextFactory.OpenInstanceRepositoryContext(_apiKey))
                 {
-                    return repository.MachineInstances.GetInstanceState(_machineInstanceGuid, CancellationToken.None).Result;
+                    _lastState = repository.MachineInstances.GetInstanceState(MachineInstanceId, CancellationToken.None).Result;
+
+                    return _lastState;
                 }
             }
 
             public void Mutator(State state)
             {
+
                 using (var repository = _instanceRepositoryContextFactory.OpenInstanceRepositoryContext(_apiKey))
                 {
-                    repository.MachineInstances.SetInstanceState(_machineInstanceGuid, state, CancellationToken.None);
+                    try
+                    {
+                        repository.MachineInstances.SetInstanceState(MachineInstanceId, state, _lastState,
+                            CancellationToken.None).Wait();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
                 }
+
             }
         }
 
@@ -229,6 +247,10 @@ namespace REstate.Stateless
             : IStateAccessorMutator
         {
             private State _state;
+
+            public Guid MachineInstanceId 
+                => Guid.NewGuid();
+
             public State Accessor()
             {
                 return _state;

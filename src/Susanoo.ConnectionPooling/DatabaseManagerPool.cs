@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
-using Susanoo;
 
-namespace REstate.Susanoo
+namespace Susanoo.ConnectionPooling
 {
     public class DatabaseManagerPool
         : IDatabaseManagerPool

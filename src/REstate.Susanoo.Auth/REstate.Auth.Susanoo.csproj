@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{95D7FB41-1D52-467A-873E-C2C31926B209}</ProjectGuid>
+    <ProjectGuid>{B1A411E0-E8BF-4D8C-B327-2C171E2E60BC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>REstate.Susanoo</RootNamespace>
-    <AssemblyName>REstate.Susanoo</AssemblyName>
+    <RootNamespace>REstate.Auth.Susanoo</RootNamespace>
+    <AssemblyName>REstate.Auth.Susanoo</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,34 +34,29 @@
       <HintPath>..\packages\Susanoo.Core.1.2.4.2\lib\net45\Susanoo.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Susanoo.SqlServer, Version=1.2.4.2, Culture=neutral, PublicKeyToken=fd869d2c03fd7e96, processorArchitecture=MSIL">
-      <HintPath>..\packages\Susanoo.SqlServer.1.2.4.2\lib\net45\Susanoo.SqlServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeConfigurationRepository.cs" />
-    <Compile Include="InstanceContextualRepository.cs" />
-    <Compile Include="InstanceRepository.cs" />
-    <Compile Include="InstanceRepositoryContextFactory.cs" />
-    <Compile Include="MachineConfigurationRepository.cs" />
-    <Compile Include="SusanooScriptHost.cs" />
-    <Compile Include="MachineInstancesRepository.cs" />
-    <Compile Include="ConfigurationContextualRepository.cs" />
-    <Compile Include="ConfigurationRepository.cs" />
-    <Compile Include="ConfigurationRepositoryContextFactory.cs" />
+    <Compile Include="AuthRepository.cs" />
+    <Compile Include="PersistateRepositoryExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SusanooScriptHostFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\REstate.Auth\REstate.Auth.csproj">
+      <Project>{276af764-e2ba-4434-b6d2-799bfc4f340c}</Project>
+      <Name>REstate.Auth</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.Susanoo\REstate.Susanoo.csproj">
+      <Project>{95d7fb41-1d52-467a-873e-c2c31926b209}</Project>
+      <Name>REstate.Susanoo</Name>
+    </ProjectReference>
     <ProjectReference Include="..\REstate\REstate.csproj">
       <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>
       <Name>REstate</Name>
@@ -71,6 +65,10 @@
       <Project>{4f2bfbb1-9b5b-4626-84a0-195a863a7c21}</Project>
       <Name>Susanoo.ConnectionPooling</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

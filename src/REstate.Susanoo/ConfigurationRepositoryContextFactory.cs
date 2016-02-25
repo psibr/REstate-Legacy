@@ -1,5 +1,6 @@
 ﻿using REstate.Repositories;
 using Susanoo;
+using Susanoo.ConnectionPooling;
 
 namespace REstate.Susanoo
 {

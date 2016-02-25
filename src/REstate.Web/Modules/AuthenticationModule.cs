@@ -7,8 +7,8 @@ using Nancy.ModelBinding;
 using Nancy.Owin;
 using Nancy.Responses.Negotiation;
 using REstate.Auth;
+using REstate.Auth.Susanoo;
 using REstate.Repositories;
-using REstate.Susanoo.Auth;
 using REstate.Web.Requests;
 using SignInDelegate = System.Func<System.Func<System.Guid, System.Collections.Generic.IDictionary<string, object>>, bool, string>;
 

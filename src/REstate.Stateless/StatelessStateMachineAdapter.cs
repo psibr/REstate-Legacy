@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Stateless;
 
@@ -9,10 +10,15 @@ namespace REstate.Stateless
     {
         private readonly StateMachine<State, Trigger> _stateMachine;
 
-        public StatelessStateMachineAdapter(StateMachine<State, Trigger> stateMachine)
+        public StatelessStateMachineAdapter(StateMachine<State, Trigger> stateMachine, int machineDefinitionId, Guid machineInstanceId)
         {
             _stateMachine = stateMachine;
+            MachineInstanceId = machineInstanceId;
+            MachineDefinitionId = machineDefinitionId;
         }
+
+        public Guid MachineInstanceId { get; }
+        public int MachineDefinitionId { get; }
 
         public void Fire(Trigger trigger)
         {
@@ -21,6 +27,7 @@ namespace REstate.Stateless
 
         public void Fire(Trigger trigger, string payload)
         {
+
             _stateMachine.Fire(new StateMachine<State, Trigger>.TriggerWithParameters<string>(trigger), payload);
         }
 

@@ -1,13 +1,12 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using REstate.Auth;
 using REstate.Auth.Repositories;
+using REstate.Susanoo;
 using Susanoo;
 
-namespace REstate.Susanoo.Auth
+namespace REstate.Auth.Susanoo
 {
 
     public class AuthRepository

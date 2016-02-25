@@ -1,4 +1,4 @@
-﻿namespace REstate.Susanoo
+﻿namespace Susanoo.ConnectionPooling
 {
     /// <summary>
     /// Enum ContextDbConnectionMode

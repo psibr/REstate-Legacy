@@ -39,6 +39,10 @@
       <HintPath>..\packages\Nancy.Authentication.Stateless.1.4.1\lib\net40\Nancy.Authentication.Stateless.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
@@ -77,6 +81,10 @@
       <Project>{276af764-e2ba-4434-b6d2-799bfc4f340c}</Project>
       <Name>REstate.Auth</Name>
     </ProjectReference>
+    <ProjectReference Include="..\REstate.Chrono.Sql\REstate.Chrono.Susanoo.csproj">
+      <Project>{43c30519-a517-44e5-9767-79b90b0ce3eb}</Project>
+      <Name>REstate.Chrono.Susanoo</Name>
+    </ProjectReference>
     <ProjectReference Include="..\REstate.Chrono\REstate.Chrono.csproj">
       <Project>{6ee10dc1-eaa1-4754-b207-d4c4b86eab9f}</Project>
       <Name>REstate.Chrono</Name>
@@ -89,9 +97,9 @@
       <Project>{7ae96174-718f-45a2-8389-0a1e982dce82}</Project>
       <Name>REstate.Stateless</Name>
     </ProjectReference>
-    <ProjectReference Include="..\REstate.Susanoo.Auth\REstate.Susanoo.Auth.csproj">
+    <ProjectReference Include="..\REstate.Susanoo.Auth\REstate.Auth.Susanoo.csproj">
       <Project>{b1a411e0-e8bf-4d8c-b327-2c171e2e60bc}</Project>
-      <Name>REstate.Susanoo.Auth</Name>
+      <Name>REstate.Auth.Susanoo</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate.Susanoo\REstate.Susanoo.csproj">
       <Project>{95d7fb41-1d52-467a-873e-c2c31926b209}</Project>

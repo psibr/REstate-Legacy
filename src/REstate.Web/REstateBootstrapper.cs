@@ -12,7 +12,9 @@ using Nancy.EmbeddedContent.Conventions;
 using Nancy.Owin;
 using Nancy.Responses.Negotiation;
 using Nancy.TinyIoc;
+using Newtonsoft.Json;
 using REstate.Chrono;
+using REstate.Chrono.Susanoo;
 using REstate.Repositories;
 using REstate.RoslynScripting;
 using REstate.Services;
@@ -26,7 +28,8 @@ namespace REstate.Web
     /// by overriding the various methods and properties.
     /// For more information https://github.com/NancyFx/Nancy/wiki/Bootstrapper
     /// </summary>
-    public class REstateBootstrapper : DefaultNancyBootstrapper
+    public class REstateBootstrapper 
+        : DefaultNancyBootstrapper
     {
 
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
@@ -39,6 +42,12 @@ namespace REstate.Web
             container.Register<IInstanceRepositoryContextFactory>(
                 (cContainer, overloads) => new InstanceRepositoryContextFactory());
 
+            container.Register<IJsonSerializer>(
+                (cContainer, overloads) => new NewtonsoftJsonSerializer());
+
+            var engine = new ChronoEngineFactory().CreateEngine();
+            container.Register(engine);
+
             container.Register<IScriptHostFactoryResolver>((cContainer, overloads) =>
                 new DefaultScriptHostFactoryResolver(new Dictionary<int, IScriptHostFactory>
                 {
@@ -46,7 +55,9 @@ namespace REstate.Web
                     { 2, new SusanooScriptHostFactory() },
                     { 3, new RoslynScriptHostFactory() },
                     { 4, new RoslynScriptHostFactory() },
-                    { 5, new ChronoTriggerScriptHostFactory() }
+                    { 5, new ChronoTriggerScriptHostFactory(
+                        container.Resolve<IChronoEngine>(),
+                        container.Resolve<IJsonSerializer>()) }
                 }));
 
             container.Register<IStateMachineFactory>((cContainer, overloads) =>
@@ -112,5 +123,19 @@ namespace REstate.Web
         {
             Password = "pass"
         };
+    }
+
+    public class NewtonsoftJsonSerializer
+        : IJsonSerializer
+    {
+        public string Serialize(object obj)
+        {
+            return JsonConvert.SerializeObject(obj);
+        }
+
+        public T Deserialize<T>(string payload)
+        {
+            return JsonConvert.DeserializeObject<T>(payload);
+        }
     }
 }
