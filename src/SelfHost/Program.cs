@@ -22,22 +22,33 @@ using REstate.Web;
 
 namespace SelfHost
 {
-    internal class Program
+    class Program
     {
+
         private static void Main(string[] args)
         {
             var url = ConfigurationManager.AppSettings["REstate.url"];
             var passPhrase = ConfigurationManager.AppSettings["REstate.passphrase"];
             var authBaseUrl = ConfigurationManager.AppSettings["REstate.Web.Auth.Url"];
 
-            REstateBootstrapper.AuthBaseUrl = authBaseUrl;
+            var container = BuildAndConfigureContainer();
 
-            Startup.PassPhrase = passPhrase;
-            REstateBootstrapper.PassPhrase = passPhrase;
+            var config = new REstateConfiguration
+            {
+                EncryptionPassphrase = passPhrase,
+                HmacPassphrase = passPhrase,
+                AuthBaseUrl = authBaseUrl,
+                EncryptionSaltBytes = new byte[] { 0x01, 0x02, 0xD1, 0xFF, 0x2F, 0x30, 0x1D, 0xF2 },
+                HmacSaltBytes = new byte[] { 0x01, 0x02, 0xD1, 0xFF, 0x2F, 0x30, 0x1D, 0xF2 },
+                ClaimsPrincipalResourceName = "server.User"
+            };
 
-            var kernel = BuildAndConfigureContainer();
+            container.RegisterInstance(config);
+            var kernel = container.Build();
+
+            //Binding to implementation
             REstateBootstrapper.KernelLocator = () => kernel;
-
+            Startup.Config = config;
 
             using (WebApp.Start<Startup>(url))
             {
@@ -59,7 +70,7 @@ namespace SelfHost
             }
         }
 
-        private static IContainer BuildAndConfigureContainer()
+        private static ContainerBuilder BuildAndConfigureContainer()
         {
             var container = new ContainerBuilder();
 
@@ -84,11 +95,11 @@ namespace SelfHost
 
             container.Register(context => new DefaultScriptHostFactoryResolver(new Dictionary<int, IScriptHostFactory>
             {
-                {1, new SusanooScriptHostFactory()},
-                {2, new SusanooScriptHostFactory()},
-                {3, new RoslynScriptHostFactory()},
-                {4, new RoslynScriptHostFactory()},
-                {5, new ChronoTriggerScriptHostFactory(
+                { 1, new SusanooScriptHostFactory() },
+                { 2, new SusanooScriptHostFactory() },
+                { 3, new RoslynScriptHostFactory() },
+                { 4, new RoslynScriptHostFactory() },
+                { 5, new ChronoTriggerScriptHostFactory(
                         context.Resolve<IChronoEngine>(),
                         context.Resolve<IJsonSerializer>())
                 }
@@ -97,9 +108,7 @@ namespace SelfHost
             container.RegisterType<StatelessStateMachineFactory>()
                 .As<IStateMachineFactory>();
 
-            var kernel = container.Build();
-
-            return kernel;
+            return container;
         }
     }
 }

@@ -70,6 +70,12 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\REstate.Web.Common\REstate.Web.Common.csproj">
+      <Project>{75b55765-0ea6-4158-a0e2-c81e54742718}</Project>
+      <Name>REstate.Web.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

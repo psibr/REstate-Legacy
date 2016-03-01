@@ -11,10 +11,10 @@ namespace REstate.Web.Configuration.Modules
         /// <summary>
         /// Registers the UI routes for the application.
         /// </summary>
-        public HomeModule()
+        public HomeModule(REstateConfiguration configuration)
         {
                 Get["/"] = _ => Context.CurrentUser == null 
-                    ? Response.AsRedirect($"{REstateBootstrapper.AuthBaseUrl}/login") 
+                    ? Response.AsRedirect($"{configuration.AuthBaseUrl}/login") 
                     : 200;
         }
     }

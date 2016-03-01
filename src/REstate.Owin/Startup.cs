@@ -4,18 +4,19 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using Owin;
+using REstate.Web;
 
 namespace REstate.Owin
 {
     public class Startup
     {
-        public static string PassPhrase { get; set; }
+        public static REstateConfiguration Config;
 
         public void Configuration(IAppBuilder app)
         {
             app.UseJwtAndCookieMiddleware(new JwtAndCookieMiddlewareOptions
             {
-                PassPhrase = PassPhrase,
+                PassPhrase = Config.HmacPassphrase,
                 CookieName = "REstate",
                 CookiePath = "/REstate",
                 CreatePrincipal = CreatePrincipal

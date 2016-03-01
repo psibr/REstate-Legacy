@@ -22,19 +22,16 @@ namespace REstate.Web
         : AutofacNancyBootstrapper
     {
 
-        public static string PassPhrase;
-
-        public static string AuthBaseUrl;
-
+        public string PassPhrase;
+        public REstateConfiguration Configuration;
         public static Func<ILifetimeScope> KernelLocator = null;
-        public static string ClaimsPrincipalResourceName = "server.User";
 
         protected override void ApplicationStartup(ILifetimeScope kernel, IPipelines pipelines)
         {
             base.ApplicationStartup(kernel, pipelines);
 
             pipelines.EnableJwtStatelessAuthentication(
-                ctx => ctx.GetOwinEnvironment()[ClaimsPrincipalResourceName] as ClaimsPrincipal,
+                ctx => ctx.GetOwinEnvironment()[Configuration.ClaimsPrincipalResourceName] as ClaimsPrincipal,
                 CryptographyConfiguration);
 
             pipelines.OnError += (ctx, ex) =>
@@ -43,7 +40,7 @@ namespace REstate.Web
                     return new Negotiator(ctx)
                         .WithStatusCode(400)
                         //.WithReasonPhrase(ex.Message) //this doesn't work for some reason here.
-                        .WithModel(new { reasonPhrase = ex.Message })
+                        .WithModel(new {reasonPhrase = ex.Message})
                         .WithAllowedMediaRange(new MediaRange("application/json"));
 
                 return null;
@@ -60,24 +57,23 @@ namespace REstate.Web
             StaticConfiguration.DisableErrorTraces = false;
         }
 
-        protected override CryptographyConfiguration CryptographyConfiguration =>
+        protected override CryptographyConfiguration CryptographyConfiguration => 
             new CryptographyConfiguration(
                 new RijndaelEncryptionProvider(
-                    new PassphraseKeyGenerator(PassPhrase, new byte[]
-                    {
-                        0x01, 0x02, 0xD1, 0xFF, 0x2F, 0x30, 0x1D, 0xF2
-                    }, 1000)),
+                    new PassphraseKeyGenerator(Configuration.EncryptionPassphrase,
+                        Configuration.EncryptionSaltBytes, 1000)),
                 new DefaultHmacProvider(
-                    new PassphraseKeyGenerator(PassPhrase, new byte[]
-                    {
-                        0x01, 0x02, 0xD1, 0xFF, 0x2F, 0x30, 0x1D, 0xF2
-                    }, 1000)));
+                    new PassphraseKeyGenerator(Configuration.HmacPassphrase, Configuration.HmacSaltBytes, 1000)));
 
         protected override ILifetimeScope GetApplicationContainer()
         {
-            return KernelLocator == null
+            var kernel = KernelLocator == null
                 ? base.GetApplicationContainer()
                 : KernelLocator();
+
+            Configuration = kernel.Resolve<REstateConfiguration>();
+
+            return kernel;
         }
 
         /// <summary>
