@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading;
 using REstate.Configuration;
 using REstate.Repositories;
+using REstate.Repositories.Configuration;
+using REstate.Repositories.Instances;
 using REstate.Services;
 using Stateless;
 
@@ -11,23 +13,19 @@ namespace REstate.Stateless
     public class StatelessStateMachineFactory
         : IStateMachineFactory
     {
-        private readonly IConfigurationRepositoryContextFactory _configurationRepositoryContextFactory;
-        private readonly IInstanceRepositoryContextFactory _instanceRepositoryContextFactory;
         private readonly IScriptHostFactoryResolver _scriptHostFactoryResolver;
 
         public StatelessStateMachineFactory(
-            IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
-            IInstanceRepositoryContextFactory instanceRepositoryContextFactory,
             IScriptHostFactoryResolver scriptHostFactoryResolver)
         {
-            _configurationRepositoryContextFactory = configurationRepositoryContextFactory;
-            _instanceRepositoryContextFactory = instanceRepositoryContextFactory;
             _scriptHostFactoryResolver = scriptHostFactoryResolver;
         }
 
-        public IStateMachine ConstructFromConfiguration(string apiKey, Guid machineInstanceGuid, IStateMachineConfiguration configuration)
+        public IStateMachine ConstructFromConfiguration(string apiKey, Guid machineInstanceGuid,
+            IStateMachineConfiguration configuration,
+            IInstanceRepositoryContextFactory instanceRepositoryContextFactory)
         {
-            var accessorMutator = new PersistentStateAccessorMutator(_instanceRepositoryContextFactory, apiKey, machineInstanceGuid);
+            var accessorMutator = new PersistentStateAccessorMutator(instanceRepositoryContextFactory, apiKey, machineInstanceGuid);
 
             return ConstructFromConfiguration(apiKey, accessorMutator, configuration);
         }
@@ -59,19 +57,24 @@ namespace REstate.Stateless
             {
                 var stateSettings = machine.Configure(new State(stateConfiguration.State.MachineDefinitionId, stateConfiguration.State.StateName));
 
-                if (stateConfiguration.OnEntryAction != null)
+                if (configuration.CodeElements != null)
                 {
-                    ConfigureOnEntryAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
-                }
 
-                if (stateConfiguration.OnEntryFromAction != null)
-                {
-                    ConfigureOnEntryFromAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
-                }
+                    if (stateConfiguration.OnEntryAction != null)
+                    {
+                        ConfigureOnEntryAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
+                    }
 
-                if (stateConfiguration.OnExitAction != null)
-                {
-                    ConfigureOnExitAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
+                    if (stateConfiguration.OnEntryFromAction != null)
+                    {
+                        ConfigureOnEntryFromAction(apiKey, stateMachine, configuration, stateConfiguration,
+                            stateSettings);
+                    }
+
+                    if (stateConfiguration.OnExitAction != null)
+                    {
+                        ConfigureOnExitAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
+                    }
                 }
 
 
@@ -82,7 +85,7 @@ namespace REstate.Stateless
                 foreach (var transition in stateConfiguration.Transitions)
                 {
 
-                    if (transition.GuardName == null)
+                    if (configuration.CodeElements == null || transition.GuardName == null)
                         if (transition.StateName != transition.ResultantStateName)
                             stateSettings.Permit(new Trigger(transition.MachineDefinitionId, transition.TriggerName),
                                 new State(transition.MachineDefinitionId, transition.ResultantStateName));
@@ -218,7 +221,7 @@ namespace REstate.Stateless
             {
                 using (var repository = _instanceRepositoryContextFactory.OpenInstanceRepositoryContext(_apiKey))
                 {
-                    _lastState = repository.MachineInstances.GetInstanceState(MachineInstanceId, CancellationToken.None).Result;
+                    _lastState = repository.MachineInstances.GetInstanceState(MachineInstanceId);
 
                     return _lastState;
                 }
@@ -231,8 +234,7 @@ namespace REstate.Stateless
                 {
                     try
                     {
-                        repository.MachineInstances.SetInstanceState(MachineInstanceId, state, _lastState,
-                            CancellationToken.None).Wait();
+                        repository.MachineInstances.SetInstanceState(MachineInstanceId, state, _lastState);
                     }
                     catch (Exception ex)
                     {

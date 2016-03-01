@@ -43,6 +43,7 @@
     <Compile Include="IPrincipal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\IAuthRepository.cs" />
+    <Compile Include="Repositories\IAuthRepositoryContextFactory.cs" />
     <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>

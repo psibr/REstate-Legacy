@@ -1,16 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Susanoo;
 using Susanoo.ConnectionPooling;
+using Susanoo.Processing;
 
 namespace REstate.Chrono.Susanoo
 {
     public class ChronoEngine
         : IChronoEngine
     {
+        private readonly ISingleResultSetCommandProcessor<dynamic, ChronoTrigger> _command = CommandManager.Instance
+                .DefineCommand("SELECT * FROM ChronoTriggers WHERE FireAfter <= GETUTCDATE()", CommandType.Text)
+                .DefineResults<ChronoTrigger>()
+                .Realize();
+
         private readonly IDatabaseManagerPool _databaseManagerPool;
 
         public ChronoEngine(IDatabaseManagerPool databaseManagerPool)
@@ -20,14 +27,15 @@ namespace REstate.Chrono.Susanoo
 
         public IEnumerable<IChronoTrigger> GetChronoStream(CancellationToken cancellationToken)
         {
-            var command = CommandManager.Instance
-                .DefineCommand("SELECT * FROM ChronoTriggers WHERE FireAfter <= GETUTCDATE()", CommandType.Text)
-                .DefineResults<ChronoTrigger>()
-                .Realize();
-
             while (!cancellationToken.IsCancellationRequested)
             {
-                var results = command.ExecuteAsync(_databaseManagerPool.DatabaseManager, cancellationToken).Result;
+                var results = _command.Execute(_databaseManagerPool.DatabaseManager)
+                    .ToList();
+
+                if (!results.Any())
+                {
+                    Thread.Sleep(5000);
+                }
 
                 foreach (var chronoTrigger in results)
                 {
@@ -38,24 +46,16 @@ namespace REstate.Chrono.Susanoo
 
         public async Task AddChronoTrigger(IChronoTrigger trigger, CancellationToken cancellationToken)
         {
-
-            try
-            {
-                await CommandManager.Instance
-                    .DefineCommand<IChronoTrigger>(
-                        "INSERT INTO ChronoTriggers (MachineDefinitionId, MachineInstanceId, StateName, TriggerName, Payload, FireAfter) \n" +
-                        "VALUES(@MachineDefinitionId, @MachineInstanceId, @StateName, @TriggerName, @Payload, @FireAfter)",
-                        CommandType.Text)
-                    .ExcludeProperty(o => o.Delay)
-                    .SendNullValues()
-                    .Realize()
-                    .ExecuteNonQueryAsync(_databaseManagerPool.DatabaseManager, trigger, 
-                        new { FireAfter = DateTime.UtcNow + TimeSpan.FromSeconds(trigger.Delay) }, cancellationToken);
-            }
-            catch (Exception e)
-            {
-                throw;
-            }
+            await CommandManager.Instance
+                .DefineCommand<IChronoTrigger>(
+                    "INSERT INTO ChronoTriggers (MachineDefinitionId, MachineInstanceId, StateName, TriggerName, Payload, FireAfter) \n" +
+                    "VALUES(@MachineDefinitionId, @MachineInstanceId, @StateName, @TriggerName, @Payload, @FireAfter)",
+                    CommandType.Text)
+                .ExcludeProperty(o => o.Delay)
+                .SendNullValues()
+                .Realize()
+                .ExecuteNonQueryAsync(_databaseManagerPool.DatabaseManager, trigger,
+                    new { FireAfter = DateTime.UtcNow + TimeSpan.FromSeconds(trigger.Delay) }, cancellationToken);
         }
 
         public async Task RemoveChronoTrigger(IChronoTrigger trigger, CancellationToken cancellationToken)

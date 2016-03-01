@@ -37,7 +37,7 @@ namespace REstate.Chrono
 
         public Func<CancellationToken, Task> BuildAsyncActionScript(IStateMachine machineInstance, string payload, ICodeWithDatabaseConfiguration code)
         {
-            throw new NotSupportedException();
+            return BuildAsyncActionScript(machineInstance, code);
         }
 
         public Func<CancellationToken, Task<bool>> BuildAsyncPredicateScript(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code)

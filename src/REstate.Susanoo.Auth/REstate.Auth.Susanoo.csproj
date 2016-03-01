@@ -45,13 +45,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthRepository.cs" />
-    <Compile Include="PersistateRepositoryExtensions.cs" />
+    <Compile Include="AuthRepositoryContextFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\REstate.Auth\REstate.Auth.csproj">
       <Project>{276af764-e2ba-4434-b6d2-799bfc4f340c}</Project>
       <Name>REstate.Auth</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.Repositories.Configuration.Susanoo\REstate.Repositories.Configuration.Susanoo.csproj">
+      <Project>{4d17b5d5-ee07-4d79-99cb-342dd2105472}</Project>
+      <Name>REstate.Repositories.Configuration.Susanoo</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate.Susanoo\REstate.Susanoo.csproj">
       <Project>{95d7fb41-1d52-467a-873e-c2c31926b209}</Project>

@@ -21,7 +21,7 @@ namespace REstate.Owin
             _options = options;
         }
 
-        public async Task Invoke(IDictionary<string, object> environment)
+        public Task Invoke(IDictionary<string, object> environment)
         {
             environment["REstate.passphrase"] = _options.PassPhrase;
 
@@ -62,16 +62,16 @@ namespace REstate.Owin
                 environment["server.User"] = principal;
 
             // Buffer the response
-            var stream = (Stream)environment["owin.ResponseBody"];
-            var buffer = new MemoryStream();
-            environment["owin.ResponseBody"] = buffer;
+            //var stream = (Stream)environment["owin.ResponseBody"];
+            //var buffer = new MemoryStream();
+            //environment["owin.ResponseBody"] = buffer;
 
-            await _next(environment);
+            return _next(environment);
 
-            //Handle Response
-            buffer.Seek(0, SeekOrigin.Begin);
+            ////Handle Response
+            //buffer.Seek(0, SeekOrigin.Begin);
 
-            await buffer.CopyToAsync(stream);
+            //await buffer.CopyToAsync(stream);
         }
 
         private void DefineJwtGenerator(IDictionary<string, object> environment, JwtAndCookieMiddlewareOptions options)

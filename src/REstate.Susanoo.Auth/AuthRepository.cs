@@ -1,21 +1,25 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using REstate.Auth.Repositories;
-using REstate.Susanoo;
+using REstate.Repositories.Configuration.Susanoo;
 using Susanoo;
+using Susanoo.ConnectionPooling;
 
 namespace REstate.Auth.Susanoo
 {
 
     public class AuthRepository
-        : ConfigurationContextualRepository, IAuthRepository
+        : IAuthRepository, IDisposable
     {
 
-        public AuthRepository(ConfigurationRepository root)
-            : base(root)
+        protected IDatabaseManagerPool DatabaseManagerPool { get; }
+
+        public AuthRepository(IDatabaseManagerPool databaseManagerPool)
         {
+            DatabaseManagerPool = databaseManagerPool;
         }
 
         public async Task<IPrincipal> LoadPrincipalByApiKey(string apiKey, CancellationToken cancellationToken)
@@ -60,6 +64,24 @@ namespace REstate.Auth.Susanoo
             principal.Claims = results[1]?.Cast<string>().ToArray() ?? new string[0];
 
             return principal;
+        }
+
+        public void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                DatabaseManagerPool.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        ~AuthRepository()
+        {
+            Dispose(false);
         }
     }
 }

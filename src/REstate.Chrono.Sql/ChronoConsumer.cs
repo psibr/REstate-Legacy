@@ -46,7 +46,7 @@ namespace REstate.Chrono.Susanoo
                                 transaction.Complete();
                             }
                         }
-                        catch (StateConflictException ex) { }
+                        catch (StateConflictException) { }
                         catch (AggregateException ex)
                             when (ex.InnerExceptions.First().GetType() == typeof(StateConflictException))
                         {

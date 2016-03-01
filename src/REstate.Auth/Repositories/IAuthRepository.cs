@@ -1,11 +1,11 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
-using REstate.Repositories;
 
 namespace REstate.Auth.Repositories
 {
     public interface IAuthRepository
-        : IConfigurationContextualRepository
+        : IDisposable
     {
         Task<IPrincipal> LoadPrincipalByApiKey(string apiKey, CancellationToken cancellationToken);
 
