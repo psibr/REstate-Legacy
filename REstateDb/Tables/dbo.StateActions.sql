@@ -3,12 +3,12 @@ SET QUOTED_IDENTIFIER ON
 SET ANSI_PADDING ON
 GO
 CREATE TABLE [dbo].[StateActions] (
-		[MachineDefinitionId]     [int] NOT NULL,
-		[StateName]               [varchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-		[PurposeName]             [varchar](100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-		[TriggerName]             [varchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-		[StateActionName]         [varchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-		[CodeElementId]           [int] NOT NULL,
+		[MachineDefinitionId]        [int] NOT NULL,
+		[StateName]                  [varchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+		[PurposeName]                [varchar](100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+		[TriggerName]                [varchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+		[StateActionDescription]     [varchar](500) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+		[CodeElementId]              [int] NOT NULL,
 		CONSTRAINT [PK_StateCodeTargets]
 		PRIMARY KEY
 		CLUSTERED
@@ -53,6 +53,8 @@ ALTER TABLE [dbo].[StateActions]
 	WITH CHECK
 	ADD CONSTRAINT [FK_StateCodeTargets_States]
 	FOREIGN KEY ([MachineDefinitionId], [StateName]) REFERENCES [dbo].[States] ([MachineDefinitionId], [StateName])
+	ON DELETE CASCADE
+	ON UPDATE CASCADE
 ALTER TABLE [dbo].[StateActions]
 	CHECK CONSTRAINT [FK_StateCodeTargets_States]
 
@@ -64,6 +66,9 @@ ALTER TABLE [dbo].[StateActions]
 ALTER TABLE [dbo].[StateActions]
 	CHECK CONSTRAINT [FK_StateCodeTargets_Triggers]
 
+GO
+CREATE STATISTICS [StateActions_CodeElementId]
+	ON [dbo].[StateActions] ([CodeElementId])
 GO
 ALTER TABLE [dbo].[StateActions] SET (LOCK_ESCALATION = TABLE)
 GO

@@ -1,5 +1,4 @@
 SET ANSI_NULLS ON
-GO
 SET QUOTED_IDENTIFIER ON
 GO
 -- =============================================
@@ -38,11 +37,11 @@ BEGIN
 
 	SELECT DISTINCT g.*
 	FROM Guards g 
-	INNER JOIN Transitions tra ON tra.GuardId = g.GuardId AND g.MachineDefinitionId = tra.MachineDefinitionId
+	INNER JOIN Transitions tra ON tra.GuardName = g.GuardName AND g.MachineDefinitionId = tra.MachineDefinitionId
 	INNER JOIN States s ON s.MachineDefinitionId = tra.MachineDefinitionId AND s.StateName = tra.StateName 
 	WHERE s.MachineDefinitionId = @MachineDefinitionId; 
 
-	SELECT s.MachineDefinitionId, s.StateName, sa.PurposeName, sa.TriggerName, sa.StateActionDescription
+	SELECT s.MachineDefinitionId, s.StateName, sa.PurposeName, sa.TriggerName, sa.StateActionDescription, sa.CodeElementId
 	FROM States s
 	INNER JOIN StateActions sa ON sa.MachineDefinitionId = s.MachineDefinitionId AND sa.StateName = s.StateName
 	WHERE s.MachineDefinitionId = @MachineDefinitionId;
@@ -52,8 +51,9 @@ BEGIN
 	FROM CodeElements ce
 	LEFT JOIN StateActions sa ON sa.CodeElementId = ce.CodeElementId
 	LEFT JOIN Guards g ON ce.CodeElementId = g.CodeElementId
-	LEFT JOIN Transitions tra ON g.GuardId = tra.GuardId
-	INNER JOIN States s ON (sa.MachineDefinitionId = s.MachineDefinitionId AND sa.StateName = s.StateName) OR (tra.MachineDefinitionId = s.MachineDefinitionId AND tra.StateName = s.StateName)
+	LEFT JOIN Transitions tra ON g.GuardName = tra.GuardName
+	INNER JOIN States s ON (sa.MachineDefinitionId = s.MachineDefinitionId AND sa.StateName = s.StateName) 
+		OR (tra.MachineDefinitionId = s.MachineDefinitionId AND tra.StateName = s.StateName)
 	LEFT JOIN CodeTypeUsages ctu ON ctu.CodeTypeId = ce.CodeTypeId
 	LEFT JOIN SqlDatabaseDefinitions sqlDb ON sqlDb.SqlDatabaseDefinitionId = ce.SqlDatabaseDefinitionId
 	LEFT JOIN SqlDatabaseProviders prov ON prov.ProviderName = sqlDb.ProviderName

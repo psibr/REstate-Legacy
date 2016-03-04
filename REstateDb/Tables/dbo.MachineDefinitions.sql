@@ -37,10 +37,10 @@ ALTER TABLE [dbo].[MachineDefinitions]
 GO
 ALTER TABLE [dbo].[MachineDefinitions]
 	WITH CHECK
-	ADD CONSTRAINT [FK_MachineDefinitions_States]
-	FOREIGN KEY ([MachineDefinitionId], [InitialStateName]) REFERENCES [dbo].[States] ([MachineDefinitionId], [StateName])
+	ADD CONSTRAINT [FK_MachineDefinitions_MachineDefinitions]
+	FOREIGN KEY ([MachineDefinitionId]) REFERENCES [dbo].[MachineDefinitions] ([MachineDefinitionId])
 ALTER TABLE [dbo].[MachineDefinitions]
-	CHECK CONSTRAINT [FK_MachineDefinitions_States]
+	CHECK CONSTRAINT [FK_MachineDefinitions_MachineDefinitions]
 
 GO
 ALTER TABLE [dbo].[MachineDefinitions] SET (LOCK_ESCALATION = TABLE)

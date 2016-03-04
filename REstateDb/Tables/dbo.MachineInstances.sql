@@ -25,6 +25,7 @@ ALTER TABLE [dbo].[MachineInstances]
 	WITH CHECK
 	ADD CONSTRAINT [FK_MachineInstances_States]
 	FOREIGN KEY ([MachineDefinitionId], [StateName]) REFERENCES [dbo].[States] ([MachineDefinitionId], [StateName])
+	ON UPDATE CASCADE
 ALTER TABLE [dbo].[MachineInstances]
 	CHECK CONSTRAINT [FK_MachineInstances_States]
 

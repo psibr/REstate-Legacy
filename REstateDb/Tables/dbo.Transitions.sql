@@ -7,7 +7,7 @@ CREATE TABLE [dbo].[Transitions] (
 		[StateName]               [varchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
 		[TriggerName]             [varchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
 		[ResultantStateName]      [varchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-		[GuardId]                 [int] NULL,
+		[GuardName]               [varchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
 		[IsActive]                [bit] NOT NULL,
 		CONSTRAINT [PK_Transistion]
 		PRIMARY KEY
@@ -23,16 +23,18 @@ ALTER TABLE [dbo].[Transitions]
 GO
 ALTER TABLE [dbo].[Transitions]
 	WITH CHECK
-	ADD CONSTRAINT [FK_Transistions_Guards]
-	FOREIGN KEY ([GuardId]) REFERENCES [dbo].[Guards] ([GuardId])
+	ADD CONSTRAINT [FK_Transitions_Guards]
+	FOREIGN KEY ([MachineDefinitionId], [GuardName]) REFERENCES [dbo].[Guards] ([MachineDefinitionId], [GuardName])
 ALTER TABLE [dbo].[Transitions]
-	CHECK CONSTRAINT [FK_Transistions_Guards]
+	CHECK CONSTRAINT [FK_Transitions_Guards]
 
 GO
 ALTER TABLE [dbo].[Transitions]
 	WITH CHECK
 	ADD CONSTRAINT [FK_Transitions_ResultantStates]
 	FOREIGN KEY ([MachineDefinitionId], [ResultantStateName]) REFERENCES [dbo].[States] ([MachineDefinitionId], [StateName])
+	ON DELETE CASCADE
+	ON UPDATE CASCADE
 ALTER TABLE [dbo].[Transitions]
 	CHECK CONSTRAINT [FK_Transitions_ResultantStates]
 
@@ -49,6 +51,7 @@ ALTER TABLE [dbo].[Transitions]
 	WITH CHECK
 	ADD CONSTRAINT [FK_Transitions_Triggers]
 	FOREIGN KEY ([MachineDefinitionId], [TriggerName]) REFERENCES [dbo].[Triggers] ([MachineDefinitionId], [TriggerName])
+	ON DELETE CASCADE
 ALTER TABLE [dbo].[Transitions]
 	CHECK CONSTRAINT [FK_Transitions_Triggers]
 

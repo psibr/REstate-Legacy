@@ -18,11 +18,10 @@ ALTER TABLE [dbo].[States]
 	WITH CHECK
 	ADD CONSTRAINT [FK_States_MachineDefinitions]
 	FOREIGN KEY ([MachineDefinitionId]) REFERENCES [dbo].[MachineDefinitions] ([MachineDefinitionId])
+	ON DELETE CASCADE
 ALTER TABLE [dbo].[States]
 	CHECK CONSTRAINT [FK_States_MachineDefinitions]
 
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'A state record describes a state for a State Machine', 'SCHEMA', N'dbo', 'TABLE', N'States', 'CONSTRAINT', N'FK_States_MachineDefinitions'
 GO
 ALTER TABLE [dbo].[States]
 	WITH CHECK
@@ -31,6 +30,12 @@ ALTER TABLE [dbo].[States]
 ALTER TABLE [dbo].[States]
 	CHECK CONSTRAINT [FK_States_ParentState]
 
+GO
+CREATE STATISTICS [States_MachineDefinitionId]
+	ON [dbo].[States] ([MachineDefinitionId])
+GO
+CREATE STATISTICS [States_StateName]
+	ON [dbo].[States] ([StateName])
 GO
 ALTER TABLE [dbo].[States] SET (LOCK_ESCALATION = TABLE)
 GO

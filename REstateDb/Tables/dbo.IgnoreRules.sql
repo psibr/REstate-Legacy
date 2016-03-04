@@ -21,14 +21,6 @@ ALTER TABLE [dbo].[IgnoreRules]
 GO
 ALTER TABLE [dbo].[IgnoreRules]
 	WITH CHECK
-	ADD CONSTRAINT [FK_IgnoreRules_States]
-	FOREIGN KEY ([MachineDefinitionId], [StateName]) REFERENCES [dbo].[States] ([MachineDefinitionId], [StateName])
-ALTER TABLE [dbo].[IgnoreRules]
-	CHECK CONSTRAINT [FK_IgnoreRules_States]
-
-GO
-ALTER TABLE [dbo].[IgnoreRules]
-	WITH CHECK
 	ADD CONSTRAINT [FK_IgnoreRules_Triggers]
 	FOREIGN KEY ([MachineDefinitionId], [TriggerName]) REFERENCES [dbo].[Triggers] ([MachineDefinitionId], [TriggerName])
 ALTER TABLE [dbo].[IgnoreRules]
