@@ -19,15 +19,8 @@ ALTER TABLE [dbo].[Triggers]
 	CONSTRAINT [DF_Triggers_IsActive]
 	DEFAULT ((1)) FOR [IsActive]
 GO
-ALTER TABLE [dbo].[Triggers]
-	WITH CHECK
-	ADD CONSTRAINT [FK_Triggers_MachineDefinitions]
-	FOREIGN KEY ([MachineDefinitionId]) REFERENCES [dbo].[MachineDefinitions] ([MachineDefinitionId])
-ALTER TABLE [dbo].[Triggers]
-	CHECK CONSTRAINT [FK_Triggers_MachineDefinitions]
-
-GO
-EXEC sp_addextendedproperty N'MS_Description', N'A trigger record describes a possible trigger for a State Machine', 'SCHEMA', N'dbo', 'TABLE', N'Triggers', 'CONSTRAINT', N'FK_Triggers_MachineDefinitions'
+CREATE STATISTICS [Triggers_MachineDefinitionId]
+	ON [dbo].[Triggers] ([MachineDefinitionId])
 GO
 ALTER TABLE [dbo].[Triggers] SET (LOCK_ESCALATION = TABLE)
 GO

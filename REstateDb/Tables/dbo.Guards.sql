@@ -3,7 +3,6 @@ SET QUOTED_IDENTIFIER ON
 SET ANSI_PADDING ON
 GO
 CREATE TABLE [dbo].[Guards] (
-		[GuardId]                 [int] IDENTITY(1, 1) NOT NULL,
 		[MachineDefinitionId]     [int] NOT NULL,
 		[GuardName]               [varchar](255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
 		[GuardDescription]        [varchar](500) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
@@ -11,7 +10,7 @@ CREATE TABLE [dbo].[Guards] (
 		CONSTRAINT [PK_Guards]
 		PRIMARY KEY
 		CLUSTERED
-		([GuardId])
+		([MachineDefinitionId], [GuardName])
 	ON [PRIMARY]
 ) ON [PRIMARY]
 GO

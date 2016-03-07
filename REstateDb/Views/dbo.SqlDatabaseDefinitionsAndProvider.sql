@@ -16,9 +16,6 @@ SELECT
 	providers.ProviderDescription
 FROM SqlDatabaseDefinitions definitions 
 INNER JOIN SqlDatabaseProviders providers ON providers.ProviderName = definitions.ProviderName
-
-
-
 GO
 EXEC sp_addextendedproperty N'MS_DiagramPane1', N'[0E232FF0-B466-11cf-A24F-00AA00A3EFFF, 1.00]
 Begin DesignProperties = 
