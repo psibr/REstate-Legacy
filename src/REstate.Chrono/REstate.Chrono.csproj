@@ -41,10 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChronoTrigger.cs" />
-    <Compile Include="IChronoEngine.cs" />
-    <Compile Include="ChronoTriggerScriptHost.cs" />
-    <Compile Include="ChronoTriggerScriptHostFactory.cs" />
-    <Compile Include="IChronoEngineFactory.cs" />
+    <Compile Include="IChronoRepository.cs" />
+    <Compile Include="IChronoRepositoryFactory.cs" />
     <Compile Include="IChronoTrigger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

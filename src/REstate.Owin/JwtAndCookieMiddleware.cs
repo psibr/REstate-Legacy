@@ -32,7 +32,7 @@ namespace REstate.Owin
             ClaimsPrincipal principal = null;
             if (headers.ContainsKey("Authorization"))
             {
-                var token = headers["Authorization"]?.FirstOrDefault()?.Replace("Bearer ", "");
+                var token = headers["Authorization"]?.FirstOrDefault()?.Replace("Bearer", "").Trim();
 
                 if (!string.IsNullOrWhiteSpace(token))
                 {

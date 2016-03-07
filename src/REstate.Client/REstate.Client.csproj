@@ -46,6 +46,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthenticatedSession.cs" />
+    <Compile Include="ConfigurationSession.cs" />
+    <Compile Include="IAuthenticatedSession.cs" />
+    <Compile Include="IAuthSession.cs" />
+    <Compile Include="IConfigurationSession.cs" />
+    <Compile Include="IInstancesSession.cs" />
+    <Compile Include="InstancesSession.cs" />
+    <Compile Include="IREstateClientFactory.cs" />
     <Compile Include="Models\IsInStateResponse.cs" />
     <Compile Include="Models\JwtResponse.cs" />
     <Compile Include="Models\MachineInstantiateResponse.cs" />
@@ -53,11 +60,14 @@
     <Compile Include="Models\StateMachineConfigurationResponse.cs" />
     <Compile Include="Models\StateModel.cs" />
     <Compile Include="Models\TriggerModel.cs" />
-    <Compile Include="REstateClient.cs" />
+    <Compile Include="REstateAuthClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\State.cs" />
     <Compile Include="Models\StateMachineBuilder.cs" />
     <Compile Include="Models\Trigger.cs" />
+    <Compile Include="REstateClientFactory.cs" />
+    <Compile Include="REstateConfigurationClient.cs" />
+    <Compile Include="REstateInstancesClient.cs" />
     <Compile Include="UnauthorizedException.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using REstate.Configuration;
 using Susanoo;
+using Susanoo.Processing;
 using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace REstate.Repositories.Instances.Susanoo
@@ -13,6 +14,13 @@ namespace REstate.Repositories.Instances.Susanoo
     public class MachineInstancesRepository
         : InstanceContextualRepository, IMachineInstancesRepository
     {
+        private static readonly ISingleResultSetCommandProcessor<dynamic,REstate.Configuration.State> GetStateCommandProcessor = 
+            CommandManager.Instance
+                .DefineCommand("dbo.GetInstanceState",
+                    CommandType.StoredProcedure)
+                .DefineResults<REstate.Configuration.State>()
+                .Realize();
+
         public MachineInstancesRepository(InstanceRepository root)
             : base(root)
         {
@@ -45,17 +53,16 @@ namespace REstate.Repositories.Instances.Susanoo
 
         public State GetInstanceState(Guid machineInstanceGuid)
         {
-            var results = CommandManager.Instance
-                .DefineCommand("dbo.GetInstanceState",
-                    CommandType.StoredProcedure)
-                .DefineResults<REstate.Configuration.State>()
-                .Realize()
-                .Execute(DatabaseManagerPool.DatabaseManager, new { MachineInstanceGuid = machineInstanceGuid });
+            var results = GetStateCommandProcessor
+                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { MachineInstanceGuid = machineInstanceGuid },
+                    CancellationToken.None).Result;
 
             var result = results
                 .SingleOrDefault();
 
-            return result != null ? new State(result.MachineDefinitionId, result.StateName) : null;
+            return result == null 
+                ? null 
+                : new State(result.MachineDefinitionId, result.StateName);
         }
 
         public void SetInstanceState(Guid machineInstanceGuid, State state, State lastState)

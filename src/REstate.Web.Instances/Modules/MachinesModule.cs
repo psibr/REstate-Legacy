@@ -24,11 +24,11 @@ namespace REstate.Web.Instances.Modules
         /// <param name="configurationRepositoryContextFactory">The repository context factory.</param>
         /// <param name="instanceRepositoryContextFactory">The instance repository context factory.</param>
         /// <param name="stateMachineFactory">The state machine factory.</param>
-        public MachinesModule(
+        public MachinesModule(InstancesRoutePrefix prefix,
             IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
             IInstanceRepositoryContextFactory instanceRepositoryContextFactory, 
             IStateMachineFactory stateMachineFactory) 
-            : base("/machines")
+            : base(prefix)
         {
             InstantiateMachine(configurationRepositoryContextFactory,
                 instanceRepositoryContextFactory);
@@ -138,7 +138,10 @@ namespace REstate.Web.Instances.Modules
                         .WithAllowedMediaRange(new MediaRange("application/json"));
                 }
 
-                var currentState = machine.GetCurrentState();
+                State currentState;
+                using (var repository = instanceRepositoryContextFactory
+                    .OpenInstanceRepositoryContext(Context.CurrentUser.GetApiKey()))
+                        currentState = repository.MachineInstances.GetInstanceState(triggerFireRequest.MachineInstanceGuid);
 
                 return Negotiate
                     .WithModel(currentState)

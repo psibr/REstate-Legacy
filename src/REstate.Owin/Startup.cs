@@ -14,14 +14,17 @@ namespace REstate.Owin
 
         public void Configuration(IAppBuilder app)
         {
+
+
             app.UseJwtAndCookieMiddleware(new JwtAndCookieMiddlewareOptions
             {
                 PassPhrase = Config.HmacPassphrase,
-                CookieName = "REstate",
-                CookiePath = "/REstate",
+                CookieName = Config.CookieName,
+                CookiePath = Config.CookiePath,
                 CreatePrincipal = CreatePrincipal
             }).MapWhen(context =>
-                context.Environment.ContainsKey("server.User") && context.Environment["server.User"] != null,
+                context.Environment.ContainsKey(Config.ClaimsPrincipalResourceName) 
+                    && context.Environment[Config.ClaimsPrincipalResourceName] != null,
                 builder => builder
                     .UseStatic("wwwroot")
                     .UseNancy());

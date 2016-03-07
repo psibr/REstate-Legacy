@@ -35,7 +35,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Nancy, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nancy.1.4.2\lib\net40\Nancy.dll</HintPath>
+      <HintPath>..\packages\Nancy.1.4.3\lib\net40\Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Nancy.Owin, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -76,9 +76,9 @@
       <Project>{276af764-e2ba-4434-b6d2-799bfc4f340c}</Project>
       <Name>REstate.Auth</Name>
     </ProjectReference>
-    <ProjectReference Include="..\REstate.Susanoo.Auth\REstate.Auth.Susanoo.csproj">
+    <ProjectReference Include="..\REstate.Repositories.Auth.Susanoo\REstate.Repositories.Auth.Susanoo.csproj">
       <Project>{b1a411e0-e8bf-4d8c-b327-2c171e2e60bc}</Project>
-      <Name>REstate.Auth.Susanoo</Name>
+      <Name>REstate.Repositories.Auth.Susanoo</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate.Web.Common\REstate.Web.Common.csproj">
       <Project>{75b55765-0ea6-4158-a0e2-c81e54742718}</Project>

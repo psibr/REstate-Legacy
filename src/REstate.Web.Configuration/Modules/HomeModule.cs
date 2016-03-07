@@ -14,7 +14,7 @@ namespace REstate.Web.Configuration.Modules
         public HomeModule(REstateConfiguration configuration)
         {
                 Get["/"] = _ => Context.CurrentUser == null 
-                    ? Response.AsRedirect($"{configuration.AuthBaseUrl}/login") 
+                    ? Response.AsRedirect(configuration.LoginAddress)
                     : 200;
         }
     }

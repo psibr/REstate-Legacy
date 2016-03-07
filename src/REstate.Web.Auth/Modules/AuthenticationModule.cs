@@ -17,7 +17,7 @@ namespace REstate.Web.Auth.Modules
         : NancyModule
     {
 
-        public AuthenticationModule(AuthRoutePrefix prefix,
+        public AuthenticationModule(AuthRoutePrefix prefix, REstateConfiguration configuration,
             IAuthRepositoryContextFactory authRepositoryContextFactory, CryptographyConfiguration crypto)
             : base(prefix)
         {
@@ -31,7 +31,7 @@ namespace REstate.Web.Auth.Modules
                 var credentials = this.Bind<CredentialAuthenticationRequest>();
 
                 if (string.IsNullOrWhiteSpace(credentials?.Username) || string.IsNullOrWhiteSpace(credentials.Password))
-                    return Response.AsRedirect("/REstate/login");
+                    return Response.AsRedirect(configuration.LoginAddress);
 
                 var environment = Context.GetOwinEnvironment();
                 var signInDelegate = (SignInDelegate)environment["jwtandcookie.signin"];
@@ -47,16 +47,16 @@ namespace REstate.Web.Auth.Modules
                         .LoadPrincipalByCredentials(credentials.Username, passwordHash, ct);
                 }
 
-                if (principal == null) return Response.AsRedirect("/REstate/login");
+                if (principal == null) return Response.AsRedirect(configuration.LoginAddress);
 
                 var jwt = signInDelegate((jti) => new Dictionary<string, object>
                 {
                         { "sub", principal.UserOrApplicationName},
-                        { "apikey", crypto.EncryptionProvider.Encrypt(principal.ApiKey)},
+                        { "apikey", crypto.EncryptionProvider.Encrypt(jti + principal.ApiKey)},
                         { "claims", principal.Claims }
                 }, true);
 
-                return Response.AsRedirect("/REstate");
+                return Response.AsRedirect(configuration.LoginRedirectAddress);
             };
 
             Post["/apikey", true] = async (parameters, ct) =>

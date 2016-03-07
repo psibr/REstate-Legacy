@@ -27,7 +27,6 @@ namespace REstate.Stateless
 
         public void Fire(Trigger trigger, string payload)
         {
-
             _stateMachine.Fire(new StateMachine<State, Trigger>.TriggerWithParameters<string>(trigger), payload);
         }
 

@@ -5,13 +5,13 @@ using Autofac;
 using Microsoft.Owin.Hosting;
 using REstate.Auth.Repositories;
 using REstate.Auth.Susanoo;
-using REstate.Chrono;
-using REstate.Chrono.Susanoo;
+using REstate.Client;
+using REstate.Client.Chrono;
+using REstate.Connectors.Chrono;
 using REstate.Owin;
 using REstate.Repositories.Configuration;
 using REstate.Repositories.Configuration.Susanoo;
 using REstate.RoslynScripting;
-using REstate.Services.JsonNet;
 using REstate.Stateless;
 using REstate.Susanoo;
 using REstate.Web;
@@ -22,17 +22,31 @@ namespace REstate.Services.Configuration
     {
         static void Main(string[] args)
         {
-            var url = ConfigurationManager.AppSettings["REstate.url"];
-            var passPhrase = ConfigurationManager.AppSettings["REstate.passphrase"];
-            var authBaseUrl = ConfigurationManager.AppSettings["REstate.Web.Auth.Url"];
+            var url = ConfigurationManager.AppSettings["REstate.Services.HostBindingAddress"];
 
-            REstateBootstrapper.AuthBaseUrl = authBaseUrl;
+            var config = new REstateConfiguration
+            {
+                EncryptionPassphrase = ConfigurationManager.AppSettings["REstate.Web.EncryptionPassphrase"],
+                HmacPassphrase = ConfigurationManager.AppSettings["REstate.Web.HmacPassphrase"],
+                EncryptionSaltBytes = new byte[] { 0x01, 0x02, 0xD1, 0xFF, 0x2F, 0x30, 0x1D, 0xF2 },
+                HmacSaltBytes = new byte[] { 0x01, 0x02, 0xD1, 0xFF, 0x2F, 0x30, 0x1D, 0xF2 },
+                ClaimsPrincipalResourceName = ConfigurationManager.AppSettings["REstate.Web.ClaimsPrincipalResourceName"],
+                LoginAddress = ConfigurationManager.AppSettings["REstate.Web.LoginAddress"],
+                ApiKeyAddress = ConfigurationManager.AppSettings["REstate.Web.ApiKeyAddress"],
+                ConfigurationDictionary = new Dictionary<string, string>
+                {
+                    { "REstate.Web.ChronoAddress", ConfigurationManager.AppSettings["REstate.Web.ChronoAddress"] }
+                }
+            };
 
-            Startup.PassPhrase = passPhrase;
-            REstateBootstrapper.PassPhrase = passPhrase;
+            var container = BuildAndConfigureContainer(config);
 
-            var kernel = BuildAndConfigureContainer();
+            container.RegisterInstance(config);
+            var kernel = container.Build();
+
+            //Binding to implementation
             REstateBootstrapper.KernelLocator = () => kernel;
+            Startup.Config = config;
 
 
             using (WebApp.Start<Startup>(url))
@@ -45,9 +59,11 @@ namespace REstate.Services.Configuration
             }
         }
 
-        private static IContainer BuildAndConfigureContainer()
+        private static ContainerBuilder BuildAndConfigureContainer(REstateConfiguration configuration)
         {
             var container = new ContainerBuilder();
+
+            container.Register(context => new ConfigurationRoutePrefix("/configuration"));
 
             container.RegisterType<AuthRepositoryContextFactory>()
                 .As<IAuthRepositoryContextFactory>();
@@ -55,31 +71,28 @@ namespace REstate.Services.Configuration
             container.RegisterType<ConfigurationRepositoryContextFactory>()
                 .As<IConfigurationRepositoryContextFactory>();
 
+            container.Register(context => new REstateClientFactory(configuration.LoginAddress))
+                .As<IREstateClientFactory>();
 
-            container.RegisterType<NewtonsoftJsonSerializer>()
-                .As<IJsonSerializer>();
+            container.Register(context => context.Resolve<IREstateClientFactory>()
+                .GetChronoClient(configuration.ConfigurationDictionary["REstate.Web.ChronoAddress"]))
+                .As<IAuthSessionClient<IChronoSession>>();
 
-            container.Register(context => new ChronoEngineFactory().CreateEngine())
-                .SingleInstance();
+            container.RegisterType<ChronoTriggerScriptHostFactory>();
 
             container.Register(context => new DefaultScriptHostFactoryResolver(new Dictionary<int, IScriptHostFactory>
             {
-                {1, new SusanooScriptHostFactory()},
-                {2, new SusanooScriptHostFactory()},
-                {3, new RoslynScriptHostFactory()},
-                {4, new RoslynScriptHostFactory()},
-                {5, new ChronoTriggerScriptHostFactory(
-                        context.Resolve<IChronoEngine>(),
-                        context.Resolve<IJsonSerializer>())
-                }
+                { 1, new SusanooScriptHostFactory() },
+                { 2, new SusanooScriptHostFactory() },
+                { 3, new RoslynScriptHostFactory() },
+                { 4, new RoslynScriptHostFactory() },
+                { 5, context.Resolve<ChronoTriggerScriptHostFactory>() }
             })).As<IScriptHostFactoryResolver>();
 
             container.RegisterType<StatelessStateMachineFactory>()
                 .As<IStateMachineFactory>();
 
-            var kernel = container.Build();
-
-            return kernel;
+            return container;
         }
     }
 }

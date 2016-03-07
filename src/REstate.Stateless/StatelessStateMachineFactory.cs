@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Threading;
 using REstate.Configuration;
-using REstate.Repositories;
-using REstate.Repositories.Configuration;
 using REstate.Repositories.Instances;
 using REstate.Services;
 using Stateless;
@@ -42,7 +40,7 @@ namespace REstate.Stateless
         {
             var machine = new StateMachine<State, Trigger>(accessorMutator.Accessor, accessorMutator.Mutator);
 
-            var stateMachine = new StatelessStateMachineAdapter(machine, 
+            var stateMachine = new StatelessStateMachineAdapter(machine,
                 configuration.MachineDefinition.MachineDefinitionId, accessorMutator.MachineInstanceId);
 
             if (configuration.MachineDefinition.AutoIgnoreNotConfiguredTriggers)
@@ -204,64 +202,56 @@ namespace REstate.Stateless
 
         protected class PersistentStateAccessorMutator : IStateAccessorMutator
         {
-            private readonly IInstanceRepositoryContextFactory _instanceRepositoryContextFactory;
-            private readonly string _apiKey;
-            private State _lastState = null;
+            private State _lastState;
+            private readonly IInstanceRepository _context;
 
-            public PersistentStateAccessorMutator(IInstanceRepositoryContextFactory instanceRepositoryContextFactory, string apiKey, Guid machineInstanceGuid)
+            public PersistentStateAccessorMutator(IInstanceRepositoryContextFactory instanceRepositoryContextFactory,
+                string apiKey, Guid machineInstanceGuid)
             {
-                _instanceRepositoryContextFactory = instanceRepositoryContextFactory;
-                _apiKey = apiKey;
                 MachineInstanceId = machineInstanceGuid;
+
+                _context = instanceRepositoryContextFactory.OpenInstanceRepositoryContext(apiKey);
             }
 
             public Guid MachineInstanceId { get; }
 
             public State Accessor()
             {
-                using (var repository = _instanceRepositoryContextFactory.OpenInstanceRepositoryContext(_apiKey))
-                {
-                    _lastState = repository.MachineInstances.GetInstanceState(MachineInstanceId);
+                _lastState = _context.MachineInstances.GetInstanceState(MachineInstanceId);
 
-                    return _lastState;
-                }
+                return _lastState;
             }
 
             public void Mutator(State state)
             {
-
-                using (var repository = _instanceRepositoryContextFactory.OpenInstanceRepositoryContext(_apiKey))
-                {
-                    try
-                    {
-                        repository.MachineInstances.SetInstanceState(MachineInstanceId, state, _lastState);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw;
-                    }
-                }
-
+                _context.MachineInstances.SetInstanceState(MachineInstanceId, state, _lastState);
             }
+
+            ~PersistentStateAccessorMutator()
+            {
+                _context.Dispose();
+            }
+
+        
+    }
+
+    protected class InMemoryStateAccessorMutator
+        : IStateAccessorMutator
+    {
+        private State _state;
+
+        public Guid MachineInstanceId
+            => Guid.NewGuid();
+
+        public State Accessor()
+        {
+            return _state;
         }
 
-        protected class InMemoryStateAccessorMutator
-            : IStateAccessorMutator
+        public void Mutator(State state)
         {
-            private State _state;
-
-            public Guid MachineInstanceId 
-                => Guid.NewGuid();
-
-            public State Accessor()
-            {
-                return _state;
-            }
-
-            public void Mutator(State state)
-            {
-                _state = state;
-            }
+            _state = state;
         }
     }
+}
 }
