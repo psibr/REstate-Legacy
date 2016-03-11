@@ -38,6 +38,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Repositories.Configuration.Susanoo", "REstate.Repositories.Configuration.Susanoo\REstate.Repositories.Configuration.Susanoo.csproj", "{4D17B5D5-EE07-4D79-99CB-342DD2105472}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Web.Auth", "REstate.Web.Auth\REstate.Web.Auth.csproj", "{C4C12BDF-551F-441F-8F02-4D706AB61127}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9C873C5D-015B-436C-8473-FA93DA90757D} = {9C873C5D-015B-436C-8473-FA93DA90757D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Repositories.Instances.Susanoo", "REstate.Repositories.Instances.Susanoo\REstate.Repositories.Instances.Susanoo.csproj", "{692DCA0E-3B2C-4919-8C2D-1AF9E665D521}"
 EndProject
@@ -46,6 +49,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Services.Configuration", "REstate.Services.Configuration\REstate.Services.Configuration.csproj", "{C65E4CDD-696D-400D-BAB8-81C9ACD96390}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Web.Common", "REstate.Web.Common\REstate.Web.Common.csproj", "{75B55765-0EA6-4158-A0E2-C81E54742718}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9C873C5D-015B-436C-8473-FA93DA90757D} = {9C873C5D-015B-436C-8473-FA93DA90757D}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{A342B55B-655B-4613-90AB-BD0C392F82FE}"
 EndProject
@@ -60,6 +66,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Services.ChronoConsumer", "REstate.Services.ChronoConsumer\REstate.Services.ChronoConsumer.csproj", "{B32FE570-743D-4550-9BA9-DCF70A212D10}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Connectors.Chrono", "REstate.Connectors.Chrono\REstate.Connectors.Chrono.csproj", "{3B215CFC-1CF6-47D8-96F0-053ADBF2D9BA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF3A3ED1-2281-4C83-B939-50DCE42D14B9} = {AF3A3ED1-2281-4C83-B939-50DCE42D14B9}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Client.Chrono", "REstate.Client.Chrono\REstate.Client.Chrono.csproj", "{AF3A3ED1-2281-4C83-B939-50DCE42D14B9}"
 EndProject
