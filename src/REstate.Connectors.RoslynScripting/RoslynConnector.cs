@@ -1,21 +1,21 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
+using REstate.Configuration;
+using REstate.Connectors.RoslynScripting.Globals;
+using REstate.Services;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
-using REstate.Configuration;
-using REstate.RoslynScripting.Globals;
-using REstate.Services;
 
-namespace REstate.RoslynScripting
+namespace REstate.Connectors.RoslynScripting
 {
-    public class RoslynScriptHost : IScriptHost
+    public class RoslynConnector : IConnector
     {
         private readonly string _apiKey;
 
-        public RoslynScriptHost(string apiKey)
+        public RoslynConnector(string apiKey)
         {
             _apiKey = apiKey;
         }
@@ -26,7 +26,7 @@ namespace REstate.RoslynScripting
         private static readonly IDictionary<string, ScriptRunner<bool>> PredicateDelegateCache =
             new Dictionary<string, ScriptRunner<bool>>();
 
-        public Func<CancellationToken, Task> BuildAsyncActionScript(IStateMachine machineInstance, string payload,
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, string payload,
             ICodeWithDatabaseConfiguration code) =>
                 async ct =>
                 {
@@ -37,9 +37,7 @@ namespace REstate.RoslynScripting
                             ScriptOptions.Default
                                 .WithReferences(typeof (Console).Assembly)
                                 .WithReferences(typeof (HttpClient).Assembly)
-                                .WithReferences(typeof (RoslynScriptHost).Assembly)
-                                .WithImports("System", "System.Net.Http", "System.Text", "System.Net",
-                                    "REstate.RoslynScripting"),
+                                .WithImports("System", "System.Net.Http", "System.Text", "System.Net"),
                             typeof (RoslynScriptGlobals))
                             .CreateDelegate();
 
@@ -50,10 +48,10 @@ namespace REstate.RoslynScripting
                         .Invoke(new RoslynScriptGlobals { Machine = machineInstance, Payload = payload }, ct);
                 };
 
-        public Func<CancellationToken, Task> BuildAsyncActionScript(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code) =>
-            BuildAsyncActionScript(machineInstance, null, code);
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code) =>
+            ConstructAction(machineInstance, null, code);
 
-        public Func<CancellationToken, Task<bool>> BuildAsyncPredicateScript(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code) =>
+        public Func<CancellationToken, Task<bool>> ConstructPredicate(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code) =>
                 async ct =>
                 {
                     ScriptRunner<bool> runner;
@@ -63,9 +61,7 @@ namespace REstate.RoslynScripting
                             ScriptOptions.Default
                                 .WithReferences(typeof(Console).Assembly)
                                 .WithReferences(typeof(HttpClient).Assembly)
-                                .WithReferences(typeof(RoslynScriptHost).Assembly)
-                                .WithImports("System", "System.Net.Http", "System.Text", "System.Net",
-                                    "REstate.RoslynScripting"),
+                                .WithImports("System", "System.Net.Http", "System.Text", "System.Net"),
                             typeof(RoslynScriptGlobals))
                             .CreateDelegate();
 

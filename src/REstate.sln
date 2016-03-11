@@ -15,39 +15,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate", "REstate\REstate.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Auth", "REstate.Auth\REstate.Auth.csproj", "{276AF764-E2BA-4434-B6D2-799BFC4F340C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.RoslynScripting", "REstate.RoslynScripting\REstate.RoslynScripting.csproj", "{310A26D6-518B-41A6-B5DB-0B4A1B4A84C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Connectors.RoslynScripting", "REstate.Connectors.RoslynScripting\REstate.Connectors.RoslynScripting.csproj", "{310A26D6-518B-41A6-B5DB-0B4A1B4A84C9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Stateless", "REstate.Stateless\REstate.Stateless.csproj", "{7AE96174-718F-45A2-8389-0A1E982DCE82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.RoslynScripting.Globals", "REstate.RoslynScripting.Globals\REstate.RoslynScripting.Globals.csproj", "{57E152AE-7B7D-4026-A8E3-D8B45B0C26DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Connectors.RoslynScripting.Globals", "REstate.Connectors.RoslynScripting.Globals\REstate.Connectors.RoslynScripting.Globals.csproj", "{57E152AE-7B7D-4026-A8E3-D8B45B0C26DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Susanoo", "REstate.Susanoo\REstate.Susanoo.csproj", "{95D7FB41-1D52-467A-873E-C2C31926B209}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Connectors.Susanoo", "REstate.Connectors.Susanoo\REstate.Connectors.Susanoo.csproj", "{95D7FB41-1D52-467A-873E-C2C31926B209}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Repositories.Auth.Susanoo", "REstate.Repositories.Auth.Susanoo\REstate.Repositories.Auth.Susanoo.csproj", "{B1A411E0-E8BF-4D8C-B327-2C171E2E60BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Owin", "REstate.Owin\REstate.Owin.csproj", "{C011084B-65EF-43C6-AF70-0D1FE8F16662}"
-EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "REstate.UI", "REstate.UI\", "{FA2CAA92-057B-4F20-A73D-64A6F12EDD8F}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.6.1"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_53663"
-		Debug.AspNetCompiler.PhysicalPath = "REstate.UI\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53663\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_53663"
-		Release.AspNetCompiler.PhysicalPath = "REstate.UI\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53663\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "53663"
-		SlnRelativePath = "REstate.UI\"
-		StartServerOnDebug = "false"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Client", "REstate.Client\REstate.Client.csproj", "{BC6E21A3-4200-4681-B74A-B30B6F46BACE}"
 EndProject
@@ -97,10 +75,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Connectors", "Connectors", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{C1F5DF6A-4D75-478D-A75A-EA1BF9266D5A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Logging.Serilog", "REstate.Logging.Serilog\REstate.Logging.Serilog.csproj", "{BC1B64FE-0B9B-4FFD-B490-FBA8792C076C}"
+EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -142,10 +119,6 @@ Global
 		{C011084B-65EF-43C6-AF70-0D1FE8F16662}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C011084B-65EF-43C6-AF70-0D1FE8F16662}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C011084B-65EF-43C6-AF70-0D1FE8F16662}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FA2CAA92-057B-4F20-A73D-64A6F12EDD8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FA2CAA92-057B-4F20-A73D-64A6F12EDD8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FA2CAA92-057B-4F20-A73D-64A6F12EDD8F}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{FA2CAA92-057B-4F20-A73D-64A6F12EDD8F}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{BC6E21A3-4200-4681-B74A-B30B6F46BACE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BC6E21A3-4200-4681-B74A-B30B6F46BACE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC6E21A3-4200-4681-B74A-B30B6F46BACE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -218,6 +191,10 @@ Global
 		{90F8CDFB-1776-4850-8DF7-F5B5ED53B073}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90F8CDFB-1776-4850-8DF7-F5B5ED53B073}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90F8CDFB-1776-4850-8DF7-F5B5ED53B073}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC1B64FE-0B9B-4FFD-B490-FBA8792C076C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC1B64FE-0B9B-4FFD-B490-FBA8792C076C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC1B64FE-0B9B-4FFD-B490-FBA8792C076C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC1B64FE-0B9B-4FFD-B490-FBA8792C076C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

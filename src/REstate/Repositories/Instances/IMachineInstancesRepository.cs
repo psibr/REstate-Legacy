@@ -1,7 +1,7 @@
+using REstate.Configuration;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using REstate.Configuration;
 
 namespace REstate.Repositories.Instances
 {

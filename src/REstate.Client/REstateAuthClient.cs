@@ -1,8 +1,8 @@
-﻿using System;
+﻿using REstate.Client.Models;
+using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using REstate.Client.Models;
 
 namespace REstate.Client
 {

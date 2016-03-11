@@ -1,10 +1,10 @@
+using REstate.Chrono;
+using REstate.Client;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using REstate.Chrono;
-using REstate.Client;
 using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace REstate.Repositories.Chrono.Susanoo
@@ -36,7 +36,7 @@ namespace REstate.Repositories.Chrono.Susanoo
                         try
                         {
                             using (var transaction = new TransactionScope(TransactionScopeOption.RequiresNew,
-                                new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted},
+                                new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
                                 TransactionScopeAsyncFlowOption.Enabled))
                             {
                                 _clientAuthenticatedSession.FireTrigger(chronoTrigger.MachineInstanceId,
@@ -57,7 +57,7 @@ namespace REstate.Repositories.Chrono.Susanoo
                 }
                 catch (Exception ex)
                 {
-                     //Log
+                    //Log
                 }
 
             }

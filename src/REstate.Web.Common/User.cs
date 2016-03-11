@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Nancy.Security;
+using System.Collections.Generic;
 
 namespace REstate.Web
 {

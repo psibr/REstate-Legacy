@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Nancy;
+﻿using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Responses.Negotiation;
 using REstate.Configuration;
@@ -9,6 +7,8 @@ using REstate.Repositories.Instances;
 using REstate.Services;
 using REstate.Web.Instances.Requests;
 using REstate.Web.Modules;
+using System;
+using System.Linq;
 
 namespace REstate.Web.Instances.Modules
 {

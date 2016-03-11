@@ -1,6 +1,5 @@
-﻿using System;
+﻿using REstate.Configuration;
 using System.Threading.Tasks;
-using REstate.Configuration;
 
 namespace REstate.Client
 {

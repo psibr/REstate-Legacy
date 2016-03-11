@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Nancy;
+﻿using Nancy;
 using Nancy.Cryptography;
 using Nancy.ModelBinding;
 using Nancy.Owin;
@@ -9,6 +6,9 @@ using Nancy.Responses.Negotiation;
 using REstate.Auth;
 using REstate.Auth.Repositories;
 using REstate.Web.Auth.Requests;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using SignInDelegate = System.Func<System.Func<System.Guid, System.Collections.Generic.IDictionary<string, object>>, bool, string>;
 
 namespace REstate.Web.Auth.Modules

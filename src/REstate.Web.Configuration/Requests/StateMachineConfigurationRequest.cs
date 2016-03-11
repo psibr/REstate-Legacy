@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using REstate.Configuration;
+using System.Collections.Generic;
 using System.Linq;
-using REstate.Configuration;
 
 namespace REstate.Web.Configuration.Requests
 {

@@ -4,7 +4,7 @@
     {
         public int CodeElementId { get; set; }
 
-        public int CodeTypeId { get; set; }
+        public string ConnectorKey { get; set; }
 
         public string CodeElementName { get; set; }
 

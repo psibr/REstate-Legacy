@@ -1,10 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
-using Nancy;
+﻿using Nancy;
 using Nancy.Authentication.Stateless;
 using Nancy.Bootstrapper;
 using Nancy.Cryptography;
+using System;
+using System.Linq;
+using System.Security.Claims;
+using REstate.Logging;
 
 namespace REstate.Web
 {
@@ -13,7 +14,7 @@ namespace REstate.Web
 
         public static void EnableJwtStatelessAuthentication(this IPipelines pipelines,
             Func<NancyContext, ClaimsPrincipal> principalLocator,
-            CryptographyConfiguration crypto)
+            CryptographyConfiguration crypto, IREstateLogger logger)
         {
 
 
@@ -40,6 +41,8 @@ namespace REstate.Web
                     Claims = user.Claims.Where(c => c.Type == "claim").Select(c => c.Value).ToList(),
                     ApiKey = apiKey
                 };
+
+                logger.Debug("Authenticated principal: {principalName}.", ctx.CurrentUser.UserName);
 
 
                 return ctx.CurrentUser;

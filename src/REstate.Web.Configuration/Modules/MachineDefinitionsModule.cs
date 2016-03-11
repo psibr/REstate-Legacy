@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Responses.Negotiation;
@@ -7,6 +5,8 @@ using REstate.Configuration;
 using REstate.Repositories.Configuration;
 using REstate.Services;
 using REstate.Web.Configuration.Requests;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace REstate.Web.Configuration.Modules
 {

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Owin;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Owin;
 
 namespace REstate.Owin
 {

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("REstate.RoslynScripting")]
+[assembly: AssemblyTitle("REstate.Logging.Serilog")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("REstate.RoslynScripting")]
+[assembly: AssemblyProduct("REstate.Logging.Serilog")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("310a26d6-518b-41a6-b5db-0b4a1b4a84c9")]
+[assembly: Guid("bc1b64fe-0b9b-4ffd-b490-fba8792c076c")]
 
 // Version information for an assembly consists of the following four values:
 //

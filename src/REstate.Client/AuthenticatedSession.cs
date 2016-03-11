@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace REstate.Client
-{ 
+{
     public abstract class AuthenticatedSession
         : IDisposable, IAuthenticatedSession
     {

@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using REstate.Client.Chrono.Models;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using REstate.Chrono;
-using REstate.Client.Chrono.Models;
 
 namespace REstate.Client.Chrono
 {
@@ -21,7 +20,7 @@ namespace REstate.Client.Chrono
 
         public async Task AddChronoTrigger(Guid machineInstanceId, string chronoTriggerJson)
         {
-            var chronoTrigger = JsonConvert.DeserializeObject<ChronoTrigger>(chronoTriggerJson);
+            var chronoTrigger = JsonConvert.DeserializeObject<ChronoTriggerRequest>(chronoTriggerJson);
 
             chronoTrigger.MachineInstanceId = machineInstanceId;
 
@@ -31,7 +30,7 @@ namespace REstate.Client.Chrono
 
         public async Task AddChronoTrigger(Guid machineInstanceId, string chronoTriggerJson, string payload)
         {
-            var chronoTrigger = JsonConvert.DeserializeObject<ChronoTrigger>(chronoTriggerJson);
+            var chronoTrigger = JsonConvert.DeserializeObject<ChronoTriggerRequest>(chronoTriggerJson);
 
             chronoTrigger.MachineInstanceId = machineInstanceId;
 
@@ -40,7 +39,7 @@ namespace REstate.Client.Chrono
             await AddChronoTrigger(chronoTrigger);
         }
 
-        public async Task AddChronoTrigger(IChronoTrigger chronoTrigger)
+        public async Task AddChronoTrigger(IChronoTriggerRequest chronoTrigger)
         {
             var payload = JsonConvert.SerializeObject(chronoTrigger);
 

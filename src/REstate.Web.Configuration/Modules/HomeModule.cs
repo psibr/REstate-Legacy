@@ -15,7 +15,7 @@ namespace REstate.Web.Configuration.Modules
         {
                 Get["/"] = _ => Context.CurrentUser == null 
                     ? Response.AsRedirect(configuration.LoginAddress)
-                    : 200;
+                    : 201;
         }
     }
 }

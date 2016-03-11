@@ -1,20 +1,20 @@
+using REstate.Configuration;
+using REstate.Services;
+using Susanoo;
 using System;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using REstate.Configuration;
-using REstate.Services;
-using Susanoo;
 
-namespace REstate.Susanoo
+namespace REstate.Connectors.Susanoo
 {
-    public class SusanooScriptHost
-        : IScriptHost
+    public class SusanooConnector
+        : IConnector
         
     {
         private readonly string _apiKey;
 
-        public SusanooScriptHost(string apiKey)
+        public SusanooConnector(string apiKey)
         {
             _apiKey = apiKey;
         }
@@ -53,16 +53,16 @@ namespace REstate.Susanoo
         {
         }
 
-        public Func<CancellationToken, Task> BuildAsyncActionScript(IStateMachine machineInstance,
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance,
             ICodeWithDatabaseConfiguration code) => async (cancellationToken) =>
                 await ExecuteActionClause(code, cancellationToken);
 
-        public Func<CancellationToken, Task> BuildAsyncActionScript(IStateMachine machineInstance,
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance,
             string payload,
             ICodeWithDatabaseConfiguration code) => async (cancellationToken) => 
                 await ExecuteActionClause(code, payload, cancellationToken);
 
-        public Func<CancellationToken, Task<bool>> BuildAsyncPredicateScript(IStateMachine machineInstance,
+        public Func<CancellationToken, Task<bool>> ConstructPredicate(IStateMachine machineInstance,
             ICodeWithDatabaseConfiguration code) => async (cancellationToken) =>
                 await ExecuteGuardClause(code, cancellationToken);
     }

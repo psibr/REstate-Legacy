@@ -1,14 +1,14 @@
-﻿using System;
+﻿using REstate.Auth;
+using REstate.Auth.Repositories;
+using Susanoo;
+using Susanoo.ConnectionPooling;
+using System;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using REstate.Auth.Repositories;
-using REstate.Repositories.Configuration.Susanoo;
-using Susanoo;
-using Susanoo.ConnectionPooling;
 
-namespace REstate.Auth.Susanoo
+namespace REstate.Repositories.Auth.Susanoo
 {
 
     public class AuthRepository

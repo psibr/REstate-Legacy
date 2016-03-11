@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using REstate.Auth.Repositories;
+﻿using REstate.Auth.Repositories;
 using Susanoo;
 using Susanoo.ConnectionPooling;
 
-namespace REstate.Auth.Susanoo
+namespace REstate.Repositories.Auth.Susanoo
 {
     public class AuthRepositoryContextFactory
         : IAuthRepositoryContextFactory

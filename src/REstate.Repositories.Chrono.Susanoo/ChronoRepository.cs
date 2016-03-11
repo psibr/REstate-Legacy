@@ -1,13 +1,13 @@
-﻿using System;
+﻿using REstate.Chrono;
+using Susanoo;
+using Susanoo.ConnectionPooling;
+using Susanoo.Processing;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using REstate.Chrono;
-using Susanoo;
-using Susanoo.ConnectionPooling;
-using Susanoo.Processing;
 
 namespace REstate.Repositories.Chrono.Susanoo
 {
@@ -30,16 +30,8 @@ namespace REstate.Repositories.Chrono.Susanoo
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                List<ChronoTrigger> results = new List<ChronoTrigger>();
-                try
-                {
-                    results = _command.Execute(_databaseManagerPool.DatabaseManager)
-                        .ToList();
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
+                var results = _command.Execute(_databaseManagerPool.DatabaseManager)
+                    .ToList();
 
                 if (!results.Any())
                 {

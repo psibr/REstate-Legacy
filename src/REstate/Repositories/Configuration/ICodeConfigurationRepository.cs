@@ -1,20 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using REstate.Configuration;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using REstate.Configuration;
 
 namespace REstate.Repositories.Configuration
 {
     public interface ICodeConfigurationRepository
     {
-        Task<ICollection<CodeType>> GetCodeTypes(CancellationToken cancellationToken);
-
-        Task<ICollection<CodeType>> GetCodeTypes(int codeUsageId, CancellationToken cancellationToken);
-
-        Task<ICollection<CodeType>> GetCodeTypes(string codeUsageName, CancellationToken cancellationToken);
-
-        Task<ICollection<CodeUsage>> GetCodeUsages(CancellationToken cancellationToken);
-
         Task<CodeElement> DefineCodeElement(CodeElement codeElement, CancellationToken cancellationToken);
 
         Task<CodeElement> UpdateCodeElement(CodeElement codeElement, CancellationToken cancellationToken);

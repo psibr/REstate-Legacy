@@ -1,11 +1,11 @@
+using Newtonsoft.Json;
+using REstate.Client.Models;
+using REstate.Configuration;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using REstate.Client.Models;
-using REstate.Configuration;
 
 namespace REstate.Client
 {

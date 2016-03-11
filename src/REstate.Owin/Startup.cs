@@ -1,10 +1,12 @@
-﻿using System.Collections;
+﻿using Owin;
+using REstate.Web;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
-using Owin;
-using REstate.Web;
+using Nancy.Owin;
+using Nancy.Routing;
 
 namespace REstate.Owin
 {
@@ -14,23 +16,31 @@ namespace REstate.Owin
 
         public void Configuration(IAppBuilder app)
         {
-
-
             app.UseJwtAndCookieMiddleware(new JwtAndCookieMiddlewareOptions
             {
                 PassPhrase = Config.HmacPassphrase,
                 CookieName = Config.CookieName,
                 CookiePath = Config.CookiePath,
+                CookieHttpOnly = true,
+                TokenLifeSpan = Config.TokenLifeSpan,
+                ClaimsPrincipalResourceName = Config.ClaimsPrincipalResourceName,
                 CreatePrincipal = CreatePrincipal
-            }).MapWhen(context =>
-                context.Environment.ContainsKey(Config.ClaimsPrincipalResourceName) 
-                    && context.Environment[Config.ClaimsPrincipalResourceName] != null,
-                builder => builder
-                    .UseStatic("wwwroot")
-                    .UseNancy());
+            });
 
-            app.UseNancy()
-               .UseStatic("wwwroot");
+            var options = new NancyOptions();
+
+            if (Config.ServesStaticContent)
+                options.PerformPassThrough = context =>
+                    context.ResolvedRoute.Description.Method == "GET"
+                    && (context.ResolvedRoute is NotFoundRoute
+                        || context.ResolvedRoute.Description.Path == Config.StaticContentRootRoutePath)
+                    && context.GetOwinEnvironment().ContainsKey(Config.ClaimsPrincipalResourceName)
+                    && context.GetOwinEnvironment()[Config.ClaimsPrincipalResourceName] != null;
+
+            app.UseNancy(options);
+
+            if (Config.ServesStaticContent)
+                app.UseStatic("wwwroot");
         }
 
         private static ClaimsPrincipal CreatePrincipal(IDictionary<string, object> payload)

@@ -1,6 +1,6 @@
-﻿using System;
-using REstate.Configuration;
+﻿using REstate.Configuration;
 using REstate.Repositories.Instances;
+using System;
 
 namespace REstate.Services
 {

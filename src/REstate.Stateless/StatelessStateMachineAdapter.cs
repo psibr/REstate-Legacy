@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Stateless;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Stateless;
 
 namespace REstate.Stateless
 {

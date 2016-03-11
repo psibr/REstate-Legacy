@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
 namespace REstate.Owin
@@ -20,6 +18,11 @@ namespace REstate.Owin
         public string CookiePath { get; set; }
 
         public bool CookieHttpOnly { get; set; }
+
+        public string ClaimsPrincipalResourceName { get; set; }
+
+        public TimeSpan TokenLifeSpan { get; set; } = TimeSpan.FromMinutes(30);
+
         public Func<IDictionary<string, object>, ClaimsPrincipal> CreatePrincipal { get; set; }
     }
 }

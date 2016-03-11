@@ -1,6 +1,6 @@
-﻿using System;
+﻿using REstate.Client.Chrono.Models;
+using System;
 using System.Threading.Tasks;
-using REstate.Chrono;
 
 namespace REstate.Client.Chrono
 {
@@ -10,6 +10,6 @@ namespace REstate.Client.Chrono
 
         Task AddChronoTrigger(Guid machineInstanceId, string chronoTriggerJson, string payload);
 
-        Task AddChronoTrigger(IChronoTrigger chronoTrigger);
+        Task AddChronoTrigger(IChronoTriggerRequest chronoTrigger);
     }
 }

@@ -1,11 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using Autofac;
+﻿using Autofac;
 using REstate.Chrono;
 using REstate.Client;
 using REstate.Repositories.Chrono.Susanoo;
 using REstate.Web;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using AutofacSerilogIntegration;
+using REstate.Logging;
+using REstate.Logging.Serilog;
+using Serilog;
 
 namespace REstate.Services.ChronoConsumer
 {
@@ -27,16 +31,22 @@ namespace REstate.Services.ChronoConsumer
             container.RegisterInstance(config);
             var kernel = container.Build();
 
+            var logger = kernel.Resolve<ILogger>();
+
             var instanceClient = kernel.Resolve<IAuthSessionClient<IInstancesSession>>();
             using (var session = instanceClient
                 .GetSession("98EC17D7-7F31-4A44-A911-6B4D10B3DC2E").Result)
             {
+                logger.Information("Authenticated session acquired.");
+
                 var engine = kernel.Resolve<IChronoRepository>();
                 var consumer = new Repositories.Chrono.Susanoo.ChronoConsumer(engine, session);
 
+                logger.Information("Starting ChronoConsumer.");
+
                 consumer.Start();
 
-                Console.WriteLine("Watching or consuming ChronoTriggers.");
+                logger.Information("Watching or consuming ChronoTriggers.");
                 Console.ReadLine();
 
                 consumer.Stop();
@@ -47,6 +57,14 @@ namespace REstate.Services.ChronoConsumer
         {
             var container = new ContainerBuilder();
 
+            container.RegisterAdapter<ILogger, IREstateLogger>(serilogLogger =>
+                new SerilogLoggingAdapter(serilogLogger));
+
+            container.RegisterLogger(
+                new LoggerConfiguration().MinimumLevel.Verbose()
+                    .Enrich.WithProperty("source", "REstate.Services.Auth")
+                    .WriteTo.LiterateConsole()
+                    .CreateLogger());
 
             container.RegisterType<ChronoRepositoryFactory>()
                 .As<IChronoRepositoryFactory>();
@@ -63,5 +81,5 @@ namespace REstate.Services.ChronoConsumer
             return container;
         }
     }
-    
+
 }

@@ -73,6 +73,10 @@
       <Project>{d8eba39b-63ae-4a66-bd0e-f7f95e572135}</Project>
       <Name>Nancy.EmbeddedContent</Name>
     </ProjectReference>
+    <ProjectReference Include="..\REstate\REstate.csproj">
+      <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>
+      <Name>REstate</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

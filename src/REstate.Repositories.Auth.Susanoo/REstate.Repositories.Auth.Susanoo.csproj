@@ -57,9 +57,9 @@
       <Project>{4d17b5d5-ee07-4d79-99cb-342dd2105472}</Project>
       <Name>REstate.Repositories.Configuration.Susanoo</Name>
     </ProjectReference>
-    <ProjectReference Include="..\REstate.Susanoo\REstate.Susanoo.csproj">
+    <ProjectReference Include="..\REstate.Connectors.Susanoo\REstate.Connectors.Susanoo.csproj">
       <Project>{95d7fb41-1d52-467a-873e-c2c31926b209}</Project>
-      <Name>REstate.Susanoo</Name>
+      <Name>REstate.Connectors.Susanoo</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate\REstate.csproj">
       <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>

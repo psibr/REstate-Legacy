@@ -1,20 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using Autofac;
+﻿using Autofac;
 using Microsoft.Owin.Hosting;
 using REstate.Client;
 using REstate.Client.Chrono;
 using REstate.Connectors.Chrono;
+using REstate.Connectors.RoslynScripting;
+using REstate.Connectors.Susanoo;
 using REstate.Owin;
 using REstate.Repositories.Configuration;
 using REstate.Repositories.Configuration.Susanoo;
 using REstate.Repositories.Instances;
 using REstate.Repositories.Instances.Susanoo;
-using REstate.RoslynScripting;
 using REstate.Stateless;
-using REstate.Susanoo;
 using REstate.Web;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using AutofacSerilogIntegration;
+using REstate.Logging;
+using REstate.Logging.Serilog;
+using Serilog;
 
 namespace REstate.Services.Instances
 {
@@ -50,10 +54,10 @@ namespace REstate.Services.Instances
             REstateBootstrapper.KernelLocator = () => kernel;
             Startup.Config = config;
 
-
+            var logger = kernel.Resolve<ILogger>();
             using (WebApp.Start<Startup>(url))
             {
-                Console.WriteLine("Running on {0}", url);
+                logger.Information("Running at {hostBindingAddress}", url);
                 Console.WriteLine("Press enter to exit");
 
                 Console.ReadLine();
@@ -65,9 +69,17 @@ namespace REstate.Services.Instances
         {
             var container = new ContainerBuilder();
 
-            container.Register(context => new InstancesRoutePrefix(string.Empty));
-            //container.Register(context => new ConfigurationRoutePrefix("/configuration"));
 
+            container.RegisterAdapter<ILogger, IREstateLogger>(serilogLogger => 
+                new SerilogLoggingAdapter(serilogLogger));
+
+            container.RegisterLogger(
+                new LoggerConfiguration().MinimumLevel.Verbose()
+                    .Enrich.WithProperty("source", "REstate.Services.Instances")
+                    .WriteTo.LiterateConsole()
+                    .CreateLogger());
+
+            container.Register(context => new InstancesRoutePrefix(string.Empty));
 
             container.RegisterType<ConfigurationRepositoryContextFactory>()
                 .As<IConfigurationRepositoryContextFactory>();
@@ -82,16 +94,15 @@ namespace REstate.Services.Instances
                 .GetChronoClient(configuration.ConfigurationDictionary["REstate.Web.ChronoAddress"]))
                 .As<IAuthSessionClient<IChronoSession>>();
 
-            container.RegisterType<ChronoTriggerScriptHostFactory>();
+            container.RegisterType<RoslynConnectorFactory>()
+                .As<IConnectorFactory>();
+            container.RegisterType<SusanooConnectorFactory>()
+                .As<IConnectorFactory>();
+            container.RegisterType<ChronoTriggerConnectorFactory>()
+                .As<IConnectorFactory>();
 
-            container.Register(context => new DefaultScriptHostFactoryResolver(new Dictionary<int, IScriptHostFactory>
-            {
-                { 1, new SusanooScriptHostFactory() },
-                { 2, new SusanooScriptHostFactory() },
-                { 3, new RoslynScriptHostFactory() },
-                { 4, new RoslynScriptHostFactory() },
-                { 5, context.Resolve<ChronoTriggerScriptHostFactory>() }
-            })).As<IScriptHostFactoryResolver>();
+            container.RegisterType<DefaultConnectorFactoryResolver>()
+                .As<IConnectorFactoryResolver>();
 
             container.RegisterType<StatelessStateMachineFactory>()
                 .As<IStateMachineFactory>();

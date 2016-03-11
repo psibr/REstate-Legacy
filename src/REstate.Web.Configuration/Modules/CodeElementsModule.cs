@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using Nancy;
+﻿using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Responses.Negotiation;
 using REstate.Configuration;
 using REstate.Repositories.Configuration;
+using System.Collections.Generic;
 
 namespace REstate.Web.Configuration.Modules
 {
@@ -16,19 +16,12 @@ namespace REstate.Web.Configuration.Modules
         /// <summary>
         /// Registers routes for modifying executable code.
         /// </summary>
+        /// <param name="prefix">The route prefix.</param>
         /// <param name="configurationRepositoryContextFactory">The repository context factory.</param>
         public CodeElementsModule(ConfigurationRoutePrefix prefix,
             IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
             : base(prefix + "/code", "developer")
         {
-            GetCodeUsages(configurationRepositoryContextFactory);
-
-            GetCodeTypes(configurationRepositoryContextFactory);
-
-            GetCodeTypesByUsageId(configurationRepositoryContextFactory);
-
-            GetCodeTypesByUsageName(configurationRepositoryContextFactory);
-
             CreateCodeElement(configurationRepositoryContextFactory);
 
             UpdateCodeElement(configurationRepositoryContextFactory);
@@ -148,78 +141,6 @@ namespace REstate.Web.Configuration.Modules
 
                 return Negotiate
                     .WithModel(newCodeElement)
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
-            };
-        }
-
-        private void GetCodeTypesByUsageName(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
-        {
-            Get["GetCodeTypesByUsageName", "/types/{CodeUsageName}", true] = async (parameters, ct) =>
-            {
-                string codeUsageName = parameters.CodeUsageName;
-
-                ICollection<CodeType> codeTypes;
-                using (var repository = configurationRepositoryContextFactory
-                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
-                {
-                    codeTypes = await repository.Code.GetCodeTypes(codeUsageName, ct);
-                }
-
-                return Negotiate
-                    .WithModel(codeTypes)
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
-            };
-        }
-
-        private void GetCodeTypesByUsageId(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
-        {
-            Get["GetCodeTypesByUsageId", "/types/{CodeUsageId:int}", true] = async (parameters, ct) =>
-            {
-                int codeUsageId = parameters.CodeUsageId;
-
-                ICollection<CodeType> codeTypes;
-                using (var repository = configurationRepositoryContextFactory
-                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
-                {
-                    codeTypes = await repository.Code.GetCodeTypes(codeUsageId, ct);
-                }
-
-                return Negotiate
-                    .WithModel(codeTypes)
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
-            };
-        }
-
-        private void GetCodeTypes(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
-        {
-            Get["GetCodeTypes", "/types", true] = async (parameters, ct) =>
-            {
-                ICollection<CodeType> codeTypes;
-                using (var repository = configurationRepositoryContextFactory
-                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
-                {
-                    codeTypes = await repository.Code.GetCodeTypes(ct);
-                }
-
-                return Negotiate
-                    .WithModel(codeTypes)
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
-            };
-        }
-
-        private void GetCodeUsages(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
-        {
-            Get["GetCodeUsages", "/usages", true] = async (parameters, ct) =>
-            {
-                ICollection<CodeUsage> codeUsages;
-                using (var repository = configurationRepositoryContextFactory
-                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
-                {
-                    codeUsages = await repository.Code.GetCodeUsages(ct);
-                }
-
-                return Negotiate
-                    .WithModel(codeUsages)
                     .WithAllowedMediaRange(new MediaRange("application/json"));
             };
         }

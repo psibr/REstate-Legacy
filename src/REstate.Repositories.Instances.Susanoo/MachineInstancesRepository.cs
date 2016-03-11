@@ -1,12 +1,12 @@
+using REstate.Configuration;
+using Susanoo;
+using Susanoo.Processing;
 using System;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using REstate.Configuration;
-using Susanoo;
-using Susanoo.Processing;
 using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace REstate.Repositories.Instances.Susanoo

@@ -1,11 +1,11 @@
-﻿using System;
+﻿using REstate.Configuration;
+using Susanoo;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using REstate.Configuration;
-using Susanoo;
 
 namespace REstate.Repositories.Configuration.Susanoo
 {
@@ -17,69 +17,20 @@ namespace REstate.Repositories.Configuration.Susanoo
         {
         }
 
-        public async Task<ICollection<CodeType>> GetCodeTypes(CancellationToken cancellationToken)
-        {
-            return (await CommandManager.Instance
-                .DefineCommand("SELECT * FROM CodeTypes", CommandType.Text)
-                .DefineResults<CodeType>()
-                .Realize()
-                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, cancellationToken))
-                .ToList();
-        }
-
-        public async Task<ICollection<CodeType>> GetCodeTypes(int codeUsageId, CancellationToken cancellationToken)
-        {
-            return (await CommandManager.Instance
-                .DefineCommand("SELECT CodeTypes.* FROM CodeTypes " +
-                               "INNER JOIN CodeTypeUsages ctu ON ctu.CodeTypeId = CodeTypes.CodeTypeId " +
-                               "WHERE ctu.CodeUsageId = @codeUsageId", CommandType.Text)
-                .DefineResults<CodeType>()
-                .Realize()
-                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { codeUsageId }, cancellationToken))
-                .ToList();
-        }
-
-        public async Task<ICollection<CodeType>> GetCodeTypes(string codeUsageName, CancellationToken cancellationToken)
-        {
-            if (String.IsNullOrWhiteSpace(codeUsageName))
-                throw new ArgumentException("Argument is null or whitespace", nameof(codeUsageName));
-
-            return (await CommandManager.Instance
-                .DefineCommand("SELECT CodeTypes.* FROM CodeTypes " +
-                               "INNER JOIN CodeTypeUsages ctu ON ctu.CodeTypeId = CodeTypes.CodeTypeId " +
-                               "INNER JOIN CodeUsages u ON u.CodeUsageId = ctu.CodeUsageId " +
-                               "WHERE AND u.CodeUsageName = @codeUsageName", CommandType.Text)
-                .DefineResults<CodeType>()
-                .Realize()
-                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { codeUsageName }, cancellationToken))
-                .ToList();
-        }
-
-        public async Task<ICollection<CodeUsage>> GetCodeUsages(CancellationToken cancellationToken)
-        {
-
-            return (await CommandManager.Instance
-                .DefineCommand("SELECT CodeUsages.* FROM CodeUsages ", CommandType.Text)
-                .DefineResults<CodeUsage>()
-                .Realize()
-                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, cancellationToken))
-                .ToList();
-        }
-
         public async Task<CodeElement> DefineCodeElement(CodeElement codeElement, CancellationToken cancellationToken)
         {
             if (codeElement == null) throw new ArgumentNullException(nameof(codeElement));
-            if (codeElement.CodeTypeId <= 0) throw new ArgumentException("CodeTypeId is a required property.", nameof(codeElement));
+            if (string.IsNullOrWhiteSpace(codeElement.ConnectorKey)) throw new ArgumentException("ConnectorKey is a required property.", nameof(codeElement));
             if (string.IsNullOrWhiteSpace(codeElement.CodeElementName)) throw new ArgumentException("CodeElementName is a required property.", nameof(codeElement));
             if (string.IsNullOrWhiteSpace(codeElement.SemanticVersion)) throw new ArgumentException("SemanticVersion is a required property.", nameof(codeElement));
 
             return (await CommandManager.Instance
-                .DefineCommand<CodeElement>("INSERT INTO CodeElements VALUES (@CodeTypeId, @CodeElementName, @SemanticVersion,\n" +
+                .DefineCommand<CodeElement>("INSERT INTO CodeElements VALUES (@ConnectorKey, @CodeElementName, @SemanticVersion,\n" +
                                             "    @CodeElementDescription, @CodeBody, @SqlDatabaseDefinitionId); \n" +
                                             "SELECT * FROM CodeElements WHERE CodeElementId = @@IDENTITY;",
                     CommandType.Text)
                 .UseExplicitPropertyInclusionMode()
-                .IncludeProperty(o => o.CodeTypeId)
+                .IncludeProperty(o => o.ConnectorKey)
                 .IncludeProperty(o => o.CodeElementName)
                 .IncludeProperty(o => o.SemanticVersion)
                 .IncludeProperty(o => o.CodeElementDescription)
@@ -96,12 +47,12 @@ namespace REstate.Repositories.Configuration.Susanoo
         {
             if (codeElement == null) throw new ArgumentNullException(nameof(codeElement));
             if (codeElement.CodeElementId <= 0) throw new ArgumentException("CodeElementId is a required property.", nameof(codeElement));
-            if (codeElement.CodeTypeId <= 0) throw new ArgumentException("CodeTypeId is a required property.", nameof(codeElement));
+            if (string.IsNullOrWhiteSpace(codeElement.ConnectorKey)) throw new ArgumentException("ConnectorKey is a required property.", nameof(codeElement));
             if (string.IsNullOrWhiteSpace(codeElement.CodeElementName)) throw new ArgumentException("CodeElementName is a required property.", nameof(codeElement));
             if (string.IsNullOrWhiteSpace(codeElement.SemanticVersion)) throw new ArgumentException("SemanticVersion is a required property.", nameof(codeElement));
 
             return (await CommandManager.Instance
-                .DefineCommand<CodeElement>("UPDATE CodeElements SET CodeTypeId = @CodeTypeId, CodeElementName = @CodeElementName,\n" +
+                .DefineCommand<CodeElement>("UPDATE CodeElements SET ConnectorKey = @ConnectorKey, CodeElementName = @CodeElementName,\n" +
                                             "   SemanticVersion = @SemanticVersion, CodeElementDescription = @CodeElementDescription,\n" +
                                             "   CodeBody = @CodeBody, SqlDatabaseDefinitionId = @SqlDatabaseDefinitionId\n" +
                                             "WHERE CodeElementId = @CodeElementId; \n" +
@@ -109,7 +60,7 @@ namespace REstate.Repositories.Configuration.Susanoo
                     CommandType.Text)
                 .UseExplicitPropertyInclusionMode()
                 .IncludeProperty(o => o.CodeElementId)
-                .IncludeProperty(o => o.CodeTypeId)
+                .IncludeProperty(o => o.ConnectorKey)
                 .IncludeProperty(o => o.CodeElementName)
                 .IncludeProperty(o => o.SemanticVersion)
                 .IncludeProperty(o => o.CodeElementDescription)

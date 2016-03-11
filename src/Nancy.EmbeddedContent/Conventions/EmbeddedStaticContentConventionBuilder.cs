@@ -1,13 +1,13 @@
 ﻿namespace Nancy.EmbeddedContent.Conventions
 {
+    using Helpers;
+    using Responses;
     using System;
     using System.Collections.Concurrent;
     using System.IO;
     using System.Linq;
     using System.Reflection;
     using System.Text.RegularExpressions;
-    using Helpers;
-    using Responses;
 
     /// <summary>
     /// Allows the use of embedded resources for static content in Nancy

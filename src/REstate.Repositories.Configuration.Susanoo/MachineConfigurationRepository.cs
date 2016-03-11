@@ -1,12 +1,12 @@
-﻿using System;
+﻿using REstate.Configuration;
+using Susanoo;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using REstate.Configuration;
-using Susanoo;
 using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace REstate.Repositories.Configuration.Susanoo
@@ -21,7 +21,7 @@ namespace REstate.Repositories.Configuration.Susanoo
         }
 
 
-        public Task<IStateMachineConfiguration> RetrieveMachineConfiguration(int machineDefinitionId, bool loadCode,
+        public async Task<IStateMachineConfiguration> RetrieveMachineConfiguration(int machineDefinitionId, bool loadCode,
             CancellationToken cancellationToken)
         {
             var typeSet = loadCode ?
@@ -46,11 +46,11 @@ namespace REstate.Repositories.Configuration.Susanoo
                 typeof (StateAction)
             };
 
-            var results = (CommandManager.Instance
+            var results = (await CommandManager.Instance
                 .DefineCommand("[dbo].[LoadMachineDefinition]", CommandType.StoredProcedure)
                 .DefineResults(typeSet)
                 .Realize()
-                .Execute(DatabaseManagerPool.DatabaseManager, new { machineDefinitionId }))
+                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { machineDefinitionId }, cancellationToken))
                 .ToArray();
 
             var machineDefinition = results[0].Cast<IMachineDefinition>().SingleOrDefault();
@@ -110,7 +110,7 @@ namespace REstate.Repositories.Configuration.Susanoo
                 CodeElements = codeElements
             };
 
-            return Task.FromResult<IStateMachineConfiguration>(machineConfiguration);
+            return machineConfiguration;
         }
 
         public async Task<IStateMachineConfiguration> RetrieveMachineConfiguration(Guid machineInstanceGuid, bool loadCode,

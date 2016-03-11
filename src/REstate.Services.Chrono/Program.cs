@@ -1,13 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using Autofac;
+﻿using Autofac;
 using Microsoft.Owin.Hosting;
 using REstate.Chrono;
 using REstate.Owin;
 using REstate.Repositories.Chrono.Susanoo;
 using REstate.Web;
 using REstate.Web.Chrono;
+using System;
+using System.Configuration;
+using AutofacSerilogIntegration;
+using REstate.Logging;
+using REstate.Logging.Serilog;
+using Serilog;
 
 namespace REstate.Services.Chrono
 {
@@ -38,9 +41,10 @@ namespace REstate.Services.Chrono
             REstateBootstrapper.KernelLocator = () => kernel;
             Startup.Config = config;
 
+            var logger = kernel.Resolve<ILogger>();
             using (WebApp.Start<Startup>(url))
             {
-                Console.WriteLine("Running on {0}", url);
+                logger.Information("Running at {hostBindingAddress}", url);
                 Console.WriteLine("Press enter to exit");
 
                 Console.ReadLine();
@@ -51,6 +55,15 @@ namespace REstate.Services.Chrono
         private static ContainerBuilder BuildAndConfigureContainer(REstateConfiguration configuration)
         {
             var container = new ContainerBuilder();
+
+            container.RegisterAdapter<ILogger, IREstateLogger>(serilogLogger =>
+                new SerilogLoggingAdapter(serilogLogger));
+
+            container.RegisterLogger(
+                new LoggerConfiguration().MinimumLevel.Verbose()
+                    .Enrich.WithProperty("source", "REstate.Services.Chrono")
+                    .WriteTo.LiterateConsole()
+                    .CreateLogger());
 
             container.Register(context => new ChronoRoutePrefix(string.Empty));
 

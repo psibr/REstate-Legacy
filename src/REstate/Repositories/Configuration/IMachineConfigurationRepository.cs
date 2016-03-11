@@ -1,8 +1,8 @@
-﻿using System;
+﻿using REstate.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using REstate.Configuration;
 
 namespace REstate.Repositories.Configuration
 {

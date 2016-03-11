@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace REstate.Web
@@ -23,6 +24,12 @@ namespace REstate.Web
         public string CookieName { get; set; } = "REstate";
 
         public string CookiePath { get; set; } = "/";
+
+        public bool ServesStaticContent { get; set; } = false;
+
+        public string StaticContentRootRoutePath { get; set; } = "/";
+
+        public TimeSpan TokenLifeSpan { get; set; } = TimeSpan.FromMinutes(30);
 
         public IDictionary<string, string> ConfigurationDictionary { get; set; }
 

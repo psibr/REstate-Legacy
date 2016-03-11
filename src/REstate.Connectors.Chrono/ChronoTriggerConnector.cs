@@ -1,18 +1,18 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using REstate.Client.Chrono;
 using REstate.Configuration;
 using REstate.Services;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace REstate.Connectors.Chrono
 {
-    public class ChronoTriggerScriptHost
-        : IScriptHost
+    public class ChronoTriggerConnector
+        : IConnector
     {
         private readonly IChronoSession _chronoSession;
 
-        public ChronoTriggerScriptHost(IChronoSession chronoSession)
+        public ChronoTriggerConnector(IChronoSession chronoSession)
         {
             _chronoSession = chronoSession;
         }
@@ -30,7 +30,7 @@ namespace REstate.Connectors.Chrono
             }
         }
 
-        public Func<CancellationToken, Task> BuildAsyncActionScript(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code)
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code)
         {
             return async (cancellationToken) =>
             {
@@ -38,7 +38,7 @@ namespace REstate.Connectors.Chrono
             };
         }
 
-        public Func<CancellationToken, Task> BuildAsyncActionScript(IStateMachine machineInstance, string payload, ICodeWithDatabaseConfiguration code)
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, string payload, ICodeWithDatabaseConfiguration code)
         {
             return async (cancellationToken) =>
             {
@@ -46,7 +46,7 @@ namespace REstate.Connectors.Chrono
             };
         }
 
-        public Func<CancellationToken, Task<bool>> BuildAsyncPredicateScript(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code)
+        public Func<CancellationToken, Task<bool>> ConstructPredicate(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code)
         {
             throw new NotSupportedException();
         }

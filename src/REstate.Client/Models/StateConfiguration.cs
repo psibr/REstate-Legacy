@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using REstate.Configuration;
+﻿using REstate.Configuration;
+using System.Collections.Generic;
 
 namespace REstate.Client.Models
 {

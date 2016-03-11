@@ -1,6 +1,6 @@
-﻿using System;
+﻿using REstate.Configuration;
+using System;
 using System.Collections.Generic;
-using REstate.Configuration;
 
 namespace REstate.Client.Models
 {

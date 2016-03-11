@@ -1,6 +1,4 @@
-﻿using System;
-using System.Security.Claims;
-using Autofac;
+﻿using Autofac;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Bootstrappers.Autofac;
@@ -10,6 +8,9 @@ using Nancy.Diagnostics;
 using Nancy.EmbeddedContent.Conventions;
 using Nancy.Owin;
 using Nancy.Responses.Negotiation;
+using System;
+using System.Security.Claims;
+using REstate.Logging;
 
 namespace REstate.Web
 {
@@ -30,12 +31,17 @@ namespace REstate.Web
         {
             base.ApplicationStartup(kernel, pipelines);
 
+            var logger = kernel.Resolve<IREstateLogger>();
+
             pipelines.EnableJwtStatelessAuthentication(
                 ctx => ctx.GetOwinEnvironment()[Configuration.ClaimsPrincipalResourceName] as ClaimsPrincipal,
-                CryptographyConfiguration);
+                CryptographyConfiguration,
+                logger);
 
             pipelines.OnError += (ctx, ex) =>
             {
+                logger.Error(ex, "Request exception encountered.");
+
                 if (ex is ArgumentException)
                     return new Negotiator(ctx)
                         .WithStatusCode(400)

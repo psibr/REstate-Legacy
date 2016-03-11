@@ -1,22 +1,22 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using REstate.Configuration;
+﻿using REstate.Configuration;
 using REstate.Repositories.Instances;
 using REstate.Services;
 using Stateless;
+using System;
+using System.Linq;
+using System.Threading;
 
 namespace REstate.Stateless
 {
     public class StatelessStateMachineFactory
         : IStateMachineFactory
     {
-        private readonly IScriptHostFactoryResolver _scriptHostFactoryResolver;
+        private readonly IConnectorFactoryResolver _connectorFactoryResolver;
 
         public StatelessStateMachineFactory(
-            IScriptHostFactoryResolver scriptHostFactoryResolver)
+            IConnectorFactoryResolver connectorFactoryResolver)
         {
-            _scriptHostFactoryResolver = scriptHostFactoryResolver;
+            _connectorFactoryResolver = connectorFactoryResolver;
         }
 
         public IStateMachine ConstructFromConfiguration(string apiKey, Guid machineInstanceGuid,
@@ -122,10 +122,10 @@ namespace REstate.Stateless
 
             if (codeElement == null) throw new ArgumentException($"CodeElement with Id {guardDefinition.CodeElementId} was not found.");
 
-            var hostFactory = _scriptHostFactoryResolver.ResolveScriptHostFactory(codeElement.CodeTypeId);
+            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(codeElement.ConnectorKey);
             Func<bool> guard = () =>
-                hostFactory.BuildScriptHost(apiKey).Result
-                    .BuildAsyncPredicateScript(stateMachine, codeElement)
+                hostFactory.BuildConnector(apiKey).Result
+                    .ConstructPredicate(stateMachine, codeElement)
                     .Invoke(CancellationToken.None).Result;
 
             return guard;
@@ -142,10 +142,10 @@ namespace REstate.Stateless
 
             if (codeElement == null) throw new ArgumentException($"CodeElement with Id {stateConfiguration.OnExitAction.CodeElementId} was not found.");
 
-            var hostFactory = _scriptHostFactoryResolver.ResolveScriptHostFactory(codeElement.CodeTypeId);
+            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(codeElement.ConnectorKey);
             stateSettings.OnExit(() =>
-                hostFactory.BuildScriptHost(apiKey).Result
-                    .BuildAsyncActionScript(stateMachine, codeElement)
+                hostFactory.BuildConnector(apiKey).Result
+                    .ConstructAction(stateMachine, codeElement)
                     .Invoke(CancellationToken.None)
             , stateConfiguration.OnExitAction.StateActionDescription ?? codeElement.CodeElementDescription);
         }
@@ -161,12 +161,12 @@ namespace REstate.Stateless
 
             if (codeElement == null) throw new ArgumentException($"CodeElement with Id {stateConfiguration.OnEntryFromAction.CodeElementId} was not found.");
 
-            var hostFactory = _scriptHostFactoryResolver.ResolveScriptHostFactory(codeElement.CodeTypeId);
+            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(codeElement.ConnectorKey);
             stateSettings.OnEntryFrom(
                 new StateMachine<State, Trigger>.TriggerWithParameters<string>(
                     new Trigger(stateConfiguration.State.MachineDefinitionId, stateConfiguration.OnEntryFromAction.TriggerName)), payload =>
-                        hostFactory.BuildScriptHost(apiKey).Result
-                            .BuildAsyncActionScript(stateMachine, payload, codeElement)
+                        hostFactory.BuildConnector(apiKey).Result
+                            .ConstructAction(stateMachine, payload, codeElement)
                             .Invoke(CancellationToken.None),
                 stateConfiguration.OnEntryFromAction.StateActionDescription ?? codeElement.CodeElementDescription);
 
@@ -183,10 +183,10 @@ namespace REstate.Stateless
 
             if (codeElement == null) throw new ArgumentException($"CodeElement with Id {stateConfiguration.OnEntryFromAction.CodeElementId} was not found.");
 
-            var hostFactory = _scriptHostFactoryResolver.ResolveScriptHostFactory(codeElement.CodeTypeId);
+            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(codeElement.ConnectorKey);
             stateSettings.OnEntry(() =>
-                hostFactory.BuildScriptHost(apiKey).Result
-                    .BuildAsyncActionScript(stateMachine, codeElement)
+                hostFactory.BuildConnector(apiKey).Result
+                    .ConstructAction(stateMachine, codeElement)
                     .Invoke(CancellationToken.None),
                 stateConfiguration.OnEntryAction.StateActionDescription ?? codeElement.CodeElementDescription);
         }

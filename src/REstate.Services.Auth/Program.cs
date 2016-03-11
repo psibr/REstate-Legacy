@@ -1,11 +1,15 @@
-﻿using System;
-using System.Configuration;
-using Autofac;
+﻿using Autofac;
 using Microsoft.Owin.Hosting;
 using REstate.Auth.Repositories;
-using REstate.Auth.Susanoo;
 using REstate.Owin;
+using REstate.Repositories.Auth.Susanoo;
 using REstate.Web;
+using System;
+using System.Configuration;
+using AutofacSerilogIntegration;
+using REstate.Logging;
+using REstate.Logging.Serilog;
+using Serilog;
 
 namespace REstate.Services.Auth
 {
@@ -31,18 +35,18 @@ namespace REstate.Services.Auth
             container.RegisterInstance(config);
             var kernel = container.Build();
 
+
             //Binding to implementation
             REstateBootstrapper.KernelLocator = () => kernel;
             Startup.Config = config;
 
-
+            var logger = kernel.Resolve<ILogger>();
             using (WebApp.Start<Startup>(url))
             {
-                Console.WriteLine("Running on {0}", url);
+                logger.Information("Running at {hostBindingAddress}", url);
                 Console.WriteLine("Press enter to exit");
 
                 Console.ReadLine();
-
             }
         }
 
@@ -50,9 +54,16 @@ namespace REstate.Services.Auth
         {
             var container = new ContainerBuilder();
 
-            container.Register(context => new AuthRoutePrefix(string.Empty));
-            //container.Register(context => new ConfigurationRoutePrefix("/configuration"));
+            container.RegisterAdapter<ILogger, IREstateLogger>(serilogLogger =>
+                new SerilogLoggingAdapter(serilogLogger));
 
+            container.RegisterLogger(
+                new LoggerConfiguration().MinimumLevel.Verbose()
+                    .Enrich.WithProperty("source", "REstate.Services.Auth")
+                    .WriteTo.LiterateConsole()
+                    .CreateLogger());
+
+            container.Register(context => new AuthRoutePrefix(string.Empty));
 
             container.RegisterType<AuthRepositoryContextFactory>()
                 .As<IAuthRepositoryContextFactory>();
