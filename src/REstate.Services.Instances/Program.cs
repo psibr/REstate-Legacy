@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using Microsoft.Owin.Hosting;
 using REstate.Client;
 using REstate.Client.Chrono;
 using REstate.Connectors.Chrono;
@@ -12,13 +11,14 @@ using REstate.Repositories.Instances;
 using REstate.Repositories.Instances.Susanoo;
 using REstate.Stateless;
 using REstate.Web;
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using AutofacSerilogIntegration;
 using REstate.Logging;
 using REstate.Logging.Serilog;
+using REstate.Services.Common.Api;
 using Serilog;
+using Topshelf;
 
 namespace REstate.Services.Instances
 {
@@ -26,12 +26,10 @@ namespace REstate.Services.Instances
     {
         static void Main(string[] args)
         {
-            var url = ConfigurationManager.AppSettings["REstate.Services.HostBindingAddress"];
-
-
-
             var config = new REstateConfiguration
             {
+                ServiceName = "REstate.Services.Instances",
+                HostBindingAddress = ConfigurationManager.AppSettings["REstate.Services.HostBindingAddress"],
                 EncryptionPassphrase = ConfigurationManager.AppSettings["REstate.Web.EncryptionPassphrase"],
                 HmacPassphrase = ConfigurationManager.AppSettings["REstate.Web.HmacPassphrase"],
                 EncryptionSaltBytes = new byte[] { 0x01, 0x02, 0xD1, 0xFF, 0x2F, 0x30, 0x1D, 0xF2 },
@@ -45,37 +43,42 @@ namespace REstate.Services.Instances
                 }
             };
 
-            var container = BuildAndConfigureContainer(config);
 
-            container.RegisterInstance(config);
-            var kernel = container.Build();
-
-            //Binding to implementation
-            REstateBootstrapper.KernelLocator = () => kernel;
             Startup.Config = config;
+            var kernel = BuildAndConfigureContainer(config).Build();
+            REstateBootstrapper.KernelLocator = () => kernel;
 
-            var logger = kernel.Resolve<ILogger>();
-            using (WebApp.Start<Startup>(url))
+            HostFactory.Run(host =>
             {
-                logger.Information("Running at {hostBindingAddress}", url);
-                Console.WriteLine("Press enter to exit");
+                host.UseSerilog(kernel.Resolve<ILogger>());
+                host.Service<REstateApiService<Startup>>(svc =>
+                {
+                    svc.ConstructUsing(() => kernel.Resolve<REstateApiService<Startup>>());
+                    svc.WhenStarted(service => service.Start());
+                    svc.WhenStopped(service => service.Stop());
+                });
 
-                Console.ReadLine();
+                host.RunAsNetworkService();
+                host.StartAutomatically();
 
-            }
+                host.SetServiceName(config.ServiceName);
+            });
         }
 
         private static ContainerBuilder BuildAndConfigureContainer(REstateConfiguration configuration)
         {
             var container = new ContainerBuilder();
 
+            container.RegisterInstance(configuration);
 
-            container.RegisterAdapter<ILogger, IREstateLogger>(serilogLogger => 
+            container.RegisterType<REstateApiService<Startup>>();
+
+            container.RegisterAdapter<ILogger, IREstateLogger>(serilogLogger =>
                 new SerilogLoggingAdapter(serilogLogger));
 
             container.RegisterLogger(
                 new LoggerConfiguration().MinimumLevel.Verbose()
-                    .Enrich.WithProperty("source", "REstate.Services.Instances")
+                    .Enrich.WithProperty("source", configuration.ServiceName)
                     .WriteTo.LiterateConsole()
                     .CreateLogger());
 

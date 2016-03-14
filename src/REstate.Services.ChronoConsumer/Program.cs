@@ -10,6 +10,7 @@ using AutofacSerilogIntegration;
 using REstate.Logging;
 using REstate.Logging.Serilog;
 using Serilog;
+using Topshelf;
 
 namespace REstate.Services.ChronoConsumer
 {
@@ -19,50 +20,48 @@ namespace REstate.Services.ChronoConsumer
         {
             var config = new REstateConfiguration
             {
+                ServiceName = "REstate.Services.ChronoConsumer",
                 ApiKeyAddress = ConfigurationManager.AppSettings["REstate.Web.ApiKeyAddress"],
                 ConfigurationDictionary = new Dictionary<string, string>
                 {
-                    { "REstate.Web.Chrono.InstancesAddress", ConfigurationManager.AppSettings["REstate.Web.Chrono.InstancesAddress"] }
+                    { "REstate.Web.Chrono.InstancesAddress", ConfigurationManager.AppSettings["REstate.Web.Chrono.InstancesAddress"] },
+                    { "ApiKey", "98EC17D7-7F31-4A44-A911-6B4D10B3DC2E" }
                 }
             };
+            
+            var kernel = BuildAndConfigureContainer(config).Build();
 
-            var container = BuildAndConfigureContainer(config);
-
-            container.RegisterInstance(config);
-            var kernel = container.Build();
-
-            var logger = kernel.Resolve<ILogger>();
-
-            var instanceClient = kernel.Resolve<IAuthSessionClient<IInstancesSession>>();
-            using (var session = instanceClient
-                .GetSession("98EC17D7-7F31-4A44-A911-6B4D10B3DC2E").Result)
+            HostFactory.Run(host =>
             {
-                logger.Information("Authenticated session acquired.");
+                host.UseSerilog(kernel.Resolve<ILogger>());
+                host.Service<ChronoConsumerService>(svc =>
+                {
+                    svc.ConstructUsing(() => kernel.Resolve<ChronoConsumerService>());
+                    svc.WhenStarted(service => service.Start());
+                    svc.WhenStopped(service => service.Stop());
+                });
 
-                var engine = kernel.Resolve<IChronoRepository>();
-                var consumer = new Repositories.Chrono.Susanoo.ChronoConsumer(engine, session);
+                host.RunAsNetworkService();
+                host.StartAutomatically();
 
-                logger.Information("Starting ChronoConsumer.");
-
-                consumer.Start();
-
-                logger.Information("Watching or consuming ChronoTriggers.");
-                Console.ReadLine();
-
-                consumer.Stop();
-            }
+                host.SetServiceName(config.ServiceName);
+            });
         }
 
         private static ContainerBuilder BuildAndConfigureContainer(REstateConfiguration configuration)
         {
             var container = new ContainerBuilder();
 
+            container.RegisterInstance(configuration);
+
+            container.RegisterType<ChronoConsumerService>();
+
             container.RegisterAdapter<ILogger, IREstateLogger>(serilogLogger =>
                 new SerilogLoggingAdapter(serilogLogger));
 
             container.RegisterLogger(
                 new LoggerConfiguration().MinimumLevel.Verbose()
-                    .Enrich.WithProperty("source", "REstate.Services.Auth")
+                    .Enrich.WithProperty("source", configuration.ServiceName)
                     .WriteTo.LiterateConsole()
                     .CreateLogger());
 

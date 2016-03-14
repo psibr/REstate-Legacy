@@ -86,6 +86,14 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Topshelf, Version=3.3.154.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Topshelf.3.3.1\lib\net40-full\Topshelf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Topshelf.Serilog, Version=3.3.154.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Topshelf.Serilog.3.3.1\lib\net40-full\Topshelf.Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -121,6 +129,10 @@
     <ProjectReference Include="..\REstate.Connectors.RoslynScripting\REstate.Connectors.RoslynScripting.csproj">
       <Project>{310a26d6-518b-41a6-b5db-0b4a1b4a84c9}</Project>
       <Name>REstate.Connectors.RoslynScripting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.Services.Common.Api\REstate.Services.Common.Api.csproj">
+      <Project>{eacdb7b6-f0d8-4663-8f93-6d4a44f381bb}</Project>
+      <Name>REstate.Services.Common.Api</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate.Stateless\REstate.Stateless.csproj">
       <Project>{7ae96174-718f-45a2-8389-0a1e982dce82}</Project>

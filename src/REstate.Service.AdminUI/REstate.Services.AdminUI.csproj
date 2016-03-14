@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{90F8CDFB-1776-4850-8DF7-F5B5ED53B073}</ProjectGuid>
+    <ProjectGuid>{144750DA-AB57-4937-956C-C732DFC5A320}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>REstate.Services.Chrono</RootNamespace>
-    <AssemblyName>REstate.Services.Chrono</AssemblyName>
+    <RootNamespace>REstate.Services.AdminUI</RootNamespace>
+    <AssemblyName>REstate.Services.AdminUI</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -110,14 +110,6 @@
       <Project>{bc1b64fe-0b9b-4ffd-b490-fba8792c076c}</Project>
       <Name>REstate.Logging.Serilog</Name>
     </ProjectReference>
-    <ProjectReference Include="..\REstate.Repositories.Chrono.Susanoo\REstate.Repositories.Chrono.Susanoo.csproj">
-      <Project>{43c30519-a517-44e5-9767-79b90b0ce3eb}</Project>
-      <Name>REstate.Repositories.Chrono.Susanoo</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\REstate.Chrono\REstate.Chrono.csproj">
-      <Project>{6ee10dc1-eaa1-4754-b207-d4c4b86eab9f}</Project>
-      <Name>REstate.Chrono</Name>
-    </ProjectReference>
     <ProjectReference Include="..\REstate.Owin\REstate.Owin.csproj">
       <Project>{c011084b-65ef-43c6-af70-0d1fe8f16662}</Project>
       <Name>REstate.Owin</Name>
@@ -126,9 +118,9 @@
       <Project>{eacdb7b6-f0d8-4663-8f93-6d4a44f381bb}</Project>
       <Name>REstate.Services.Common.Api</Name>
     </ProjectReference>
-    <ProjectReference Include="..\REstate.Web.Chrono\REstate.Web.Chrono.csproj">
-      <Project>{bef5a46a-0175-42e8-83ca-49b4c3f0aeba}</Project>
-      <Name>REstate.Web.Chrono</Name>
+    <ProjectReference Include="..\REstate.Web.AdminUI\REstate.Web.AdminUI.csproj">
+      <Project>{85f6276a-c3f1-4496-b8d5-b0df9a9aad60}</Project>
+      <Name>REstate.Web.AdminUI</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate.Web.Common\REstate.Web.Common.csproj">
       <Project>{75b55765-0ea6-4158-a0e2-c81e54742718}</Project>
@@ -140,7 +132,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

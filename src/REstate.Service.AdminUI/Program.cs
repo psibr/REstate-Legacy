@@ -1,20 +1,15 @@
-﻿using Autofac;
-using Microsoft.Owin.Hosting;
-using REstate.Chrono;
-using REstate.Owin;
-using REstate.Repositories.Chrono.Susanoo;
-using REstate.Web;
-using REstate.Web.Chrono;
-using System;
-using System.Configuration;
+﻿using System.Configuration;
+using Autofac;
 using AutofacSerilogIntegration;
 using REstate.Logging;
 using REstate.Logging.Serilog;
+using REstate.Owin;
 using REstate.Services.Common.Api;
+using REstate.Web;
 using Serilog;
 using Topshelf;
 
-namespace REstate.Services.Chrono
+namespace REstate.Services.AdminUI
 {
     class Program
     {
@@ -22,7 +17,7 @@ namespace REstate.Services.Chrono
         {
             var config = new REstateConfiguration
             {
-                ServiceName = "REstate.Services.Chrono",
+                ServiceName = "REstate.Services.AdminUI",
                 HostBindingAddress = ConfigurationManager.AppSettings["REstate.Services.HostBindingAddress"],
                 EncryptionPassphrase = ConfigurationManager.AppSettings["REstate.Web.EncryptionPassphrase"],
                 HmacPassphrase = ConfigurationManager.AppSettings["REstate.Web.HmacPassphrase"],
@@ -30,6 +25,8 @@ namespace REstate.Services.Chrono
                 HmacSaltBytes = new byte[] { 0x01, 0x02, 0xD1, 0xFF, 0x2F, 0x30, 0x1D, 0xF2 },
                 ClaimsPrincipalResourceName = ConfigurationManager.AppSettings["REstate.Web.ClaimsPrincipalResourceName"],
                 LoginAddress = ConfigurationManager.AppSettings["REstate.Web.LoginAddress"],
+                ApiKeyAddress = ConfigurationManager.AppSettings["REstate.Web.ApiKeyAddress"],
+                ServesStaticContent = true
             };
 
             Startup.Config = config;
@@ -69,14 +66,6 @@ namespace REstate.Services.Chrono
                     .Enrich.WithProperty("source", configuration.ServiceName)
                     .WriteTo.LiterateConsole()
                     .CreateLogger());
-
-            container.Register(context => new ChronoRoutePrefix(string.Empty));
-
-            container.RegisterType<ChronoRepositoryFactory>()
-                .As<IChronoRepositoryFactory>();
-
-            container.Register(context => context.Resolve<IChronoRepositoryFactory>().OpenRepository());
-
 
             return container;
         }

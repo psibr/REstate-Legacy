@@ -57,7 +57,6 @@
     <Compile Include="Requests\StateMachineConfigurationRequest.cs" />
     <Compile Include="Modules\CodeElementsModule.cs" />
     <Compile Include="Modules\ConfigurationModule.cs" />
-    <Compile Include="Modules\HomeModule.cs" />
     <Compile Include="Modules\MachineDefinitionsModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

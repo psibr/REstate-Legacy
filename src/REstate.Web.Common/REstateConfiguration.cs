@@ -5,6 +5,10 @@ namespace REstate.Web
 {
     public class REstateConfiguration
     {
+        public string ServiceName { get; set; }
+
+        public string HostBindingAddress { get; set; }
+
         public string EncryptionPassphrase { get; set; }
 
         public string HmacPassphrase { get; set; }
