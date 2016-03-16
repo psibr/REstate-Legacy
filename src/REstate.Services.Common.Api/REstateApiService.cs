@@ -1,29 +1,29 @@
 ﻿using System;
 using Microsoft.Owin.Hosting;
 using REstate.Logging;
-using REstate.Web;
+using REstate.Platform;
 
-namespace REstate.Services.Common.Api
+namespace REstate.ApiService
 {
     public class REstateApiService<TOwinStartup>
         : IDisposable
     {
+        private REstateApiServiceConfiguration ApiServiceConfiguration { get; }
         private IREstateLogger Logger { get; }
-        private REstateConfiguration Configuration { get; }
 
         private IDisposable _webApp;
 
-        public REstateApiService(REstateConfiguration configuration, IREstateLogger logger)
+        public REstateApiService(REstateApiServiceConfiguration apiServiceConfiguration, IREstateLogger logger)
         {
+            ApiServiceConfiguration = apiServiceConfiguration;
             Logger = logger;
-            Configuration = configuration;
         }
 
         public void Start()
         {
-            _webApp = WebApp.Start<TOwinStartup>(Configuration.HostBindingAddress);
+            _webApp = WebApp.Start<TOwinStartup>(ApiServiceConfiguration.HostBindingAddress);
 
-            Logger.Information("Running at {hostBindingAddress}", Configuration.HostBindingAddress);
+            Logger.Information("Running at {hostBindingAddress}", ApiServiceConfiguration.HostBindingAddress);
         }
 
         public void Stop()

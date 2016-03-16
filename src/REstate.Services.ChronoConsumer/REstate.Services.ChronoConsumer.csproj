@@ -41,6 +41,10 @@
       <HintPath>..\packages\AutofacSerilogIntegration.1.0.10\lib\portable-net45+dnxcore50+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\AutofacSerilogIntegration.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
       <Private>True</Private>
@@ -84,6 +88,10 @@
     <ProjectReference Include="..\REstate.Logging.Serilog\REstate.Logging.Serilog.csproj">
       <Project>{bc1b64fe-0b9b-4ffd-b490-fba8792c076c}</Project>
       <Name>REstate.Logging.Serilog</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
+      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
+      <Name>REstate.Platform</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate.Repositories.Chrono.Susanoo\REstate.Repositories.Chrono.Susanoo.csproj">
       <Project>{43c30519-a517-44e5-9767-79b90b0ce3eb}</Project>

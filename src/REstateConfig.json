@@ -1,0 +1,25 @@
+{
+  "encryptionPassphrase": "ThisIsMySharedKeyAndPassPhrase",
+  "hmacPassphrase": "ThisIsMySharedKeyAndPassPhrase",
+  "hmacSaltBase64": "AQJ80f7/MC89",
+  "claimsPrincipalResourceName": "REstate.Web.Principal",
+  "encryptionSaltBase64": "AQJ80f7/MC89",
+  "adminAddress": "http://localhost/restate",
+  "chronoAddress": "http://localhost/restate/chrono/",
+  "configurationAddress": "http://localhost/restate/configuration/",
+  "instancesAddress": "http://localhost/restate/machines/",
+  "authAddress": "http://localhost/restate/auth/",
+  "cookieName": "REstate",
+  "cookiePath": "/",
+  "servesStaticContent": false,
+  "staticContentRootRoutePath": "/",
+  "tokenLifeSpan": 30,
+  "connectorConfiguration": {
+  },
+  "connectionStrings": {
+    "REstate": {
+      "connectionString": "server=(LocalDB)\\MSSQLLocalDb;database=REstate;Application Name=REstate;Integrated Security=sspi;MultipleActiveResultSets=true",
+      "providerName": "System.Data.SqlClient"
+    }
+  }
+}

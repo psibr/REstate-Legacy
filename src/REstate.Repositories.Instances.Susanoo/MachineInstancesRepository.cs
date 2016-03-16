@@ -16,8 +16,8 @@ namespace REstate.Repositories.Instances.Susanoo
     {
         private static readonly ISingleResultSetCommandProcessor<dynamic,REstate.Configuration.State> GetStateCommandProcessor = 
             CommandManager.Instance
-                .DefineCommand("dbo.GetInstanceState",
-                    CommandType.StoredProcedure)
+                .DefineCommand("SELECT MachineDefinitionId, StateName FROM MachineInstances WHERE MachineInstanceId = @MachineInstanceGuid",
+                    CommandType.Text)
                 .DefineResults<REstate.Configuration.State>()
                 .Realize();
 
@@ -84,7 +84,6 @@ namespace REstate.Repositories.Instances.Susanoo
                         "WHERE MachineInstanceId = @machineInstanceGuid AND StateName = @LastStateName;" +
                         "\n\n" +
                         "EXEC sp_releaseapplock @Resource = @machineInstanceGuid",
-
                         CommandType.Text)
                     .Realize()
                     .SetTimeout(TimeSpan.FromSeconds(3))

@@ -33,6 +33,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.Common.1.1.1\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>True</Private>
@@ -86,6 +90,7 @@
     <Compile Include="RoslynConnector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoslynConnectorFactory.cs" />
+    <Compile Include="RoslynConnectorModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -99,6 +104,10 @@
     <ProjectReference Include="..\REstate.Connectors.RoslynScripting.Globals\REstate.Connectors.RoslynScripting.Globals.csproj">
       <Project>{57e152ae-7b7d-4026-a8e3-d8b45b0c26dc}</Project>
       <Name>REstate.Connectors.RoslynScripting.Globals</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
+      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
+      <Name>REstate.Platform</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate\REstate.csproj">
       <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>

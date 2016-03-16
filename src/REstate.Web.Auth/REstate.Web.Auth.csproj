@@ -76,6 +76,10 @@
       <Project>{276af764-e2ba-4434-b6d2-799bfc4f340c}</Project>
       <Name>REstate.Auth</Name>
     </ProjectReference>
+    <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
+      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
+      <Name>REstate.Platform</Name>
+    </ProjectReference>
     <ProjectReference Include="..\REstate.Repositories.Auth.Susanoo\REstate.Repositories.Auth.Susanoo.csproj">
       <Project>{b1a411e0-e8bf-4d8c-b327-2c171e2e60bc}</Project>
       <Name>REstate.Repositories.Auth.Susanoo</Name>

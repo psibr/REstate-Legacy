@@ -11,6 +11,7 @@ using Nancy.Responses.Negotiation;
 using System;
 using System.Security.Claims;
 using REstate.Logging;
+using REstate.Platform;
 
 namespace REstate.Web
 {
@@ -67,9 +68,9 @@ namespace REstate.Web
             new CryptographyConfiguration(
                 new RijndaelEncryptionProvider(
                     new PassphraseKeyGenerator(Configuration.EncryptionPassphrase,
-                        Configuration.EncryptionSaltBytes, 1000)),
+                        Convert.FromBase64String(Configuration.EncryptionSaltBase64), 1000)),
                 new DefaultHmacProvider(
-                    new PassphraseKeyGenerator(Configuration.HmacPassphrase, Configuration.HmacSaltBytes, 1000)));
+                    new PassphraseKeyGenerator(Configuration.HmacPassphrase, Convert.FromBase64String(Configuration.HmacSaltBase64), 1000)));
 
         protected override ILifetimeScope GetApplicationContainer()
         {

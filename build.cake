@@ -10,7 +10,7 @@ var configuration = Argument("configuration", "Debug");
 //////////////////////////////////////////////////////////////////////
 
 // Define directories.
-var buildDir = Directory("./src/SelfHost/bin") + Directory(configuration);
+var buildDirs = GetDirectories("./src/REstate.Services.*/bin/" + configuration);
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -19,7 +19,7 @@ var buildDir = Directory("./src/SelfHost/bin") + Directory(configuration);
 Task("Clean")
     .Does(() =>
 {
-    CleanDirectory(buildDir);
+    CleanDirectories(buildDirs);
 });
 
 Task("Restore-NuGet-Packages")

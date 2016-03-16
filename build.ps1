@@ -53,7 +53,6 @@ if (!(Test-Path $CAKE_EXE)) {
 Invoke-Expression "$CAKE_EXE `"$Script`" -target=`"$Target`" -configuration=`"$Configuration`" -verbosity=`"$Verbosity`" $UseDryRun $UseExperimental"
 Write-Host
 
-Invoke-Expression "cd .\src\REstate.UI"
-Invoke-Expression "gulp host"
+
 
 exit $LASTEXITCODE

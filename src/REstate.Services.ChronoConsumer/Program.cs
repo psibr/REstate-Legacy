@@ -2,13 +2,11 @@
 using REstate.Chrono;
 using REstate.Client;
 using REstate.Repositories.Chrono.Susanoo;
-using REstate.Web;
-using System;
-using System.Collections.Generic;
 using System.Configuration;
 using AutofacSerilogIntegration;
-using REstate.Logging;
+using Newtonsoft.Json;
 using REstate.Logging.Serilog;
+using REstate.Platform;
 using Serilog;
 using Topshelf;
 
@@ -16,18 +14,13 @@ namespace REstate.Services.ChronoConsumer
 {
     class Program
     {
+        const string ServiceName = "REstate.Services.ChronoConsumer";
+
         static void Main(string[] args)
         {
-            var config = new REstateConfiguration
-            {
-                ServiceName = "REstate.Services.ChronoConsumer",
-                ApiKeyAddress = ConfigurationManager.AppSettings["REstate.Web.ApiKeyAddress"],
-                ConfigurationDictionary = new Dictionary<string, string>
-                {
-                    { "REstate.Web.Chrono.InstancesAddress", ConfigurationManager.AppSettings["REstate.Web.Chrono.InstancesAddress"] },
-                    { "ApiKey", "98EC17D7-7F31-4A44-A911-6B4D10B3DC2E" }
-                }
-            };
+            var configString = REstateConfiguration.LoadConfigurationFile();
+
+            var config = JsonConvert.DeserializeObject<REstateConfiguration>(configString);
             
             var kernel = BuildAndConfigureContainer(config).Build();
 
@@ -44,7 +37,7 @@ namespace REstate.Services.ChronoConsumer
                 host.RunAsNetworkService();
                 host.StartAutomatically();
 
-                host.SetServiceName(config.ServiceName);
+                host.SetServiceName(ServiceName);
             });
         }
 
@@ -54,14 +47,18 @@ namespace REstate.Services.ChronoConsumer
 
             container.RegisterInstance(configuration);
 
+            container.RegisterInstance(new ConsumerServiceConfiguration
+            {
+                ApiKey = ConfigurationManager.AppSettings["ApiKey"]
+            });
+
             container.RegisterType<ChronoConsumerService>();
 
-            container.RegisterAdapter<ILogger, IREstateLogger>(serilogLogger =>
-                new SerilogLoggingAdapter(serilogLogger));
+            container.RegisterModule<SerilogREstateLoggingModule>();
 
             container.RegisterLogger(
                 new LoggerConfiguration().MinimumLevel.Verbose()
-                    .Enrich.WithProperty("source", configuration.ServiceName)
+                    .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
                     .CreateLogger());
 
@@ -70,11 +67,11 @@ namespace REstate.Services.ChronoConsumer
 
             container.Register(context => context.Resolve<IChronoRepositoryFactory>().OpenRepository());
 
-            container.Register(context => new REstateClientFactory(configuration.ApiKeyAddress))
+            container.Register(context => new REstateClientFactory(configuration.AuthAddress + "apikey"))
                 .As<IREstateClientFactory>();
 
             container.Register(context => context.Resolve<IREstateClientFactory>()
-                .GetInstancesClient(configuration.ConfigurationDictionary["REstate.Web.Chrono.InstancesAddress"]))
+                .GetInstancesClient(configuration.InstancesAddress))
                 .As<IAuthSessionClient<IInstancesSession>>();
 
             return container;

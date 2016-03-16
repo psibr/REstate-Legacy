@@ -1,4 +1,5 @@
 ﻿using Nancy;
+using REstate.Platform;
 
 namespace REstate.Web.AdminUI.Modules
 {
@@ -14,7 +15,7 @@ namespace REstate.Web.AdminUI.Modules
         public HomeModule(REstateConfiguration configuration)
         {
                 Get["/"] = _ => Context.CurrentUser == null 
-                    ? Response.AsRedirect(configuration.LoginAddress)
+                    ? Response.AsRedirect(configuration.AdminAddress)
                     : 404;
         }
     }

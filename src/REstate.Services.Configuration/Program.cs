@@ -1,24 +1,19 @@
 ﻿using Autofac;
-using Microsoft.Owin.Hosting;
 using REstate.Auth.Repositories;
-using REstate.Client;
-using REstate.Client.Chrono;
-using REstate.Connectors.Chrono;
-using REstate.Connectors.RoslynScripting;
-using REstate.Connectors.Susanoo;
 using REstate.Owin;
 using REstate.Repositories.Auth.Susanoo;
 using REstate.Repositories.Configuration;
 using REstate.Repositories.Configuration.Susanoo;
 using REstate.Stateless;
 using REstate.Web;
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using AutofacSerilogIntegration;
+using Newtonsoft.Json;
+using REstate.ApiService;
 using REstate.Logging;
 using REstate.Logging.Serilog;
-using REstate.Services.Common.Api;
+using REstate.Platform;
 using Serilog;
 using Topshelf;
 
@@ -26,24 +21,13 @@ namespace REstate.Services.Configuration
 {
     class Program
     {
+        const string ServiceName = "REstate.Services.Configuration";
+
         static void Main(string[] args)
         {
-            var config = new REstateConfiguration
-            {
-                ServiceName = "REstate.Services.Configuration",
-                HostBindingAddress = ConfigurationManager.AppSettings["REstate.Services.HostBindingAddress"],
-                EncryptionPassphrase = ConfigurationManager.AppSettings["REstate.Web.EncryptionPassphrase"],
-                HmacPassphrase = ConfigurationManager.AppSettings["REstate.Web.HmacPassphrase"],
-                EncryptionSaltBytes = new byte[] { 0x01, 0x02, 0xD1, 0xFF, 0x2F, 0x30, 0x1D, 0xF2 },
-                HmacSaltBytes = new byte[] { 0x01, 0x02, 0xD1, 0xFF, 0x2F, 0x30, 0x1D, 0xF2 },
-                ClaimsPrincipalResourceName = ConfigurationManager.AppSettings["REstate.Web.ClaimsPrincipalResourceName"],
-                LoginAddress = ConfigurationManager.AppSettings["REstate.Web.LoginAddress"],
-                ApiKeyAddress = ConfigurationManager.AppSettings["REstate.Web.ApiKeyAddress"],
-                ConfigurationDictionary = new Dictionary<string, string>
-                {
-                    { "REstate.Web.ChronoAddress", ConfigurationManager.AppSettings["REstate.Web.ChronoAddress"] }
-                }
-            };
+            var configString = REstateConfiguration.LoadConfigurationFile();
+
+            var config = JsonConvert.DeserializeObject<REstateConfiguration>(configString);
 
             Startup.Config = config;
             var kernel = BuildAndConfigureContainer(config).Build();
@@ -62,7 +46,7 @@ namespace REstate.Services.Configuration
                 host.RunAsNetworkService();
                 host.StartAutomatically();
 
-                host.SetServiceName(config.ServiceName);
+                host.SetServiceName(ServiceName);
             });
         }
 
@@ -72,14 +56,18 @@ namespace REstate.Services.Configuration
 
             container.RegisterInstance(configuration);
 
+            container.RegisterInstance(new REstateApiServiceConfiguration
+            {
+                HostBindingAddress = ConfigurationManager.AppSettings["REstate.Services.HostBindingAddress"]
+            });
+
             container.RegisterType<REstateApiService<Startup>>();
 
-            container.RegisterAdapter<ILogger, IREstateLogger>(serilogLogger =>
-                new SerilogLoggingAdapter(serilogLogger));
+            container.RegisterModule<SerilogREstateLoggingModule>();
 
             container.RegisterLogger(
                 new LoggerConfiguration().MinimumLevel.Verbose()
-                    .Enrich.WithProperty("source", configuration.ServiceName)
+                    .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
                     .CreateLogger());
 
@@ -91,20 +79,7 @@ namespace REstate.Services.Configuration
             container.RegisterType<ConfigurationRepositoryContextFactory>()
                 .As<IConfigurationRepositoryContextFactory>();
 
-            container.Register(context => new REstateClientFactory(configuration.LoginAddress))
-                .As<IREstateClientFactory>();
-
-            container.Register(context => context.Resolve<IREstateClientFactory>()
-                .GetChronoClient(configuration.ConfigurationDictionary["REstate.Web.ChronoAddress"]))
-                .As<IAuthSessionClient<IChronoSession>>();
-
-
-            container.RegisterType<RoslynConnectorFactory>()
-                .As<IConnectorFactory>();
-            container.RegisterType<SusanooConnectorFactory>()
-                .As<IConnectorFactory>();
-            container.RegisterType<ChronoTriggerConnectorFactory>()
-                .As<IConnectorFactory>();
+            container.RegisterConnectors(configuration);
 
             container.RegisterType<DefaultConnectorFactoryResolver>()
                 .As<IConnectorFactoryResolver>();

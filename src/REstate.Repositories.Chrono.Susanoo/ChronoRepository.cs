@@ -48,7 +48,9 @@ namespace REstate.Repositories.Chrono.Susanoo
         public async Task AddChronoTrigger(IChronoTrigger trigger, CancellationToken cancellationToken)
         {
             await CommandManager.Instance
-                .DefineCommand<IChronoTrigger>("AddChronoTrigger", CommandType.StoredProcedure)
+                .DefineCommand<IChronoTrigger>(
+                    @"INSERT INTO ChronoTriggers ( ChronoTriggerId, MachineInstanceId, StateName, TriggerName, Payload, FireAfter)
+                    VALUES(newId(), @MachineInstanceId, @StateName, @TriggerName, @Payload, @FireAfter)", CommandType.Text)
                 .ExcludeProperty(o => o.Delay)
                 .ExcludeProperty(o => o.ChronoTriggerId)
                 .SendNullValues()

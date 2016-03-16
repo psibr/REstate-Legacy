@@ -1,5 +1,5 @@
-﻿using Owin;
-using REstate.Web;
+﻿using System;
+using Owin;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using Nancy.Owin;
 using Nancy.Routing;
+using REstate.Platform;
 
 namespace REstate.Owin
 {
@@ -22,7 +23,7 @@ namespace REstate.Owin
                 CookieName = Config.CookieName,
                 CookiePath = Config.CookiePath,
                 CookieHttpOnly = true,
-                TokenLifeSpan = Config.TokenLifeSpan,
+                TokenLifeSpan = TimeSpan.FromMinutes(Config.TokenLifeSpan),
                 ClaimsPrincipalResourceName = Config.ClaimsPrincipalResourceName,
                 CreatePrincipal = CreatePrincipal
             });

@@ -2,21 +2,26 @@
 using REstate.Chrono;
 using REstate.Client;
 using REstate.Logging;
-using REstate.Web;
+using REstate.Platform;
 
 namespace REstate.Services.ChronoConsumer
 {
+    public class ConsumerServiceConfiguration
+    {
+        public string ApiKey { get; set; }
+    }
+
     public class ChronoConsumerService
         : IDisposable
     {
         private IAuthSessionClient<IInstancesSession> InstanceSessionClient { get; }
         private IInstancesSession _instanceSession;
         private IREstateLogger Logger { get; }
-        private REstateConfiguration Configuration { get; }
+        private ConsumerServiceConfiguration Configuration { get; }
         private IChronoRepository ChronoRepository { get; }
         private Repositories.Chrono.Susanoo.ChronoConsumer _chronoConsumer;
 
-        public ChronoConsumerService(REstateConfiguration configuration, IChronoRepository chronoRepository, 
+        public ChronoConsumerService(ConsumerServiceConfiguration configuration, IChronoRepository chronoRepository, 
             IAuthSessionClient<IInstancesSession> instanceSessionClient, IREstateLogger logger)
         {
             InstanceSessionClient = instanceSessionClient;
@@ -28,7 +33,7 @@ namespace REstate.Services.ChronoConsumer
         public void Start()
         {
             _instanceSession = InstanceSessionClient
-                .GetSession(Configuration.ConfigurationDictionary["ApiKey"]).Result;
+                .GetSession(Configuration.ApiKey).Result;
 
             Logger.Information("Authenticated session acquired.");
 

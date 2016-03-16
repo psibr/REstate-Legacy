@@ -1,15 +1,14 @@
-﻿using Autofac;
-using Microsoft.Owin.Hosting;
+﻿using System.Configuration;
+using Autofac;
 using REstate.Auth.Repositories;
 using REstate.Owin;
 using REstate.Repositories.Auth.Susanoo;
 using REstate.Web;
-using System;
-using System.Configuration;
 using AutofacSerilogIntegration;
-using REstate.Logging;
+using Newtonsoft.Json;
+using REstate.ApiService;
 using REstate.Logging.Serilog;
-using REstate.Services.Common.Api;
+using REstate.Platform;
 using Serilog;
 using Topshelf;
 
@@ -17,20 +16,13 @@ namespace REstate.Services.Auth
 {
     class Program
     {
+        const string ServiceName = "REstate.Services.Auth";
+
         static void Main(string[] args)
         {
-            var config = new REstateConfiguration
-            {
-                ServiceName = "REstate.Services.Auth",
-                HostBindingAddress = ConfigurationManager.AppSettings["REstate.Services.HostBindingAddress"],
-                EncryptionPassphrase = ConfigurationManager.AppSettings["REstate.Web.EncryptionPassphrase"],
-                HmacPassphrase = ConfigurationManager.AppSettings["REstate.Web.HmacPassphrase"],
-                EncryptionSaltBytes = new byte[] { 0x01, 0x02, 0xD1, 0xFF, 0x2F, 0x30, 0x1D, 0xF2 },
-                HmacSaltBytes = new byte[] { 0x01, 0x02, 0xD1, 0xFF, 0x2F, 0x30, 0x1D, 0xF2 },
-                ClaimsPrincipalResourceName = ConfigurationManager.AppSettings["REstate.Web.ClaimsPrincipalResourceName"],
-                LoginRedirectAddress = ConfigurationManager.AppSettings["REstate.Web.Auth.LoginRedirectAddress"],
-                LoginAddress = ConfigurationManager.AppSettings["REstate.Web.LoginAddress"]
-            };
+            var configString = REstateConfiguration.LoadConfigurationFile();
+
+            var config = JsonConvert.DeserializeObject<REstateConfiguration>(configString);
 
             Startup.Config = config;
             var kernel = BuildAndConfigureContainer(config).Build();
@@ -49,7 +41,7 @@ namespace REstate.Services.Auth
                 host.RunAsNetworkService();
                 host.StartAutomatically();
 
-                host.SetServiceName(config.ServiceName);
+                host.SetServiceName(ServiceName);
             });
         }
 
@@ -59,14 +51,18 @@ namespace REstate.Services.Auth
 
             container.RegisterInstance(configuration);
 
+            container.RegisterInstance(new REstateApiServiceConfiguration
+            {
+                HostBindingAddress = ConfigurationManager.AppSettings["REstate.Services.HostBindingAddress"]
+            });
+
             container.RegisterType<REstateApiService<Startup>>();
 
-            container.RegisterAdapter<ILogger, IREstateLogger>(serilogLogger =>
-                new SerilogLoggingAdapter(serilogLogger));
+            container.RegisterModule<SerilogREstateLoggingModule>();
 
             container.RegisterLogger(
                 new LoggerConfiguration().MinimumLevel.Verbose()
-                    .Enrich.WithProperty("source", configuration.ServiceName)
+                    .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
                     .CreateLogger());
 

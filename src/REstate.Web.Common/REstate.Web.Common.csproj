@@ -60,7 +60,6 @@
     <Compile Include="Modules\SecuredModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="REstateBootstrapper.cs" />
-    <Compile Include="REstateConfiguration.cs" />
     <Compile Include="RoutePrefix.cs" />
     <Compile Include="User.cs" />
     <Compile Include="UserIdentityExtensions.cs" />
@@ -72,6 +71,10 @@
     <ProjectReference Include="..\Nancy.EmbeddedContent\Nancy.EmbeddedContent.csproj">
       <Project>{d8eba39b-63ae-4a66-bd0e-f7f95e572135}</Project>
       <Name>Nancy.EmbeddedContent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
+      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
+      <Name>REstate.Platform</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate\REstate.csproj">
       <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>

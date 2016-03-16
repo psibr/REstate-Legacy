@@ -9,6 +9,7 @@ using REstate.Web.Auth.Requests;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using REstate.Platform;
 using SignInDelegate = System.Func<System.Func<System.Guid, System.Collections.Generic.IDictionary<string, object>>, bool, string>;
 
 namespace REstate.Web.Auth.Modules
@@ -31,7 +32,7 @@ namespace REstate.Web.Auth.Modules
                 var credentials = this.Bind<CredentialAuthenticationRequest>();
 
                 if (string.IsNullOrWhiteSpace(credentials?.Username) || string.IsNullOrWhiteSpace(credentials.Password))
-                    return Response.AsRedirect(configuration.LoginAddress);
+                    return Response.AsRedirect(configuration.AuthAddress + "login");
 
                 var environment = Context.GetOwinEnvironment();
                 var signInDelegate = (SignInDelegate)environment["jwtandcookie.signin"];
@@ -47,7 +48,7 @@ namespace REstate.Web.Auth.Modules
                         .LoadPrincipalByCredentials(credentials.Username, passwordHash, ct);
                 }
 
-                if (principal == null) return Response.AsRedirect(configuration.LoginAddress);
+                if (principal == null) return Response.AsRedirect(configuration.AuthAddress + "login");
 
                 var jwt = signInDelegate((jti) => new Dictionary<string, object>
                 {
@@ -56,7 +57,7 @@ namespace REstate.Web.Auth.Modules
                         { "claims", principal.Claims }
                 }, true);
 
-                return Response.AsRedirect(configuration.LoginRedirectAddress);
+                return Response.AsRedirect(configuration.AdminAddress);
             };
 
             Post["/apikey", true] = async (parameters, ct) =>

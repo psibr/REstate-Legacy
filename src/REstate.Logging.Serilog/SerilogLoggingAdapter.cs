@@ -1,8 +1,20 @@
 ﻿using System;
+using Autofac;
 using Serilog;
 
 namespace REstate.Logging.Serilog
 {
+    public class SerilogREstateLoggingModule : Module
+    {
+        protected override void Load(ContainerBuilder builder)
+        {
+            base.Load(builder);
+
+            builder.RegisterAdapter<ILogger, IREstateLogger>(serilogLogger =>
+                new SerilogLoggingAdapter(serilogLogger));
+        }
+    }
+
     public class SerilogLoggingAdapter
         : IREstateLogger
     {

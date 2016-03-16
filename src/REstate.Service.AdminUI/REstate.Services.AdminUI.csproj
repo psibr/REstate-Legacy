@@ -61,6 +61,10 @@
       <HintPath>..\packages\Nancy.Bootstrappers.Autofac.1.4.1\lib\net40\Nancy.Bootstrappers.Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
@@ -114,9 +118,13 @@
       <Project>{c011084b-65ef-43c6-af70-0d1fe8f16662}</Project>
       <Name>REstate.Owin</Name>
     </ProjectReference>
-    <ProjectReference Include="..\REstate.Services.Common.Api\REstate.Services.Common.Api.csproj">
+    <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
+      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
+      <Name>REstate.Platform</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.Services.Common.Api\REstate.ApiService.csproj">
       <Project>{eacdb7b6-f0d8-4663-8f93-6d4a44f381bb}</Project>
-      <Name>REstate.Services.Common.Api</Name>
+      <Name>REstate.ApiService</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate.Web.AdminUI\REstate.Web.AdminUI.csproj">
       <Project>{85f6276a-c3f1-4496-b8d5-b0df9a9aad60}</Project>
