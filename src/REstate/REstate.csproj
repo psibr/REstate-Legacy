@@ -48,8 +48,6 @@
     <Compile Include="Configuration\IMachineDefinition.cs" />
     <Compile Include="Configuration\IMachineDefinitionDependent.cs" />
     <Compile Include="Configuration\ISqlDatabaseDefinition.cs" />
-    <Compile Include="Configuration\ISqlDatabaseDefinitionAndProvider.cs" />
-    <Compile Include="Configuration\ISqlDatabaseProvider.cs" />
     <Compile Include="Configuration\IState.cs" />
     <Compile Include="Configuration\IStateAction.cs" />
     <Compile Include="Configuration\IStateConfiguration.cs" />
@@ -58,8 +56,6 @@
     <Compile Include="Configuration\ITrigger.cs" />
     <Compile Include="Configuration\MachineDefinition.cs" />
     <Compile Include="Configuration\SqlDatabaseDefinition.cs" />
-    <Compile Include="Configuration\SqlDatabaseDefinitionAndProvider.cs" />
-    <Compile Include="Configuration\SqlDatabaseProvider.cs" />
     <Compile Include="Configuration\State.cs" />
     <Compile Include="Configuration\StateAction.cs" />
     <Compile Include="Configuration\StateConfiguration.cs" />

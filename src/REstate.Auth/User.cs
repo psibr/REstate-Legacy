@@ -4,8 +4,6 @@ namespace REstate.Auth
 {
     public class Principal : IPrincipal
     {
-        public int PrincipalId { get; set; }
-
         public string UserOrApplicationName { get; set; }
 
         public string PrincipalType { get; set; }

@@ -22,7 +22,7 @@ namespace REstate.Connectors.Susanoo
         protected async Task<bool> ExecuteGuardClause(ICodeWithDatabaseConfiguration code, CancellationToken cancellationToken)
         {
             using (var db = CommandManager.ResolveDatabaseManagerFactory()
-                .CreateFromConnectionString(code.ConnectionString, code.ProviderValue))
+                .CreateFromConnectionString(code.ConnectionString, code.ProviderName))
                 return await CommandManager.Instance
                     .DefineCommand(code.CodeBody, CommandType.Text)
                     .Realize()
@@ -32,7 +32,7 @@ namespace REstate.Connectors.Susanoo
         protected async Task ExecuteActionClause(ICodeWithDatabaseConfiguration code, CancellationToken cancellationToken)
         {
             using (var db = CommandManager.ResolveDatabaseManagerFactory()
-                .CreateFromConnectionString(code.ConnectionString, code.ProviderValue))
+                .CreateFromConnectionString(code.ConnectionString, code.ProviderName))
                 await CommandManager.Instance
                     .DefineCommand(code.CodeBody, CommandType.Text)
                     .Realize()
@@ -42,7 +42,7 @@ namespace REstate.Connectors.Susanoo
         protected async Task ExecuteActionClause(ICodeWithDatabaseConfiguration code, string payload, CancellationToken cancellationToken)
         {
             using (var db = CommandManager.ResolveDatabaseManagerFactory()
-                .CreateFromConnectionString(code.ConnectionString, code.ProviderValue))
+                .CreateFromConnectionString(code.ConnectionString, code.ProviderName))
                 await CommandManager.Instance
                     .DefineCommand(code.CodeBody, CommandType.Text)
                     .Realize()

@@ -12,24 +12,23 @@ namespace REstate.Database.SqlServer
         {
             Create.Table("Claims")
                 .WithColumn("ClaimName").AsString(255).NotNullable().PrimaryKey()
-                .WithColumn("ClaimDescription").AsString(500);
+                .WithColumn("ClaimDescription").AsString(500).Nullable();
 
             Create.Table("Principals")
-                .WithColumn("PrincipalId").AsInt32().NotNullable().PrimaryKey()
-                .WithColumn("ApiKey").AsGuid().NotNullable()
+                .WithColumn("ApiKey").AsGuid().NotNullable().PrimaryKey()
                 .WithColumn("PrincipalType").AsString(50).NotNullable()
                 .WithColumn("UserOrApplicationName").AsString(255).NotNullable()
-                .WithColumn("PasswordHash").AsString(1000)
+                .WithColumn("PasswordHash").AsString(1000).Nullable()
                 .WithColumn("IsActive").AsBoolean().WithDefaultValue(true);
 
             Create.Table("PrincipalClaims")
-                .WithColumn("PrincipalId").AsInt32().NotNullable().PrimaryKey()
+                .WithColumn("ApiKey").AsGuid().NotNullable().PrimaryKey()
                 .WithColumn("ClaimName").AsString(255).NotNullable().PrimaryKey()
                 .WithColumn("IsActive").AsBoolean().WithDefaultValue(true);
 
             Create.ForeignKey("FK_PrincipalClaims_Principals")
-                .FromTable("PrincipalClaims").ForeignColumns("PrincipalId")
-                .ToTable("Principals").PrimaryColumns("PrincipalId");
+                .FromTable("PrincipalClaims").ForeignColumns("ApiKey")
+                .ToTable("Principals").PrimaryColumns("ApiKey");
 
             Create.ForeignKey("FK_PrincipalClaims_Claims")
                 .FromTable("PrincipalClaims").ForeignColumns("ClaimName")

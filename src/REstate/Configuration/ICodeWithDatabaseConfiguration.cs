@@ -12,10 +12,6 @@
         string ConnectionString { get; }
 
         string ProviderName { get; set; }
-
-        string ProviderDescription { get; }
-
-        string ProviderValue { get; }
     }
 
     public class CodeWithDatabaseConfiguration 
@@ -32,7 +28,5 @@
         public string SqlDatabaseDescription { get; set; }
         public string ConnectionString { get; set; }
         public string ProviderName { get; set; }
-        public string ProviderDescription { get; set; }
-        public string ProviderValue { get; set; }
     }
 }

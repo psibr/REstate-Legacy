@@ -1,4 +1,6 @@
-﻿using REstate.Auth.Repositories;
+﻿using System.Linq;
+using REstate.Auth.Repositories;
+using REstate.Platform;
 using Susanoo;
 using Susanoo.ConnectionPooling;
 
@@ -7,11 +9,21 @@ namespace REstate.Repositories.Auth.Susanoo
     public class AuthRepositoryContextFactory
         : IAuthRepositoryContextFactory
     {
+        private readonly REstateConfiguration _configuration;
+
+        public AuthRepositoryContextFactory(REstateConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public IAuthRepository OpenAuthRepositoryContext()
         {
+            var connectionConfig = _configuration.Connections
+                .SingleOrDefault(kvp => kvp.Value.Tags.Contains("auth"));
+
             return new AuthRepository(new DatabaseManagerPool(
                     CommandManager.ResolveDatabaseManagerFactory(),
-                    factory => factory.CreateFromConnectionStringName("REstate")));
+                    factory => factory.CreateFromConnectionString(connectionConfig.Value.ConnectionString, connectionConfig.Value.ProviderName)));
         }
     }
 }

@@ -73,29 +73,18 @@ namespace REstate.Repositories.Configuration.Susanoo
                 .Single();
         }
 
-        public async Task<ICollection<ISqlDatabaseDefinitionAndProvider>> GetDatabaseDefinitions(CancellationToken cancellationToken)
+        public async Task<ICollection<ISqlDatabaseDefinition>> GetDatabaseDefinitions(CancellationToken cancellationToken)
         {
             return (await CommandManager.Instance
-                .DefineCommand("SELECT * FROM SqlDatabaseDefinitionsAndProvider", CommandType.Text)
-                .DefineResults<SqlDatabaseDefinitionAndProvider>()
+                .DefineCommand("SELECT * FROM SqlDatabaseDefinitions", CommandType.Text)
+                .DefineResults<SqlDatabaseDefinition>()
                 .Realize()
                 .ExecuteAsync(DatabaseManagerPool.DatabaseManager, cancellationToken))
-                .Cast<ISqlDatabaseDefinitionAndProvider>()
+                .Cast<ISqlDatabaseDefinition>()
                 .ToList();
         }
 
-        public async Task<ICollection<ISqlDatabaseProvider>> GetDatabaseProviders(CancellationToken cancellationToken)
-        {
-            return (await CommandManager.Instance
-                .DefineCommand("SELECT * FROM SqlDatabaseProviders", CommandType.Text)
-                .DefineResults<SqlDatabaseProvider>()
-                .Realize()
-                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, cancellationToken))
-                .Cast<ISqlDatabaseProvider>()
-                .ToList();
-        }
-
-        public async Task<ISqlDatabaseDefinitionAndProvider> DefineDatabaseDefinition(ISqlDatabaseDefinition databaseDefinition, CancellationToken cancellationToken)
+        public async Task<ISqlDatabaseDefinition> DefineDatabaseDefinition(ISqlDatabaseDefinition databaseDefinition, CancellationToken cancellationToken)
         {
             if (databaseDefinition == null) throw new ArgumentNullException(nameof(databaseDefinition));
             if (string.IsNullOrWhiteSpace(databaseDefinition.SqlDatabaseName)) throw new ArgumentException("SqlDatabaseName is a required property.", nameof(databaseDefinition));
@@ -106,14 +95,14 @@ namespace REstate.Repositories.Configuration.Susanoo
                 .DefineCommand<ISqlDatabaseDefinition>(
                     "INSERT INTO SqlDatabaseDefinitions \n" +
                     "VALUES(@SqlDatabaseName, @SqlDatabaseDescription, @ConnectionString, @ProviderName);" +
-                    "\n\nSELECT * FROM SqlDatabaseDefinitionsAndProvider WHERE SqlDatabaseDefinitionId = @@IDENTITY", CommandType.Text)
-                .DefineResults<SqlDatabaseDefinitionAndProvider>()
+                    "\n\nSELECT * FROM SqlDatabaseDefinitions WHERE SqlDatabaseDefinitionId = @@IDENTITY", CommandType.Text)
+                .DefineResults<SqlDatabaseDefinition>()
                 .Realize()
                 .ExecuteAsync(DatabaseManagerPool.DatabaseManager, databaseDefinition, cancellationToken))
                 .Single();
         }
 
-        public async Task<ISqlDatabaseDefinitionAndProvider> UpdateDatabaseDefinition(ISqlDatabaseDefinition databaseDefinition, CancellationToken cancellationToken)
+        public async Task<ISqlDatabaseDefinition> UpdateDatabaseDefinition(ISqlDatabaseDefinition databaseDefinition, CancellationToken cancellationToken)
         {
             if (databaseDefinition == null) throw new ArgumentNullException(nameof(databaseDefinition));
             if (databaseDefinition.SqlDatabaseDefinitionId <= 0) throw new ArgumentException("SqlDatabaseDefinitionId is a required property.", nameof(databaseDefinition));
@@ -129,9 +118,9 @@ namespace REstate.Repositories.Configuration.Susanoo
                     "\nConnectionString = @ConnectionString," +
                     "\nProviderName = @ProviderName" +
                     "\nWHERE SqlDatabaseDefinitionId = @SqlDatabaseDefinitionId" +
-                    "\n\nSELECT * FROM SqlDatabaseDefinitionsAndProvider WHERE SqlDatabaseDefinitionId = @SqlDatabaseDefinitionId",
+                    "\n\nSELECT * FROM SqlDatabaseDefinitions WHERE SqlDatabaseDefinitionId = @SqlDatabaseDefinitionId",
                     CommandType.Text)
-                .DefineResults<SqlDatabaseDefinitionAndProvider>()
+                .DefineResults<SqlDatabaseDefinition>()
                 .Realize()
                 .ExecuteAsync(DatabaseManagerPool.DatabaseManager, databaseDefinition, cancellationToken))
                 .Single();

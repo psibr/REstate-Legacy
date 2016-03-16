@@ -1,8 +1,8 @@
 Param(
-    [string]$Script = "build.cake",
-    [string]$Target = "Default",
     [ValidateSet("Release", "Debug")]
     [string]$Configuration = "Release",
+    [string]$Script = "build.cake",
+    [string]$Target = "Default",
     [ValidateSet("Quiet", "Minimal", "Normal", "Verbose", "Diagnostic")]
     [string]$Verbosity = "Verbose",
     [switch]$Experimental,
@@ -52,7 +52,5 @@ if (!(Test-Path $CAKE_EXE)) {
 # Start Cake
 Invoke-Expression "$CAKE_EXE `"$Script`" -target=`"$Target`" -configuration=`"$Configuration`" -verbosity=`"$Verbosity`" $UseDryRun $UseExperimental"
 Write-Host
-
-
 
 exit $LASTEXITCODE

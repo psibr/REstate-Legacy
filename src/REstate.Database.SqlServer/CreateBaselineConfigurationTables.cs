@@ -14,21 +14,21 @@ namespace REstate.Database.SqlServer
             Create.Table("MachineDefinitions")
                 .WithColumn("MachineDefinitionId").AsInt32().NotNullable().Identity().PrimaryKey()
                 .WithColumn("MachineName").AsString(255).NotNullable()
-                .WithColumn("MachineDescription").AsString(500)
-                .WithColumn("InitialStateName").AsString(255)
+                .WithColumn("MachineDescription").AsString(500).Nullable()
+                .WithColumn("InitialStateName").AsString(255).Nullable()
                 .WithColumn("AutoIgnoreNotConfiguredTriggers").AsBoolean().NotNullable().WithDefaultValue(false)
                 .WithColumn("IsActive").AsBoolean().NotNullable().WithDefaultValue(false);
 
             Create.Table("States")
                 .WithColumn("MachineDefinitionId").AsInt32().NotNullable().PrimaryKey()
                 .WithColumn("StateName").AsString(255).NotNullable().PrimaryKey()
-                .WithColumn("ParentStateName").AsString(255)
-                .WithColumn("StateDescription").AsString(500);
+                .WithColumn("ParentStateName").AsString(255).Nullable()
+                .WithColumn("StateDescription").AsString(500).Nullable();
 
             Create.Table("Triggers")
                 .WithColumn("MachineDefinitionId").AsInt32().NotNullable().PrimaryKey()
                 .WithColumn("TriggerName").AsString(255).NotNullable().PrimaryKey()
-                .WithColumn("TriggerDescription").AsString(500)
+                .WithColumn("TriggerDescription").AsString(500).Nullable()
                 .WithColumn("IsActive").AsBoolean().NotNullable().WithDefaultValue(true);
 
             Create.Table("IgnoreRules")
@@ -40,7 +40,7 @@ namespace REstate.Database.SqlServer
             Create.Table("SqlDatabaseDefinitions")
                 .WithColumn("SqlDatabaseDefinitionId").AsInt32().NotNullable().PrimaryKey()
                 .WithColumn("SqlDatabaseName").AsString(255).NotNullable()
-                .WithColumn("SqlDatabaseDescription").AsString(500)
+                .WithColumn("SqlDatabaseDescription").AsString(500).Nullable()
                 .WithColumn("ConnectionString").AsString(1000).NotNullable()
                 .WithColumn("ProviderName").AsString(255).NotNullable();
 
@@ -49,34 +49,34 @@ namespace REstate.Database.SqlServer
                 .WithColumn("ConnectorKey").AsString(255).NotNullable()
                 .WithColumn("CodeElementName").AsString(255).NotNullable()
                 .WithColumn("SemanticVersion").AsString(50).NotNullable().WithDefaultValue("0.1.0")
-                .WithColumn("CodeElementDescription").AsString(1000)
+                .WithColumn("CodeElementDescription").AsString(1000).Nullable()
                 .WithColumn("CodeBody").AsString(4000).NotNullable()
-                .WithColumn("SqlDatabaseDefinitionId").AsInt32();
+                .WithColumn("SqlDatabaseDefinitionId").AsInt32().Nullable();
 
             Create.Table("Guards")
                 .WithColumn("MachineDefinitionId").AsInt32().NotNullable().PrimaryKey()
                 .WithColumn("GuardName").AsString(255).NotNullable().PrimaryKey()
-                .WithColumn("GuardDescription").AsString(500)
-                .WithColumn("CodeElementId").AsInt32();
+                .WithColumn("GuardDescription").AsString(500).Nullable()
+                .WithColumn("CodeElementId").AsInt32().Nullable();
 
             Create.Table("Transitions")
                 .WithColumn("MachineDefinitionId").AsInt32().NotNullable().PrimaryKey()
                 .WithColumn("StateName").AsString(255).NotNullable().PrimaryKey()
                 .WithColumn("TriggerName").AsString(255).NotNullable().PrimaryKey()
                 .WithColumn("ResultantStateName").AsString(255).NotNullable()
-                .WithColumn("GuardName").AsString(255)
+                .WithColumn("GuardName").AsString(255).Nullable()
                 .WithColumn("IsActive").AsBoolean().NotNullable().WithDefaultValue(true);
 
             Create.Table("StateActionPurposes")
                 .WithColumn("PurposeName").AsString(255).NotNullable().PrimaryKey()
-                .WithColumn("PurposeDescription").AsString(500);
+                .WithColumn("PurposeDescription").AsString(500).Nullable();
 
             Create.Table("StateActions")
                 .WithColumn("MachineDefinitionId").AsInt32().NotNullable().PrimaryKey()
                 .WithColumn("StateName").AsString(255).NotNullable().PrimaryKey()
                 .WithColumn("PurposeName").AsString(255).NotNullable().PrimaryKey()
-                .WithColumn("TriggerName").AsString(255)
-                .WithColumn("StateActionDescription").AsString(500)
+                .WithColumn("TriggerName").AsString(255).Nullable()
+                .WithColumn("StateActionDescription").AsString(500).Nullable()
                 .WithColumn("CodeElementId").AsInt32().NotNullable();
 
             //States

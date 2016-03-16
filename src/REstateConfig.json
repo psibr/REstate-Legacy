@@ -16,10 +16,11 @@
   "tokenLifeSpan": 30,
   "connectorConfiguration": {
   },
-  "connectionStrings": {
+  "connections": {
     "REstate": {
       "connectionString": "server=(LocalDB)\\MSSQLLocalDb;database=REstate;Application Name=REstate;Integrated Security=sspi;MultipleActiveResultSets=true",
-      "providerName": "System.Data.SqlClient"
+      "providerName": "System.Data.SqlClient",
+      "tags": [ "configuration", "instances", "chrono", "auth" ]
     }
   }
 }

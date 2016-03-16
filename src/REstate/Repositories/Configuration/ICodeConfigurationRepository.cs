@@ -11,14 +11,12 @@ namespace REstate.Repositories.Configuration
 
         Task<CodeElement> UpdateCodeElement(CodeElement codeElement, CancellationToken cancellationToken);
 
-        Task<ICollection<ISqlDatabaseDefinitionAndProvider>> GetDatabaseDefinitions(CancellationToken cancellationToken);
+        Task<ICollection<ISqlDatabaseDefinition>> GetDatabaseDefinitions(CancellationToken cancellationToken);
 
-        Task<ICollection<ISqlDatabaseProvider>> GetDatabaseProviders(CancellationToken cancellationToken);
-
-        Task<ISqlDatabaseDefinitionAndProvider> DefineDatabaseDefinition(ISqlDatabaseDefinition databaseDefinition,
+        Task<ISqlDatabaseDefinition> DefineDatabaseDefinition(ISqlDatabaseDefinition databaseDefinition,
             CancellationToken cancellationToken);
 
-        Task<ISqlDatabaseDefinitionAndProvider> UpdateDatabaseDefinition(ISqlDatabaseDefinition databaseDefinition,
+        Task<ISqlDatabaseDefinition> UpdateDatabaseDefinition(ISqlDatabaseDefinition databaseDefinition,
             CancellationToken cancellationToken);
     }
 }

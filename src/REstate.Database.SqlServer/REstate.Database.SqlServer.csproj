@@ -48,14 +48,12 @@
     <Compile Include="CreateBaselineChronoTables.cs" />
     <Compile Include="CreateBaselineConfigurationTables.cs" />
     <Compile Include="CreateBaselineInstancesTables.cs" />
+    <Compile Include="CreateDefaultAdminUsers.cs" />
     <Compile Include="CreateLoadMachineConfiguration.cs" />
     <Compile Include="CreateTableTypesAndProcs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

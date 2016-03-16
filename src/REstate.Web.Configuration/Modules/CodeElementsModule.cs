@@ -28,8 +28,6 @@ namespace REstate.Web.Configuration.Modules
 
             GetDatabaseDefinitions(configurationRepositoryContextFactory);
 
-            GetDatabaseProviders(configurationRepositoryContextFactory);
-
             DefineDatabaseDefinition(configurationRepositoryContextFactory);
 
             UpdateDatabaseDefinition(configurationRepositoryContextFactory);
@@ -41,15 +39,15 @@ namespace REstate.Web.Configuration.Modules
             {
                 ISqlDatabaseDefinition defintion = this.Bind<SqlDatabaseDefinition>();
 
-                ISqlDatabaseDefinitionAndProvider databaseDefinitionAndProvider;
+                ISqlDatabaseDefinition databaseDefinition;
                 using (var repository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    databaseDefinitionAndProvider = await repository.Code.UpdateDatabaseDefinition(defintion, ct);
+                    databaseDefinition = await repository.Code.UpdateDatabaseDefinition(defintion, ct);
                 }
 
                 return Negotiate
-                    .WithModel(databaseDefinitionAndProvider)
+                    .WithModel(databaseDefinition)
                     .WithAllowedMediaRange(new MediaRange("application/json"));
             };
         }
@@ -60,32 +58,15 @@ namespace REstate.Web.Configuration.Modules
             {
                 ISqlDatabaseDefinition defintion = this.Bind<SqlDatabaseDefinition>(/*ignore: */ (o) => o.SqlDatabaseDefinitionId);
 
-                ISqlDatabaseDefinitionAndProvider databaseDefinitionAndProvider;
+                ISqlDatabaseDefinition databaseDefinition;
                 using (var repository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    databaseDefinitionAndProvider = await repository.Code.DefineDatabaseDefinition(defintion, ct);
+                    databaseDefinition = await repository.Code.DefineDatabaseDefinition(defintion, ct);
                 }
 
                 return Negotiate
-                    .WithModel(databaseDefinitionAndProvider)
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
-            };
-        }
-
-        private void GetDatabaseProviders(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
-        {
-            Get["GetDatabaseProviders", "/databaseproviders/", true] = async (parameters, ct) =>
-            {
-                ICollection<ISqlDatabaseProvider> sqlDatabaseProviders;
-                using (var repository = configurationRepositoryContextFactory
-                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
-                {
-                    sqlDatabaseProviders = await repository.Code.GetDatabaseProviders(ct);
-                }
-
-                return Negotiate
-                    .WithModel(sqlDatabaseProviders)
+                    .WithModel(databaseDefinition)
                     .WithAllowedMediaRange(new MediaRange("application/json"));
             };
         }
@@ -94,15 +75,15 @@ namespace REstate.Web.Configuration.Modules
         {
             Get["GetDatabaseDefinitions", "/databasedefinitions/", true] = async (parameters, ct) =>
             {
-                ICollection<ISqlDatabaseDefinitionAndProvider> databaseDefinition;
+                ICollection<ISqlDatabaseDefinition> databaseDefinitions;
                 using (var repository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    databaseDefinition = await repository.Code.GetDatabaseDefinitions(ct);
+                    databaseDefinitions = await repository.Code.GetDatabaseDefinitions(ct);
                 }
 
                 return Negotiate
-                    .WithModel(databaseDefinition)
+                    .WithModel(databaseDefinitions)
                     .WithAllowedMediaRange(new MediaRange("application/json"));
             };
         }

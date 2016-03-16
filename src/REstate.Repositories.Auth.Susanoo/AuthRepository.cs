@@ -25,11 +25,11 @@ namespace REstate.Repositories.Auth.Susanoo
         public async Task<IPrincipal> LoadPrincipalByApiKey(string apiKey, CancellationToken cancellationToken)
         {
             var results = (await CommandManager.Instance
-                .DefineCommand("SELECT PrincipalId, ApiKey, PrincipalType, UserOrApplicationName\n" +
+                .DefineCommand("SELECT ApiKey, PrincipalType, UserOrApplicationName\n" +
                                "FROM Principals\n" +
                                "WHERE ApiKey = @ApiKey\n\n" +
                                "SELECT ClaimName FROM PrincipalClaims c\n" +
-                               "INNER JOIN Principals p ON p.PrincipalId = c.PrincipalId\n" +
+                               "INNER JOIN Principals p ON p.ApiKey = c.ApiKey\n" +
                                "WHERE p.ApiKey = @ApiKey", CommandType.Text)
                 .DefineResults(typeof(Principal), typeof(string))
                 .Realize()
@@ -47,11 +47,11 @@ namespace REstate.Repositories.Auth.Susanoo
         public async Task<IPrincipal> LoadPrincipalByCredentials(string username, string passwordHash, CancellationToken cancellationToken)
         {
             var results = (await CommandManager.Instance
-                .DefineCommand("SELECT PrincipalId, ApiKey, PrincipalType, UserOrApplicationName\n" +
+                .DefineCommand("SELECT ApiKey, PrincipalType, UserOrApplicationName\n" +
                                "FROM Principals\n" +
                                "WHERE UserOrApplicationName = @username AND PasswordHash = @passwordHash\n\n" +
                                "SELECT ClaimName FROM PrincipalClaims c\n" +
-                               "INNER JOIN Principals p ON p.PrincipalId = c.PrincipalId\n" +
+                               "INNER JOIN Principals p ON p.ApiKey = c.ApiKey\n" +
                                "WHERE p.UserOrApplicationName = @username AND p.PasswordHash = @passwordHash", CommandType.Text)
                 .DefineResults(typeof(Principal), typeof(string))
                 .Realize()

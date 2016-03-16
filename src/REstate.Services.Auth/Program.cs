@@ -69,7 +69,7 @@ namespace REstate.Services.Auth
             container.Register(context => new AuthRoutePrefix(string.Empty));
 
             container.RegisterType<AuthRepositoryContextFactory>()
-                .As<IAuthRepositoryContextFactory>();
+                .As<IAuthRepositoryContextFactory>().SingleInstance();
 
             return container;
         }

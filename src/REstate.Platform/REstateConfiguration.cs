@@ -41,6 +41,8 @@ namespace REstate.Platform
 
         public IDictionary<string, string> ConnectorConfiguration { get; set; }
 
+        public IDictionary<string, ConnectionConfiguration> Connections { get; set; }
+
         public static string LoadConfigurationFile()
         {
             var binLocation = new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent;
@@ -59,6 +61,5 @@ namespace REstate.Platform
 
             return configString;
         }
-
     }
 }
