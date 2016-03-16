@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{B59F15F7
 	ProjectSection(SolutionItems) = preProject
 		..\build.cake = ..\build.cake
 		..\build.ps1 = ..\build.ps1
+		..\create-database.ps1 = ..\create-database.ps1
 		..\deploy-database.config = ..\deploy-database.config
 		..\deploy-database.ps1 = ..\deploy-database.ps1
 		REstateConfig.json = REstateConfig.json
