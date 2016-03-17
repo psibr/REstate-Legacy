@@ -12,7 +12,7 @@ A State machine, in this specific case a Finite State Machine, is a model of com
 ####Dependencies
 Make sure you have git CLI tools, MSBuild 14 (or Visual Studio 2015), and LocalDb Sql Server 2014+ installed.
 
-LocalDB 2014 is available for download [here](https://www.microsoft.com/en-us/download/details.aspx?id=42299). Not you have to click download and THEN scroll down and choose the LocalDb installer. 
+LocalDB 2014 is available for download [here](https://www.microsoft.com/en-us/download/details.aspx?id=42299). Note that you have to click download and THEN scroll down and choose the LocalDb installer. 
 
 ####Downloading and running
 
