@@ -7,6 +7,21 @@ A State machine, in this specific case a Finite State Machine, is a model of com
 
 [Wikipedia article which dives into theory here.](https://en.wikipedia.org/wiki/Finite-state_machine)
 
+###Getting Started
+
+####Dependencies
+Make sure you have git CLI tools, MSBuild 14 (or Visual Studio 2015), and LocalDb Sql Server 2014+ installed.
+
+LocalDB 2014 is available for download [here](https://www.microsoft.com/en-us/download/details.aspx?id=42299). Not you have to click download and THEN scroll down and choose the LocalDb installer. 
+
+####Downloading and running
+
+From a command prompt run the following command where you want REstate; and you are done.
+
+```batch
+git clone https://github.com/psibernetic/REstate.git & cd REstate & BuildAndRunREstateOnLocalDb.bat
+```
+
 ###What practical use is there?
 
 A common example of a finite state machine is a traffic light. There are rules that dictate when and in what order the light can change colors; this is modeled as a state machine.
