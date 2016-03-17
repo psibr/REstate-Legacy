@@ -3,10 +3,10 @@ using FluentMigrator;
 
 namespace REstate.Database.SqlServer
 {
-    [Tags("Auth")]
+    [Tags("Chrono")]
     [Tags("Full")]
-    [Migration(2016031601)]
-    public class CreateDefaultAdminUsers
+    [Migration(2016031701)]
+    public class CreateChronoConsumerServiceAccount
         : Migration
     {
         public override void Up()
@@ -16,14 +16,14 @@ namespace REstate.Database.SqlServer
                 {
                     ApiKey = Guid.NewGuid(),
                     PrincipalType = "Application",
-                    UserOrApplicationName = "AdminUI"
+                    UserOrApplicationName = "ChronoConsumer"
                 });
         }
 
         public override void Down()
         {
             Delete.FromTable("Principals")
-                .Row(new { PrincipalType = "Application", UserOrApplicationName = "AdminUI" });
+                .Row(new { PrincipalType = "Application", UserOrApplicationName = "ChronoConsumer" });
         }
     }
 }

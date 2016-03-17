@@ -21,7 +21,7 @@ namespace REstate.Connectors.Chrono
                 .As<IREstateClientFactory>();
 
             builder.Register(context => context.Resolve<IREstateClientFactory>()
-                .GetChronoClient(Configuration.ChronoAddress))
+                .GetChronoClient(Configuration.ChronoAddress.Address))
                 .As<IAuthSessionClient<IChronoSession>>();
         }
     }

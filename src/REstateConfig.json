@@ -4,23 +4,46 @@
   "hmacSaltBase64": "AQJ80f7/MC89",
   "claimsPrincipalResourceName": "REstate.Web.Principal",
   "encryptionSaltBase64": "AQJ80f7/MC89",
-  "adminAddress": "http://localhost/restate",
-  "chronoAddress": "http://localhost/restate/chrono/",
-  "configurationAddress": "http://localhost/restate/configuration/",
-  "instancesAddress": "http://localhost/restate/machines/",
-  "authAddress": "http://localhost/restate/auth/",
+  "httpServices": {
+    "admin": {
+      "address": "http://localhost/restate",
+      "binding": "http://+/restate"
+    },
+    "chrono": {
+      "address": "http://localhost/restate/chrono/",
+      "binding": "http://+/restate/chrono"
+    },
+    "configuration": {
+      "address": "http://localhost/restate/configuration/",
+      "binding": "http://+/restate/configuration"
+    },
+    "instances": {
+      "address": "http://localhost/restate/machines/",
+      "binding": "http://+/restate/machines"
+    },
+    "auth": {
+      "address": "http://localhost/restate/auth/",
+      "binding": "http://+/restate/auth"
+    }
+  },
+  "processingServices": {
+    "chronoConsumer": {
+      //This value must be changed to reflect the API key created at install.
+      "apiKey": "64FEAC8C-C00A-44F8-9B3E-C1FC836B1BA2"
+    }
+  },
   "cookieName": "REstate",
   "cookiePath": "/",
   "servesStaticContent": false,
   "staticContentRootRoutePath": "/",
   "tokenLifeSpan": 30,
-  "connectorConfiguration": {
+  "connectorConfig": {
   },
-  "connections": {
-    "REstate": {
+  "connections": [
+    {
       "connectionString": "server=(LocalDB)\\MSSQLLocalDb;database=REstate;Application Name=REstate;Integrated Security=sspi;MultipleActiveResultSets=true",
       "providerName": "System.Data.SqlClient",
       "tags": [ "configuration", "instances", "chrono", "auth" ]
     }
-  }
+  ]
 }

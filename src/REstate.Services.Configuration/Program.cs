@@ -58,7 +58,7 @@ namespace REstate.Services.Configuration
 
             container.RegisterInstance(new REstateApiServiceConfiguration
             {
-                HostBindingAddress = ConfigurationManager.AppSettings["REstate.Services.HostBindingAddress"]
+                HostBindingAddress = configuration.ConfigurationAddress.Binding
             });
 
             container.RegisterType<REstateApiService<Startup>>();

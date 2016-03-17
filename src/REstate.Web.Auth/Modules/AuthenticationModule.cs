@@ -57,7 +57,7 @@ namespace REstate.Web.Auth.Modules
                         { "claims", principal.Claims }
                 }, true);
 
-                return Response.AsRedirect(configuration.AdminAddress);
+                return Response.AsRedirect(configuration.AdminAddress.Address);
             };
 
             Post["/apikey", true] = async (parameters, ct) =>

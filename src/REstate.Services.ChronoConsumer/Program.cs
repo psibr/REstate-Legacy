@@ -49,7 +49,7 @@ namespace REstate.Services.ChronoConsumer
 
             container.RegisterInstance(new ConsumerServiceConfiguration
             {
-                ApiKey = ConfigurationManager.AppSettings["ApiKey"]
+                ApiKey = configuration.ChronoConsumerConfig.ApiKey
             });
 
             container.RegisterType<ChronoConsumerService>();
@@ -71,7 +71,7 @@ namespace REstate.Services.ChronoConsumer
                 .As<IREstateClientFactory>();
 
             container.Register(context => context.Resolve<IREstateClientFactory>()
-                .GetInstancesClient(configuration.InstancesAddress))
+                .GetInstancesClient(configuration.InstancesAddress.Address))
                 .As<IAuthSessionClient<IInstancesSession>>();
 
             return container;

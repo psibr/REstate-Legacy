@@ -46,7 +46,9 @@
   <ItemGroup>
     <Compile Include="ConnectionConfiguration.cs" />
     <Compile Include="ConnectorRegistrationExtensions.cs" />
+    <Compile Include="HttpServiceAddressConfiguration.cs" />
     <Compile Include="IREstateConnectorModule.cs" />
+    <Compile Include="ProcessingServiceConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="REstateConfiguration.cs" />
   </ItemGroup>

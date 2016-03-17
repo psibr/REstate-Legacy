@@ -60,6 +60,10 @@
       <Project>{bc6e21a3-4200-4681-b74a-b30b6f46bace}</Project>
       <Name>REstate.Client</Name>
     </ProjectReference>
+    <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
+      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
+      <Name>REstate.Platform</Name>
+    </ProjectReference>
     <ProjectReference Include="..\REstate\REstate.csproj">
       <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>
       <Name>REstate</Name>

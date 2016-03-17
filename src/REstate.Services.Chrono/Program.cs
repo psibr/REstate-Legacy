@@ -57,7 +57,7 @@ namespace REstate.Services.Chrono
 
             container.RegisterInstance(new REstateApiServiceConfiguration
             {
-                HostBindingAddress = ConfigurationManager.AppSettings["REstate.Services.HostBindingAddress"]
+                HostBindingAddress = configuration.ChronoAddress.Binding
             });
 
             container.RegisterType<REstateApiService<Startup>>();

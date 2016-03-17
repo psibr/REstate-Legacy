@@ -19,11 +19,13 @@ namespace REstate.Repositories.Auth.Susanoo
         public IAuthRepository OpenAuthRepositoryContext()
         {
             var connectionConfig = _configuration.Connections
-                .SingleOrDefault(kvp => kvp.Value.Tags.Contains("auth"));
+                .Single(ea => ea.Tags.Contains("auth"));
 
             return new AuthRepository(new DatabaseManagerPool(
                     CommandManager.ResolveDatabaseManagerFactory(),
-                    factory => factory.CreateFromConnectionString(connectionConfig.Value.ConnectionString, connectionConfig.Value.ProviderName)));
+                    factory => factory.CreateFromConnectionString(
+                        connectionConfig.ConnectionString,
+                        connectionConfig.ProviderName)));
         }
     }
 }

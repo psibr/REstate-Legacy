@@ -19,15 +19,27 @@ namespace REstate.Platform
 
         public string EncryptionSaltBase64 { get; set; }
 
-        public string AuthAddress { get; set; }
+        public HttpServiceAddressConfiguration AuthAddress =>
+            HttpServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "auth")).Value;
 
-        public string AdminAddress { get; set; }
+        public HttpServiceAddressConfiguration AdminAddress =>
+            HttpServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "admin")).Value;
 
-        public string ChronoAddress { get; set; }
+        public HttpServiceAddressConfiguration ChronoAddress =>
+            HttpServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "chrono")).Value;
 
-        public string InstancesAddress { get; set; }
+        public HttpServiceAddressConfiguration InstancesAddress =>
+            HttpServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "instances")).Value;
 
-        public string ConfigurationAddress { get; set; }
+        public HttpServiceAddressConfiguration ConfigurationAddress =>
+            HttpServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "configuration")).Value;
+
+        public ProcessingServiceConfiguration ChronoConsumerConfig =>
+            ProcessingServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "chronoConsumer")).Value;
+
+        public IDictionary<string, HttpServiceAddressConfiguration> HttpServices { get; set; }
+
+        public IDictionary<string, ProcessingServiceConfiguration> ProcessingServices { get; set; }
 
         public string CookieName { get; set; } = "REstate";
 
@@ -39,9 +51,9 @@ namespace REstate.Platform
 
         public int TokenLifeSpan { get; set; } = 30;
 
-        public IDictionary<string, string> ConnectorConfiguration { get; set; }
+        public IDictionary<string, string> ConnectorConfig { get; set; }
 
-        public IDictionary<string, ConnectionConfiguration> Connections { get; set; }
+        public ConnectionConfiguration[] Connections { get; set; }
 
         public static string LoadConfigurationFile()
         {
