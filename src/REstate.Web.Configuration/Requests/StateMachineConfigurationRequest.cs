@@ -20,17 +20,17 @@ namespace REstate.Web.Configuration.Requests
             return new StateMachineConfiguration
             {
                 MachineDefinition = request.MachineDefinition,
-                Triggers = request.Triggers.Cast<ITrigger>().ToList(),
-                Guards = request.Guards.Cast<IGuard>().ToList(),
-                StateConfigurations = request.StateConfigurations.Select(sc => new REstate.Configuration.StateConfiguration
+                Triggers = request.Triggers?.Cast<ITrigger>().ToList() ?? new List<ITrigger>(),
+                Guards = request.Guards?.Cast<IGuard>().ToList() ?? new List<IGuard>(),
+                StateConfigurations = request.StateConfigurations?.Select(sc => new REstate.Configuration.StateConfiguration
                 {
                     State = sc.State,
                     OnEntryAction = sc.OnEntryAction,
                     OnEntryFromAction = sc.OnEntryFromAction,
                     OnExitAction = sc.OnExitAction,
-                    Transitions = sc.Transitions.Cast<ITransition>().ToList(),
-                    IgnoreRules = sc.IgnoreRules.Cast<IIgnoreRule>().ToList()
-                }).Cast<IStateConfiguration>().ToList()
+                    Transitions = sc.Transitions?.Cast<ITransition>().ToList() ?? new List<ITransition>(),
+                    IgnoreRules = sc.IgnoreRules?.Cast<IIgnoreRule>().ToList() ?? new List<IIgnoreRule>()
+                }).Cast<IStateConfiguration>().ToList() ?? new List<IStateConfiguration>()
             };
 
 
