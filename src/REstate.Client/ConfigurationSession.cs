@@ -22,7 +22,7 @@ namespace REstate.Client
         {
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
-                var response = await client.GetAsync($"configuration/machinedefinitions/{machineDefinitionId}");
+                var response = await client.GetAsync($"machinedefinitions/{machineDefinitionId}");
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
 
@@ -40,7 +40,7 @@ namespace REstate.Client
 
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
-                var response = await client.PostAsync("configuration/machinedefinitions/",
+                var response = await client.PostAsync("machinedefinitions/",
                     new StringContent(payload, Encoding.UTF8, "application/json"));
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
@@ -57,7 +57,7 @@ namespace REstate.Client
         {
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
-                var response = await client.GetAsync($"configuration/machinedefinitions/{machineDefinitionId}/diagram");
+                var response = await client.GetAsync($"machinedefinitions/{machineDefinitionId}/diagram");
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
 
