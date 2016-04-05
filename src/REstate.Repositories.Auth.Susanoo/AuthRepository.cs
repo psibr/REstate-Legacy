@@ -1,12 +1,12 @@
-﻿using REstate.Auth;
-using REstate.Auth.Repositories;
-using Susanoo;
+﻿using Susanoo;
 using Susanoo.ConnectionPooling;
 using System;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Psibr.Platform;
+using Psibr.Platform.Repositories;
 
 namespace REstate.Repositories.Auth.Susanoo
 {

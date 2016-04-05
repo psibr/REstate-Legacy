@@ -4,6 +4,6 @@ namespace REstate.Platform
 {
     public interface IREstateConnectorModule : IModule
     {
-        REstateConfiguration Configuration { get; set; }
+        REstatePlatformConfiguration Configuration { get; set; }
     }
 }

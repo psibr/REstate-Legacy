@@ -41,8 +41,16 @@
       <HintPath>..\packages\AutofacSerilogIntegration.1.0.10\lib\portable-net45+dnxcore50+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\AutofacSerilogIntegration.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="JWT, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\JWT.1.3.4\lib\3.5\JWT.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.FileSystems, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.FileSystems.3.0.1\lib\net45\Microsoft.Owin.FileSystems.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Owin.Host.HttpListener, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -53,12 +61,24 @@
       <HintPath>..\packages\Microsoft.Owin.Hosting.3.0.1\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Owin.StaticFiles, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.StaticFiles.3.0.1\lib\net45\Microsoft.Owin.StaticFiles.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Nancy, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nancy.1.4.3\lib\net40\Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Nancy.Authentication.Stateless, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Authentication.Stateless.1.4.1\lib\net40\Nancy.Authentication.Stateless.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Nancy.Bootstrappers.Autofac, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nancy.Bootstrappers.Autofac.1.4.1\lib\net40\Nancy.Bootstrappers.Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nancy.Owin, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Owin.1.4.1\lib\net40\Nancy.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -67,6 +87,26 @@
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OwinJwtAndCookie, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OwinJwtAndCookie.1.0.0.0\lib\net461\OwinJwtAndCookie.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.1.2.0.0\lib\net461\Psibr.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform.Logging.Serilog, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Logging.Serilog.1.0.0.0\lib\net461\Psibr.Platform.Logging.Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform.Nancy, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Nancy.2.0.0.0\lib\net461\Psibr.Platform.Nancy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform.Nancy.Service, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Nancy.Service.1.0.0.0\lib\net461\Psibr.Platform.Nancy.Service.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
@@ -110,29 +150,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\REstate.Logging.Serilog\REstate.Logging.Serilog.csproj">
-      <Project>{bc1b64fe-0b9b-4ffd-b490-fba8792c076c}</Project>
-      <Name>REstate.Logging.Serilog</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\REstate.Owin\REstate.Owin.csproj">
-      <Project>{c011084b-65ef-43c6-af70-0d1fe8f16662}</Project>
-      <Name>REstate.Owin</Name>
-    </ProjectReference>
     <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
       <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
       <Name>REstate.Platform</Name>
     </ProjectReference>
-    <ProjectReference Include="..\REstate.Services.Common.Api\REstate.ApiService.csproj">
-      <Project>{eacdb7b6-f0d8-4663-8f93-6d4a44f381bb}</Project>
-      <Name>REstate.ApiService</Name>
-    </ProjectReference>
     <ProjectReference Include="..\REstate.Web.AdminUI\REstate.Web.AdminUI.csproj">
       <Project>{85f6276a-c3f1-4496-b8d5-b0df9a9aad60}</Project>
       <Name>REstate.Web.AdminUI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\REstate.Web.Common\REstate.Web.Common.csproj">
-      <Project>{75b55765-0ea6-4158-a0e2-c81e54742718}</Project>
-      <Name>REstate.Web.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate\REstate.csproj">
       <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>

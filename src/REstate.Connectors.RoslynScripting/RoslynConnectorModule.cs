@@ -6,7 +6,7 @@ namespace REstate.Connectors.RoslynScripting
 {
     public class RoslynConnectorModule : Module, IREstateConnectorModule
     {
-        public REstateConfiguration Configuration { get; set; }
+        public REstatePlatformConfiguration Configuration { get; set; }
 
         protected override void Load(ContainerBuilder builder)
         {

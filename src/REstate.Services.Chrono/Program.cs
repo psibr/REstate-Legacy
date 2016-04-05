@@ -1,17 +1,14 @@
-﻿using Autofac;
-using Microsoft.Owin.Hosting;
+﻿using System;
+using Autofac;
 using REstate.Chrono;
-using REstate.Owin;
 using REstate.Repositories.Chrono.Susanoo;
-using REstate.Web;
 using REstate.Web.Chrono;
-using System;
-using System.Configuration;
 using AutofacSerilogIntegration;
 using Newtonsoft.Json;
-using REstate.ApiService;
-using REstate.Logging;
-using REstate.Logging.Serilog;
+using Psibr.Platform;
+using Psibr.Platform.Logging.Serilog;
+using Psibr.Platform.Nancy;
+using Psibr.Platform.Nancy.Service;
 using REstate.Platform;
 using Serilog;
 using Topshelf;
@@ -24,20 +21,19 @@ namespace REstate.Services.Chrono
 
         static void Main(string[] args)
         {
-            var configString = REstateConfiguration.LoadConfigurationFile();
+            var configString = PlatformConfiguration.LoadConfigurationFile("REstateConfig.json");
 
-            var config = JsonConvert.DeserializeObject<REstateConfiguration>(configString);
+            var config = JsonConvert.DeserializeObject<REstatePlatformConfiguration>(configString);
 
-            Startup.Config = config;
             var kernel = BuildAndConfigureContainer(config).Build();
-            REstateBootstrapper.KernelLocator = () => kernel;
+            PlatformNancyBootstrapper.KernelLocator = () => kernel;
 
             HostFactory.Run(host =>
             {
                 host.UseSerilog(kernel.Resolve<ILogger>());
-                host.Service<REstateApiService<Startup>>(svc =>
+                host.Service<PlatformApiService>(svc =>
                 {
-                    svc.ConstructUsing(() => kernel.Resolve<REstateApiService<Startup>>());
+                    svc.ConstructUsing(() => kernel.Resolve<PlatformApiService>());
                     svc.WhenStarted(service => service.Start());
                     svc.WhenStopped(service => service.Stop());
                 });
@@ -47,22 +43,25 @@ namespace REstate.Services.Chrono
 
                 host.SetServiceName(ServiceName);
             });
+
+            Console.ReadLine();
         }
 
-        private static ContainerBuilder BuildAndConfigureContainer(REstateConfiguration configuration)
+        private static ContainerBuilder BuildAndConfigureContainer(REstatePlatformConfiguration configuration)
         {
             var container = new ContainerBuilder();
 
-            container.RegisterInstance(configuration);
+            container.Register(ctx => configuration)
+                .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
 
-            container.RegisterInstance(new REstateApiServiceConfiguration
+            container.RegisterInstance(new ApiServiceConfiguration
             {
                 HostBindingAddress = configuration.ChronoAddress.Binding
             });
 
-            container.RegisterType<REstateApiService<Startup>>();
+            container.RegisterType<PlatformApiService>();
 
-            container.RegisterModule<SerilogREstateLoggingModule>();
+            container.RegisterModule<SerilogPlatformLoggingModule>();
 
             container.RegisterLogger(
                 new LoggerConfiguration().MinimumLevel.Verbose()

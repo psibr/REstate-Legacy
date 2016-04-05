@@ -6,7 +6,7 @@ namespace REstate.Connectors.Susanoo
 {
     public class SusanooConnectorModule : Module, IREstateConnectorModule
     {
-        public REstateConfiguration Configuration { get; set; }
+        public REstatePlatformConfiguration Configuration { get; set; }
 
         protected override void Load(ContainerBuilder builder)
         {

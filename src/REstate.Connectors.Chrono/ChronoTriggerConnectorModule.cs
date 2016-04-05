@@ -8,7 +8,7 @@ namespace REstate.Connectors.Chrono
 {
     public class ChronoTriggerConnectorModule : Module, IREstateConnectorModule
     {
-        public REstateConfiguration Configuration { get; set; }
+        public REstatePlatformConfiguration Configuration { get; set; }
 
         protected override void Load(ContainerBuilder builder)
         {

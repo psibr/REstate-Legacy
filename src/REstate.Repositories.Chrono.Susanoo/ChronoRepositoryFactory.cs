@@ -1,6 +1,6 @@
 ﻿using System.Linq;
+using Psibr.Platform;
 using REstate.Chrono;
-using REstate.Platform;
 using Susanoo;
 using Susanoo.ConnectionPooling;
 
@@ -8,9 +8,9 @@ namespace REstate.Repositories.Chrono.Susanoo
 {
     public class ChronoRepositoryFactory : IChronoRepositoryFactory
     {
-        private readonly REstateConfiguration _configuration;
+        private readonly IPlatformConfiguration _configuration;
 
-        public ChronoRepositoryFactory(REstateConfiguration configuration)
+        public ChronoRepositoryFactory(IPlatformConfiguration configuration)
         {
             _configuration = configuration;
         }

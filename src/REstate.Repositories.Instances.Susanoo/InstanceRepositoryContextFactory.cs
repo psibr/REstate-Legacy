@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using REstate.Platform;
+using Psibr.Platform;
 using Susanoo;
 using Susanoo.ConnectionPooling;
 
@@ -8,9 +8,9 @@ namespace REstate.Repositories.Instances.Susanoo
     public class InstanceRepositoryContextFactory
         : IInstanceRepositoryContextFactory
     {
-        private readonly REstateConfiguration _configuration;
+        private readonly IPlatformConfiguration _configuration;
 
-        public InstanceRepositoryContextFactory(REstateConfiguration configuration)
+        public InstanceRepositoryContextFactory(IPlatformConfiguration configuration)
         {
             _configuration = configuration;
         }

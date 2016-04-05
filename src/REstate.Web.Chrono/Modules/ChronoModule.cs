@@ -1,7 +1,7 @@
 ﻿using Nancy.ModelBinding;
 using REstate.Chrono;
-using REstate.Web.Modules;
 using System;
+using Psibr.Platform.Nancy.Modules;
 
 namespace REstate.Web.Chrono.Modules
 {

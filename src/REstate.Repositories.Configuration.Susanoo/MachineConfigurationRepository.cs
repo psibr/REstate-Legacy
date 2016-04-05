@@ -116,12 +116,7 @@ namespace REstate.Repositories.Configuration.Susanoo
         public async Task<IStateMachineConfiguration> RetrieveMachineConfiguration(Guid machineInstanceGuid, bool loadCode,
             CancellationToken cancellationToken)
         {
-            IStateMachineConfiguration configuration;
-            using (var scope = new TransactionScope(TransactionScopeOption.Required,
-                new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
-                TransactionScopeAsyncFlowOption.Enabled))
-            {
-                var machineDefinitionId = await CommandManager.Instance
+            var machineDefinitionId = await CommandManager.Instance
                     .DefineCommand(
                         "SELECT TOP 1 MachineDefinitionId FROM MachineInstances WHERE MachineInstanceId = @MachineInstanceGuid",
                         CommandType.Text)
@@ -132,10 +127,8 @@ namespace REstate.Repositories.Configuration.Susanoo
                 if (machineDefinitionId == null || machineDefinitionId.Value <= 0)
                     throw new ArgumentException("Not a valid instance identifier.", nameof(machineDefinitionId));
 
-                configuration = await RetrieveMachineConfiguration(machineDefinitionId.Value, loadCode, cancellationToken);
+                var configuration = await RetrieveMachineConfiguration(machineDefinitionId.Value, loadCode, cancellationToken);
 
-                scope.Complete();
-            }
 
             return configuration;
         }

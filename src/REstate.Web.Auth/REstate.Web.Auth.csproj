@@ -34,8 +34,36 @@
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="JWT, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\JWT.1.3.4\lib\3.5\JWT.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.FileSystems, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.FileSystems.3.0.1\lib\net45\Microsoft.Owin.FileSystems.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Hosting, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Hosting.3.0.1\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.StaticFiles, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.StaticFiles.3.0.1\lib\net45\Microsoft.Owin.StaticFiles.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Nancy, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nancy.1.4.3\lib\net40\Nancy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nancy.Authentication.Stateless, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Authentication.Stateless.1.4.1\lib\net40\Nancy.Authentication.Stateless.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nancy.Bootstrappers.Autofac, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Bootstrappers.Autofac.1.4.1\lib\net40\Nancy.Bootstrappers.Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Nancy.Owin, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -44,6 +72,18 @@
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OwinJwtAndCookie, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OwinJwtAndCookie.1.0.0.0\lib\net461\OwinJwtAndCookie.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.1.2.0.0\lib\net461\Psibr.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform.Nancy, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Nancy.2.0.0.0\lib\net461\Psibr.Platform.Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -56,26 +96,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthRoutePrefix.cs" />
     <Compile Include="Modules\AuthenticationModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Requests\ApiKeyAuthenticationRequest.cs" />
     <Compile Include="Requests\CredentialAuthenticationRequest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\login.html" />
+    <EmbeddedResource Include="Views\login.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Nancy.EmbeddedContent\Nancy.EmbeddedContent.csproj">
-      <Project>{d8eba39b-63ae-4a66-bd0e-f7f95e572135}</Project>
-      <Name>Nancy.EmbeddedContent</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\REstate.Auth\REstate.Auth.csproj">
-      <Project>{276af764-e2ba-4434-b6d2-799bfc4f340c}</Project>
-      <Name>REstate.Auth</Name>
-    </ProjectReference>
     <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
       <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
       <Name>REstate.Platform</Name>
@@ -83,10 +119,6 @@
     <ProjectReference Include="..\REstate.Repositories.Auth.Susanoo\REstate.Repositories.Auth.Susanoo.csproj">
       <Project>{b1a411e0-e8bf-4d8c-b327-2c171e2e60bc}</Project>
       <Name>REstate.Repositories.Auth.Susanoo</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\REstate.Web.Common\REstate.Web.Common.csproj">
-      <Project>{75b55765-0ea6-4158-a0e2-c81e54742718}</Project>
-      <Name>REstate.Web.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

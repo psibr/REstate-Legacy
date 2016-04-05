@@ -6,7 +6,7 @@
   "encryptionSaltBase64": "AQJ80f7/MC89",
   "httpServices": {
     "admin": {
-      "address": "http://localhost/restate",
+      "address": "http://localhost/restate/",
       "binding": "http://+/restate"
     },
     "chrono": {
@@ -24,6 +24,10 @@
     "auth": {
       "address": "http://localhost/restate/auth/",
       "binding": "http://+/restate/auth"
+    },
+    "messaging": {
+      "address": "http://localhost/restate/messaging/",
+      "binding": "http://+/restate/messaging"
     }
   },
   "processingServices": {

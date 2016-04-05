@@ -4,6 +4,7 @@ using Nancy.Responses.Negotiation;
 using REstate.Configuration;
 using REstate.Repositories.Configuration;
 using System.Collections.Generic;
+using Psibr.Platform.Nancy;
 
 namespace REstate.Web.Configuration.Modules
 {

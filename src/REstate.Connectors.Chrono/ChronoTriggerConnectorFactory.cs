@@ -2,7 +2,7 @@ using REstate.Client;
 using REstate.Client.Chrono;
 using REstate.Services;
 using System.Threading.Tasks;
-using REstate.Logging;
+using Psibr.Platform.Logging;
 
 namespace REstate.Connectors.Chrono
 {
@@ -10,9 +10,9 @@ namespace REstate.Connectors.Chrono
         : IConnectorFactory
     {
         private readonly IAuthSessionClient<IChronoSession> _client;
-        private readonly IREstateLogger _logger;
+        private readonly IPlatformLogger _logger;
 
-        public ChronoTriggerConnectorFactory(IAuthSessionClient<IChronoSession> client, IREstateLogger logger)
+        public ChronoTriggerConnectorFactory(IAuthSessionClient<IChronoSession> client, IPlatformLogger logger)
         {
             _client = client;
             _logger = logger;

@@ -46,6 +46,10 @@
       <HintPath>..\packages\Nancy.Bootstrappers.Autofac.1.4.1\lib\net40\Nancy.Bootstrappers.Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Psibr.Platform, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.1.2.0.0\lib\net461\Psibr.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
@@ -56,6 +60,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -64,10 +69,6 @@
     <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
       <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
       <Name>REstate.Platform</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\REstate.Web.Common\REstate.Web.Common.csproj">
-      <Project>{75b55765-0ea6-4158-a0e2-c81e54742718}</Project>
-      <Name>REstate.Web.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

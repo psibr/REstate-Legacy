@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Psibr.Platform, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.1.2.0.0\lib\net461\Psibr.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Susanoo.Core, Version=1.2.4.2, Culture=neutral, PublicKeyToken=0a505ce04f8a59d5, processorArchitecture=MSIL">
       <HintPath>..\packages\Susanoo.Core.1.2.4.2\lib\net45\Susanoo.Core.dll</HintPath>
       <Private>True</Private>
@@ -49,10 +53,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\REstate.Auth\REstate.Auth.csproj">
-      <Project>{276af764-e2ba-4434-b6d2-799bfc4f340c}</Project>
-      <Name>REstate.Auth</Name>
-    </ProjectReference>
     <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
       <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
       <Name>REstate.Platform</Name>

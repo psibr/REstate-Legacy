@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using REstate.Auth.Repositories;
-using REstate.Platform;
+using Psibr.Platform;
+using Psibr.Platform.Repositories;
 using Susanoo;
 using Susanoo.ConnectionPooling;
 
@@ -9,9 +9,9 @@ namespace REstate.Repositories.Auth.Susanoo
     public class AuthRepositoryContextFactory
         : IAuthRepositoryContextFactory
     {
-        private readonly REstateConfiguration _configuration;
+        private readonly IPlatformConfiguration _configuration;
 
-        public AuthRepositoryContextFactory(REstateConfiguration configuration)
+        public AuthRepositoryContextFactory(IPlatformConfiguration configuration)
         {
             _configuration = configuration;
         }

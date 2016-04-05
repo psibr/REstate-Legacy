@@ -34,6 +34,10 @@
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Psibr.Platform, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.1.2.0.0\lib\net461\Psibr.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
       <Private>True</Private>
@@ -49,12 +53,7 @@
   <ItemGroup>
     <Compile Include="SerilogLoggingAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\REstate\REstate.csproj">
-      <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>
-      <Name>REstate</Name>
-    </ProjectReference>
+    <Compile Include="SerilogREstateLoggingModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

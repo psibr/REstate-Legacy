@@ -3,12 +3,12 @@ using Nancy.Cryptography;
 using Nancy.ModelBinding;
 using Nancy.Owin;
 using Nancy.Responses.Negotiation;
-using REstate.Auth;
-using REstate.Auth.Repositories;
 using REstate.Web.Auth.Requests;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Psibr.Platform;
+using Psibr.Platform.Repositories;
 using REstate.Platform;
 using SignInDelegate = System.Func<System.Func<System.Guid, System.Collections.Generic.IDictionary<string, object>>, bool, string>;
 
@@ -18,7 +18,7 @@ namespace REstate.Web.Auth.Modules
         : NancyModule
     {
 
-        public AuthenticationModule(AuthRoutePrefix prefix, REstateConfiguration configuration,
+        public AuthenticationModule(AuthRoutePrefix prefix, REstatePlatformConfiguration configuration,
             IAuthRepositoryContextFactory authRepositoryContextFactory, CryptographyConfiguration crypto)
             : base(prefix)
         {
@@ -32,7 +32,7 @@ namespace REstate.Web.Auth.Modules
                 var credentials = this.Bind<CredentialAuthenticationRequest>();
 
                 if (string.IsNullOrWhiteSpace(credentials?.Username) || string.IsNullOrWhiteSpace(credentials.Password))
-                    return Response.AsRedirect(configuration.AuthAddress + "login");
+                    return Response.AsRedirect(configuration.AuthAddress.Address + "login");
 
                 var environment = Context.GetOwinEnvironment();
                 var signInDelegate = (SignInDelegate)environment["jwtandcookie.signin"];
@@ -40,7 +40,7 @@ namespace REstate.Web.Auth.Modules
                 var passwordHash = Convert.ToBase64String(crypto.HmacProvider
                     .GenerateHmac(credentials.Password));
 
-
+                ;
                 IPrincipal principal;
                 using (var repository = authRepositoryContextFactory.OpenAuthRepositoryContext())
                 {
@@ -48,13 +48,13 @@ namespace REstate.Web.Auth.Modules
                         .LoadPrincipalByCredentials(credentials.Username, passwordHash, ct);
                 }
 
-                if (principal == null) return Response.AsRedirect(configuration.AuthAddress + "login");
+                if (principal == null) return Response.AsRedirect(configuration.AuthAddress.Address + "login");
 
                 var jwt = signInDelegate((jti) => new Dictionary<string, object>
                 {
-                        { "sub", principal.UserOrApplicationName},
-                        { "apikey", crypto.EncryptionProvider.Encrypt(jti + principal.ApiKey)},
-                        { "claims", principal.Claims }
+                    { "sub", principal.UserOrApplicationName},
+                    { "apikey", crypto.EncryptionProvider.Encrypt(jti + principal.ApiKey)},
+                    { "claims", principal.Claims }
                 }, true);
 
                 return Response.AsRedirect(configuration.AdminAddress.Address);
@@ -80,7 +80,7 @@ namespace REstate.Web.Auth.Modules
                     { "sub", principal.UserOrApplicationName},
                     { "apikey", crypto.EncryptionProvider.Encrypt(jti + principal.ApiKey)},
                     { "claims", principal.Claims }
-                }, true);
+                }, false);
 
                 return Negotiate
                     .WithModel(await Task.FromResult(new { jwt }))

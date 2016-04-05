@@ -12,7 +12,7 @@ namespace REstate.Web.AdminUI.Modules
         /// <summary>
         /// Registers the UI routes for the application.
         /// </summary>
-        public HomeModule(REstateConfiguration configuration)
+        public HomeModule(REstatePlatformConfiguration configuration)
         {
                 Get["/"] = _ => Context.CurrentUser == null 
                     ? Response.AsRedirect(configuration.AdminAddress.Address)

@@ -1,4 +1,4 @@
-using REstate.Web.Modules;
+using Psibr.Platform.Nancy.Modules;
 
 namespace REstate.Web.Configuration.Modules
 {

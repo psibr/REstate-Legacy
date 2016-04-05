@@ -7,6 +7,7 @@ using REstate.Services;
 using REstate.Web.Configuration.Requests;
 using System.Collections.Generic;
 using System.Linq;
+using Psibr.Platform.Nancy;
 
 namespace REstate.Web.Configuration.Modules
 {

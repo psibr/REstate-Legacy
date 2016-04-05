@@ -1,11 +1,12 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
 using REstate.Chrono;
 using REstate.Client;
 using REstate.Repositories.Chrono.Susanoo;
-using System.Configuration;
 using AutofacSerilogIntegration;
 using Newtonsoft.Json;
-using REstate.Logging.Serilog;
+using Psibr.Platform;
+using Psibr.Platform.Logging.Serilog;
 using REstate.Platform;
 using Serilog;
 using Topshelf;
@@ -18,9 +19,9 @@ namespace REstate.Services.ChronoConsumer
 
         static void Main(string[] args)
         {
-            var configString = REstateConfiguration.LoadConfigurationFile();
+            var configString = PlatformConfiguration.LoadConfigurationFile("REstateConfig.json");
 
-            var config = JsonConvert.DeserializeObject<REstateConfiguration>(configString);
+            var config = JsonConvert.DeserializeObject<REstatePlatformConfiguration>(configString);
             
             var kernel = BuildAndConfigureContainer(config).Build();
 
@@ -39,13 +40,16 @@ namespace REstate.Services.ChronoConsumer
 
                 host.SetServiceName(ServiceName);
             });
+
+            Console.ReadLine();
         }
 
-        private static ContainerBuilder BuildAndConfigureContainer(REstateConfiguration configuration)
+        private static ContainerBuilder BuildAndConfigureContainer(REstatePlatformConfiguration configuration)
         {
             var container = new ContainerBuilder();
 
-            container.RegisterInstance(configuration);
+            container.Register(ctx => configuration)
+                .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
 
             container.RegisterInstance(new ConsumerServiceConfiguration
             {
@@ -54,7 +58,7 @@ namespace REstate.Services.ChronoConsumer
 
             container.RegisterType<ChronoConsumerService>();
 
-            container.RegisterModule<SerilogREstateLoggingModule>();
+            container.RegisterModule<SerilogPlatformLoggingModule>();
 
             container.RegisterLogger(
                 new LoggerConfiguration().MinimumLevel.Verbose()

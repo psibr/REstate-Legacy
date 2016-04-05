@@ -1,22 +1,11 @@
 ﻿using System;
-using Autofac;
+using Psibr.Platform.Logging;
 using Serilog;
 
 namespace REstate.Logging.Serilog
 {
-    public class SerilogREstateLoggingModule : Module
-    {
-        protected override void Load(ContainerBuilder builder)
-        {
-            base.Load(builder);
-
-            builder.RegisterAdapter<ILogger, IREstateLogger>(serilogLogger =>
-                new SerilogLoggingAdapter(serilogLogger));
-        }
-    }
-
     public class SerilogLoggingAdapter
-        : IREstateLogger
+        : IPlatformLogger
     {
         private readonly ILogger _logger;
 
@@ -25,13 +14,13 @@ namespace REstate.Logging.Serilog
             _logger = serilogLogger;
         }
 
-        public IREstateLogger ForContext(string propertyName, object value, bool destructureObjects = false) => 
+        public IPlatformLogger ForContext(string propertyName, object value, bool destructureObjects = false) => 
             new SerilogLoggingAdapter(_logger.ForContext(propertyName, value, destructureObjects));
 
-        public IREstateLogger ForContext<TSource>() =>
+        public IPlatformLogger ForContext<TSource>() =>
             new SerilogLoggingAdapter(_logger.ForContext<TSource>());
 
-        public IREstateLogger ForContext(Type source) =>
+        public IPlatformLogger ForContext(Type source) =>
             new SerilogLoggingAdapter(_logger.ForContext(source));
 
         public void Verbose(string messageTemplate, params object[] propertyValues) =>

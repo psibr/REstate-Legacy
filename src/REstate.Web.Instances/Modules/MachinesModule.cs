@@ -6,9 +6,10 @@ using REstate.Repositories.Configuration;
 using REstate.Repositories.Instances;
 using REstate.Services;
 using REstate.Web.Instances.Requests;
-using REstate.Web.Modules;
 using System;
 using System.Linq;
+using Psibr.Platform.Nancy;
+using Psibr.Platform.Nancy.Modules;
 
 namespace REstate.Web.Instances.Modules
 {

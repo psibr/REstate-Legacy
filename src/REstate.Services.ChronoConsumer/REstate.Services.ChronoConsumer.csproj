@@ -45,6 +45,18 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.1.2.0.0\lib\net461\Psibr.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform.Logging.Serilog, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Logging.Serilog.1.0.0.0\lib\net461\Psibr.Platform.Logging.Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
       <Private>True</Private>
@@ -85,10 +97,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\REstate.Logging.Serilog\REstate.Logging.Serilog.csproj">
-      <Project>{bc1b64fe-0b9b-4ffd-b490-fba8792c076c}</Project>
-      <Name>REstate.Logging.Serilog</Name>
-    </ProjectReference>
     <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
       <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
       <Name>REstate.Platform</Name>
@@ -108,10 +116,6 @@
     <ProjectReference Include="..\REstate.Client\REstate.Client.csproj">
       <Project>{bc6e21a3-4200-4681-b74a-b30b6f46bace}</Project>
       <Name>REstate.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\REstate.Web.Common\REstate.Web.Common.csproj">
-      <Project>{75b55765-0ea6-4158-a0e2-c81e54742718}</Project>
-      <Name>REstate.Web.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate\REstate.csproj">
       <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>

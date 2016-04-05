@@ -1,4 +1,6 @@
-﻿namespace REstate.Web.Chrono
+﻿using Psibr.Platform.Nancy;
+
+namespace REstate.Web.Chrono
 {
     public class ChronoRoutePrefix : RoutePrefix
     {

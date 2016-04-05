@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Psibr.Platform, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.1.2.0.0\lib\net461\Psibr.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Susanoo.Core, Version=1.2.4.2, Culture=neutral, PublicKeyToken=0a505ce04f8a59d5, processorArchitecture=MSIL">
       <HintPath>..\packages\Susanoo.Core.1.2.4.2\lib\net45\Susanoo.Core.dll</HintPath>
       <Private>True</Private>

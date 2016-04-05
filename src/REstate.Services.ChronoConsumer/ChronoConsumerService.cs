@@ -1,8 +1,7 @@
 ﻿using System;
+using Psibr.Platform.Logging;
 using REstate.Chrono;
 using REstate.Client;
-using REstate.Logging;
-using REstate.Platform;
 
 namespace REstate.Services.ChronoConsumer
 {
@@ -16,13 +15,13 @@ namespace REstate.Services.ChronoConsumer
     {
         private IAuthSessionClient<IInstancesSession> InstanceSessionClient { get; }
         private IInstancesSession _instanceSession;
-        private IREstateLogger Logger { get; }
+        private IPlatformLogger Logger { get; }
         private ConsumerServiceConfiguration Configuration { get; }
         private IChronoRepository ChronoRepository { get; }
         private Repositories.Chrono.Susanoo.ChronoConsumer _chronoConsumer;
 
         public ChronoConsumerService(ConsumerServiceConfiguration configuration, IChronoRepository chronoRepository, 
-            IAuthSessionClient<IInstancesSession> instanceSessionClient, IREstateLogger logger)
+            IAuthSessionClient<IInstancesSession> instanceSessionClient, IPlatformLogger logger)
         {
             InstanceSessionClient = instanceSessionClient;
             Logger = logger;
