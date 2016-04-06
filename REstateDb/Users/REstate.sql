@@ -1,4 +1,0 @@
-CREATE USER [REstate]
-	FOR LOGIN [REstate]
-	WITH DEFAULT_SCHEMA = [dbo]
-GO
