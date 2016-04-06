@@ -2,32 +2,28 @@
   "encryptionPassphrase": "ThisIsMySharedKeyAndPassPhrase",
   "hmacPassphrase": "ThisIsMySharedKeyAndPassPhrase",
   "hmacSaltBase64": "AQJ80f7/MC89",
-  "claimsPrincipalResourceName": "REstate.Web.Principal",
+  "claimsPrincipalResourceName": "REstate.Principal",
   "encryptionSaltBase64": "AQJ80f7/MC89",
   "httpServices": {
     "admin": {
-      "address": "http://localhost/restate/",
-      "binding": "http://+/restate"
+      "address": "http://localhost/restate/ui",
+      "binding": "http://+:80/restate/ui"
     },
     "chrono": {
       "address": "http://localhost/restate/chrono/",
-      "binding": "http://+/restate/chrono"
+      "binding": "http://+:80/restate/chrono"
     },
-    "configuration": {
-      "address": "http://localhost/restate/configuration/",
-      "binding": "http://+/restate/configuration"
-    },
-    "instances": {
-      "address": "http://localhost/restate/machines/",
-      "binding": "http://+/restate/machines"
+    "core": {
+      "address": "http://localhost/restate/",
+      "binding": "http://+:80/restate"
     },
     "auth": {
       "address": "http://localhost/restate/auth/",
-      "binding": "http://+/restate/auth"
+      "binding": "http://+:80/restate/auth"
     },
     "messaging": {
       "address": "http://localhost/restate/messaging/",
-      "binding": "http://+/restate/messaging"
+      "binding": "http://+:80/restate/messaging"
     }
   },
   "processingServices": {
@@ -47,7 +43,12 @@
     {
       "connectionString": "server=(LocalDB)\\MSSQLLocalDb;database=REstate;Application Name=REstate;Integrated Security=sspi;MultipleActiveResultSets=true",
       "providerName": "System.Data.SqlClient",
-      "tags": [ "configuration", "instances", "chrono", "auth" ]
+      "tags": [ "configuration", "instances", "chrono", "core", "auth" ]
+    },
+    {
+      "connectionString": "http://68.97.116.11:8500",
+      "providerName": "consul",
+      "tags": [ "consul", "core" ]
     }
   ]
 }

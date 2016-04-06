@@ -18,7 +18,7 @@ namespace REstate.Client.Chrono
         }
 
 
-        public async Task AddChronoTrigger(Guid machineInstanceId, string chronoTriggerJson)
+        public async Task AddChronoTrigger(string machineInstanceId, string chronoTriggerJson)
         {
             var chronoTrigger = JsonConvert.DeserializeObject<ChronoTriggerRequest>(chronoTriggerJson);
 
@@ -28,7 +28,7 @@ namespace REstate.Client.Chrono
 
         }
 
-        public async Task AddChronoTrigger(Guid machineInstanceId, string chronoTriggerJson, string payload)
+        public async Task AddChronoTrigger(string machineInstanceId, string chronoTriggerJson, string payload)
         {
             var chronoTrigger = JsonConvert.DeserializeObject<ChronoTriggerRequest>(chronoTriggerJson);
 

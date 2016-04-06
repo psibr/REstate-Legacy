@@ -4,11 +4,12 @@ using System.Collections.Generic;
 namespace REstate
 {
     public class State
-        : IEquatable<State>, IEquatable<KeyValuePair<int, string>>
+        : IEquatable<State>, IEquatable<KeyValuePair<string, string>>
     {
-        public State(int machineDefinitionId, string stateName)
+        public State(string machineDefinitionId, string stateName)
         {
-            if (machineDefinitionId <= 0) throw new ArgumentOutOfRangeException(nameof(machineDefinitionId));
+            if (string.IsNullOrWhiteSpace(machineDefinitionId))
+                throw new ArgumentException("Argument is null or whitespace", nameof(stateName));
             if (string.IsNullOrWhiteSpace(stateName))
                 throw new ArgumentException("Argument is null or whitespace", nameof(stateName));
 
@@ -16,9 +17,10 @@ namespace REstate
             StateName = stateName;
         }
 
-        public State(KeyValuePair<int, string> statePair)
+        public State(KeyValuePair<string, string> statePair)
         {
-            if (statePair.Key <= 0) throw new ArgumentOutOfRangeException(nameof(statePair));
+            if (string.IsNullOrWhiteSpace(statePair.Key))
+                throw new ArgumentException("Argument is null or whitespace", nameof(statePair));
             if (string.IsNullOrWhiteSpace(statePair.Value))
                 throw new ArgumentException("Argument is null or whitespace", nameof(statePair));
 
@@ -26,7 +28,7 @@ namespace REstate
             StateName = statePair.Value;
         }
 
-        public int MachineDefinitionId { get; }
+        public string MachineDefinitionId { get; }
 
         public string StateName { get; }
 
@@ -56,9 +58,9 @@ namespace REstate
         /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public bool Equals(KeyValuePair<int, string> other)
+        public bool Equals(KeyValuePair<string, string> other)
         {
-            return other.Key > 0
+            return !string.IsNullOrWhiteSpace(other.Key)
                 && !string.IsNullOrWhiteSpace(other.Value)
                 && MachineDefinitionId == other.Key
                 && StateName == other.Value;
@@ -97,7 +99,7 @@ namespace REstate
         {
             unchecked
             {
-                return (MachineDefinitionId * 397) ^ (StateName?.GetHashCode() ?? 0);
+                return (MachineDefinitionId.GetHashCode() * 397) ^ (StateName?.GetHashCode() ?? 0);
             }
         }
 

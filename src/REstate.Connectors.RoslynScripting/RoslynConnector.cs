@@ -8,15 +8,18 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Psibr.Platform.Logging;
 
 namespace REstate.Connectors.RoslynScripting
 {
     public class RoslynConnector : IConnector
     {
+        private readonly IPlatformLogger _logger;
         private readonly string _apiKey;
 
-        public RoslynConnector(string apiKey)
+        public RoslynConnector(IPlatformLogger logger, string apiKey)
         {
+            _logger = logger;
             _apiKey = apiKey;
         }
 
@@ -45,7 +48,14 @@ namespace REstate.Connectors.RoslynScripting
                     }
 
                     await runner
-                        .Invoke(new RoslynScriptGlobals { Machine = machineInstance, Payload = payload }, ct);
+                        .Invoke(new RoslynScriptGlobals
+                        {
+                            Machine = machineInstance,
+                            Payload = payload,
+                            Logger = _logger
+                                .ForContext("MachineDefinitionId", machineInstance.MachineDefinitionId)
+                                .ForContext("MachineInstanceId", machineInstance.MachineInstanceId)
+                        }, ct);
                 };
 
         public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code) =>
@@ -69,7 +79,13 @@ namespace REstate.Connectors.RoslynScripting
                     }
 
                     return await runner
-                        .Invoke(new RoslynScriptGlobals { Machine = machineInstance }, ct);
+                        .Invoke(new RoslynScriptGlobals
+                        {
+                            Machine = machineInstance,
+                            Logger = _logger
+                                .ForContext("MachineDefinitionId", machineInstance.MachineDefinitionId)
+                                .ForContext("MachineInstanceId", machineInstance.MachineInstanceId)
+                        }, ct);
                 };
 
         public void Dispose()

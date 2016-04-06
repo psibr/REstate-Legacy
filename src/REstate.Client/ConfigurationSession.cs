@@ -18,13 +18,19 @@ namespace REstate.Client
             
         }
 
-        public async Task<IStateMachineConfiguration> GetStateMachineConfiguration(int machineDefinitionId)
+        public async Task<IStateMachineConfiguration> GetStateMachineConfiguration(string machineDefinitionId)
         {
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
                 var response = await client.GetAsync($"machinedefinitions/{machineDefinitionId}");
 
-                if (response.StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.Unauthorized:
+                        throw new UnauthorizedException();
+                    case HttpStatusCode.Forbidden:
+                        throw new ForbiddenException();
+                }
 
                 return await response.Content.ReadAsStringAsync();
             });
@@ -43,7 +49,13 @@ namespace REstate.Client
                 var response = await client.PostAsync("machinedefinitions/",
                     new StringContent(payload, Encoding.UTF8, "application/json"));
 
-                if (response.StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.Unauthorized:
+                        throw new UnauthorizedException();
+                    case HttpStatusCode.Forbidden:
+                        throw new ForbiddenException();
+                }
 
                 return await response.Content.ReadAsStringAsync();
             });
@@ -53,13 +65,19 @@ namespace REstate.Client
             return configurationResponse;
         }
 
-        public async Task<string> GetMachineDiagram(int machineDefinitionId)
+        public async Task<string> GetMachineDiagram(string machineDefinitionId)
         {
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
                 var response = await client.GetAsync($"machinedefinitions/{machineDefinitionId}/diagram");
 
-                if (response.StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.Unauthorized:
+                        throw new UnauthorizedException();
+                    case HttpStatusCode.Forbidden:
+                        throw new ForbiddenException();
+                }
 
                 return await response.Content.ReadAsStringAsync();
             });

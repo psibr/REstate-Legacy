@@ -2,7 +2,7 @@ namespace REstate.Configuration
 {
     public class MachineDefinition : IMachineDefinition
     {
-        public int MachineDefinitionId { get; set; }
+        public string MachineDefinitionId { get; set; }
 
         public string MachineName { get; set; }
 

@@ -2,6 +2,6 @@
 {
     public interface IMachineDefinitionDependent
     {
-        int MachineDefinitionId { get; set; }
+        string MachineDefinitionId { get; set; }
     }
 }

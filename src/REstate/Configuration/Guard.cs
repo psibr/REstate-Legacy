@@ -3,7 +3,7 @@
     public class Guard 
         : IGuard
     {
-        public int MachineDefinitionId { get; set; }
+        public string MachineDefinitionId { get; set; }
 
         public string GuardName { get; set; }
 

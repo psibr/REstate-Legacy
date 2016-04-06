@@ -2,7 +2,7 @@
 {
     internal class TriggerModel
     {
-        public int MachineDefinitionId { get; set; }
+        public string MachineDefinitionId { get; set; }
         public string TriggerName { get; set; }
 
         public static implicit operator REstate.Trigger(TriggerModel model)

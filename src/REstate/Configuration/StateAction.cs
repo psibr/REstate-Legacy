@@ -3,7 +3,7 @@
     public class StateAction
         : IStateAction
     {
-        public int MachineDefinitionId { get; set; }
+        public string MachineDefinitionId { get; set; }
         public string StateName { get; set; }
         public string PurposeName { get; set; }
         public string TriggerName { get; set; }

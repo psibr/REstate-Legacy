@@ -19,11 +19,11 @@ namespace REstate.Stateless
             _connectorFactoryResolver = connectorFactoryResolver;
         }
 
-        public IStateMachine ConstructFromConfiguration(string apiKey, Guid machineInstanceGuid,
+        public IStateMachine ConstructFromConfiguration(string apiKey, string machineInstanceId,
             IStateMachineConfiguration configuration,
             IInstanceRepositoryContextFactory instanceRepositoryContextFactory)
         {
-            var accessorMutator = new PersistentStateAccessorMutator(instanceRepositoryContextFactory, apiKey, machineInstanceGuid);
+            var accessorMutator = new PersistentStateAccessorMutator(instanceRepositoryContextFactory, apiKey, machineInstanceId);
 
             return ConstructFromConfiguration(apiKey, accessorMutator, configuration);
         }
@@ -193,7 +193,7 @@ namespace REstate.Stateless
 
         protected interface IStateAccessorMutator
         {
-            Guid MachineInstanceId { get; }
+            string MachineInstanceId { get; }
 
             State Accessor();
 
@@ -206,14 +206,14 @@ namespace REstate.Stateless
             private readonly IInstanceRepository _context;
 
             public PersistentStateAccessorMutator(IInstanceRepositoryContextFactory instanceRepositoryContextFactory,
-                string apiKey, Guid machineInstanceGuid)
+                string apiKey, string machineInstanceId)
             {
-                MachineInstanceId = machineInstanceGuid;
+                MachineInstanceId = machineInstanceId;
 
                 _context = instanceRepositoryContextFactory.OpenInstanceRepositoryContext(apiKey);
             }
 
-            public Guid MachineInstanceId { get; }
+            public string MachineInstanceId { get; }
 
             public State Accessor()
             {
@@ -240,8 +240,8 @@ namespace REstate.Stateless
     {
         private State _state;
 
-        public Guid MachineInstanceId
-            => Guid.NewGuid();
+        public string MachineInstanceId
+            => Guid.NewGuid().ToString();
 
         public State Accessor()
         {

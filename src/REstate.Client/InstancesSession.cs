@@ -19,7 +19,7 @@ namespace REstate.Client
 
         }
 
-        public async Task<Guid> InstantiateMachine(int machineDefinitionId)
+        public async Task<Guid> InstantiateMachine(string machineDefinitionId)
         {
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
@@ -36,11 +36,11 @@ namespace REstate.Client
             return instance.MachineInstanceGuid;
         }
 
-        public async Task<State> GetMachineState(Guid machineInstanceGuid)
+        public async Task<State> GetMachineState(string machineInstanceId)
         {
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
-                var response = await client.GetAsync($"{machineInstanceGuid}/state");
+                var response = await client.GetAsync($"{machineInstanceId}/state");
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
 
@@ -54,11 +54,11 @@ namespace REstate.Client
             return state;
         }
 
-        public async Task<bool> IsMachineInState(Guid machineInstanceGuid, string stateName)
+        public async Task<bool> IsMachineInState(string machineInstanceId, string stateName)
         {
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
-                var response = await client.GetAsync($"{machineInstanceGuid}/isinstate/{stateName}");
+                var response = await client.GetAsync($"{machineInstanceId}/isinstate/{stateName}");
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
 
@@ -70,11 +70,11 @@ namespace REstate.Client
             return isInStateResponse.IsInState;
         }
 
-        public async Task<ICollection<Trigger>> GetAvailableTriggers(Guid machineInstanceGuid)
+        public async Task<ICollection<Trigger>> GetAvailableTriggers(string machineInstanceId)
         {
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
-                var response = await client.GetAsync($"{machineInstanceGuid}/triggers");
+                var response = await client.GetAsync($"{machineInstanceId}/triggers");
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
 
@@ -86,11 +86,11 @@ namespace REstate.Client
             return triggers.Select(t => (REstate.Trigger)t).ToArray();
         }
 
-        public async Task<State> FireTrigger(Guid machineInstanceGuid, string triggerName, string payload = null)
+        public async Task<State> FireTrigger(string machineInstanceId, string triggerName, string payload = null)
         {
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
-                var response = await client.PostAsync($"{machineInstanceGuid}/fire/{triggerName}",
+                var response = await client.PostAsync($"{machineInstanceId}/fire/{triggerName}",
                     payload == null ? new StringContent(string.Empty) :
                         new StringContent($"{{ \"payload\": \"{payload}\" }}", Encoding.UTF8, "application/json"));
 
@@ -111,11 +111,11 @@ namespace REstate.Client
             return state;
         }
 
-        public async Task DeleteInstance(Guid machineInstanceGuid)
+        public async Task DeleteInstance(string machineInstanceId)
         {
             await EnsureAuthenticatedRequest(async (client) =>
             {
-                var response = await client.DeleteAsync($"{machineInstanceGuid}");
+                var response = await client.DeleteAsync($"{machineInstanceId}");
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
 
@@ -123,11 +123,11 @@ namespace REstate.Client
             });
         }
 
-        public async Task<string> GetMachineDiagram(Guid machineInstanceGuid)
+        public async Task<string> GetMachineDiagram(string machineInstanceId)
         {
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
-                var response = await client.GetAsync($"{machineInstanceGuid}/diagram");
+                var response = await client.GetAsync($"{machineInstanceId}/diagram");
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized) throw new UnauthorizedException();
 

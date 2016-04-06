@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="AuthenticatedSession.cs" />
     <Compile Include="ConfigurationSession.cs" />
+    <Compile Include="ForbiddenException.cs" />
     <Compile Include="IAuthenticatedSession.cs" />
     <Compile Include="IAuthSession.cs" />
     <Compile Include="IConfigurationSession.cs" />

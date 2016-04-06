@@ -33,7 +33,8 @@ namespace REstate.Services.Auth
                 host.Service<PlatformApiService>(svc =>
                 {
                     svc.ConstructUsing(() => kernel.Resolve<PlatformApiService>());
-                    svc.WhenStarted(service => service.Start());
+                    svc.WhenStarted(service => 
+                        service.Start());
                     svc.WhenStopped(service => service.Stop());
                 });
 

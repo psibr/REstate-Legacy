@@ -77,8 +77,8 @@
       <HintPath>..\packages\OwinJwtAndCookie.1.0.0.0\lib\net461\OwinJwtAndCookie.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Psibr.Platform, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.1.2.0.0\lib\net461\Psibr.Platform.dll</HintPath>
+    <Reference Include="Psibr.Platform, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.2.0.0.0\lib\net461\Psibr.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Psibr.Platform.Nancy, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">

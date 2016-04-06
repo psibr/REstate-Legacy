@@ -6,12 +6,12 @@ namespace REstate.Client
 {
     public interface IInstancesSession : IAuthenticatedSession
     {
-        Task DeleteInstance(Guid machineInstanceGuid);
-        Task<State> FireTrigger(Guid machineInstanceGuid, string triggerName, string payload = null);
-        Task<ICollection<Trigger>> GetAvailableTriggers(Guid machineInstanceGuid);
-        Task<string> GetMachineDiagram(Guid machineInstanceGuid);
-        Task<State> GetMachineState(Guid machineInstanceGuid);
-        Task<Guid> InstantiateMachine(int machineDefinitionId);
-        Task<bool> IsMachineInState(Guid machineInstanceGuid, string stateName);
+        Task DeleteInstance(string machineInstanceId);
+        Task<State> FireTrigger(string machineInstanceId, string triggerName, string payload = null);
+        Task<ICollection<Trigger>> GetAvailableTriggers(string machineInstanceId);
+        Task<string> GetMachineDiagram(string machineInstanceId);
+        Task<State> GetMachineState(string machineInstanceId);
+        Task<Guid> InstantiateMachine(string machineDefinitionId);
+        Task<bool> IsMachineInState(string machineInstanceId, string stateName);
     }
 }

@@ -8,12 +8,12 @@ namespace REstate.Repositories.Instances
     public interface IMachineInstancesRepository
     { 
 
-        Task EnsureInstanceExists(IStateMachineConfiguration configuration, Guid machineInstanceGuid, CancellationToken cancellationToken);
+        Task EnsureInstanceExists(IStateMachineConfiguration configuration, string machineInstanceId, CancellationToken cancellationToken);
 
-        Task DeleteInstance(Guid machineInstanceGuid, CancellationToken cancellationToken);
+        Task DeleteInstance(string machineInstanceId, CancellationToken cancellationToken);
 
-        State GetInstanceState(Guid machineInstanceGuid);
+        State GetInstanceState(string machineInstanceId);
 
-        void SetInstanceState(Guid machineInstanceGuid, State state, State lastState);
+        void SetInstanceState(string machineInstanceId, State state, State lastState);
     }
 }

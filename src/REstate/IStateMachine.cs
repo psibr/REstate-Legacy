@@ -5,9 +5,9 @@ namespace REstate
 {
     public interface IStateMachine
     {
-        Guid MachineInstanceId { get; }
+        string MachineInstanceId { get; }
 
-        int MachineDefinitionId { get; }
+        string MachineDefinitionId { get; }
 
         void Fire(Trigger trigger);
 

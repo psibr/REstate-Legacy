@@ -4,21 +4,23 @@ using System.Collections.Generic;
 namespace REstate
 {
     public class Trigger
-        : IEquatable<Trigger>, IEquatable<KeyValuePair<int, string>>
+        : IEquatable<Trigger>, IEquatable<KeyValuePair<string, string>>
     {
-        public Trigger(int machineDefinitionId, string triggerName)
+        public Trigger(string machineDefinitionId, string triggerName)
         {
-            if (machineDefinitionId <= 0) throw new ArgumentOutOfRangeException(nameof(machineDefinitionId));
             if (string.IsNullOrWhiteSpace(triggerName))
                 throw new ArgumentException("Argument is null or whitespace", nameof(triggerName));
+            if (String.IsNullOrWhiteSpace(machineDefinitionId))
+                throw new ArgumentException("Argument is null or whitespace", nameof(machineDefinitionId));
 
             MachineDefinitionId = machineDefinitionId;
             TriggerName = triggerName;
         }
 
-        public Trigger(KeyValuePair<int, string> statePair)
+        public Trigger(KeyValuePair<string, string> statePair)
         {
-            if (statePair.Key <= 0) throw new ArgumentOutOfRangeException(nameof(statePair));
+            if (string.IsNullOrWhiteSpace(statePair.Key))
+                throw new ArgumentException("Argument is null or whitespace", nameof(statePair));
             if (string.IsNullOrWhiteSpace(statePair.Value))
                 throw new ArgumentException("Argument is null or whitespace", nameof(statePair));
 
@@ -26,7 +28,7 @@ namespace REstate
             TriggerName = statePair.Value;
         }
 
-        public virtual int MachineDefinitionId { get; }
+        public virtual string MachineDefinitionId { get; }
 
         public virtual string TriggerName { get; }
 
@@ -56,9 +58,9 @@ namespace REstate
         /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public bool Equals(KeyValuePair<int, string> other)
+        public bool Equals(KeyValuePair<string, string> other)
         {
-            return other.Key > 0
+            return !string.IsNullOrWhiteSpace(other.Key)
                    && !string.IsNullOrWhiteSpace(other.Value)
                    && MachineDefinitionId == other.Key
                    && TriggerName == other.Value;
@@ -80,8 +82,8 @@ namespace REstate
             if (trigger != null)
                 return Equals(trigger);
 
-            if (obj is KeyValuePair<int, string>)
-                return Equals((KeyValuePair<int, string>)obj);
+            if (obj is KeyValuePair<string, string>)
+                return Equals((KeyValuePair<string, string>)obj);
 
             return false;
         }
@@ -97,7 +99,7 @@ namespace REstate
         {
             unchecked
             {
-                return (MachineDefinitionId * 397) ^ (TriggerName?.GetHashCode() ?? 0);
+                return (MachineDefinitionId.GetHashCode() * 397) ^ (TriggerName?.GetHashCode() ?? 0);
             }
         }
 

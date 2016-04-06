@@ -15,11 +15,8 @@ namespace REstate.Platform
         public HttpServiceAddressConfiguration ChronoAddress =>
             HttpServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "chrono")).Value;
 
-        public HttpServiceAddressConfiguration InstancesAddress =>
-            HttpServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "instances")).Value;
-
-        public HttpServiceAddressConfiguration ConfigurationAddress =>
-            HttpServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "configuration")).Value;
+        public HttpServiceAddressConfiguration CoreAddress =>
+            HttpServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "core")).Value;
 
         public ProcessingServiceConfiguration ChronoConsumerConfig =>
             ProcessingServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "chronoConsumer")).Value;

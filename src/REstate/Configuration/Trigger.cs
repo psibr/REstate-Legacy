@@ -7,7 +7,7 @@ namespace REstate.Configuration
             IsActive = true;
         }
 
-        public int MachineDefinitionId { get; set; }
+        public string MachineDefinitionId { get; set; }
 
         public string TriggerName { get; set; }
 

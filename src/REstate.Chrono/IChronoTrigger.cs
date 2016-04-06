@@ -6,7 +6,7 @@ namespace REstate.Chrono
     {
         Guid ChronoTriggerId { get; set; }
 
-        Guid MachineInstanceId { get; set; }
+        string MachineInstanceId { get; set; }
 
         string StateName { get; set; }
 

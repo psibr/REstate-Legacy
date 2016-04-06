@@ -2,7 +2,7 @@
 {
     internal class StateModel
     {
-        public int MachineDefinitionId { get; set; }
+        public string MachineDefinitionId { get; set; }
         public string StateName { get; set; }
 
         public static implicit operator REstate.State(StateModel model)

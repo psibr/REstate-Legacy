@@ -6,7 +6,7 @@ namespace REstate.Services
 {
     public interface IStateMachineFactory
     {
-        IStateMachine ConstructFromConfiguration(string apiKey, Guid machineInstanceGuid,
+        IStateMachine ConstructFromConfiguration(string apiKey, string machineInstanceId,
             IStateMachineConfiguration configuration,
             IInstanceRepositoryContextFactory instanceRepositoryContextFactory);
 
