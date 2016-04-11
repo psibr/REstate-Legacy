@@ -40,7 +40,11 @@ namespace REstate.Services.Core
                     svc.WhenStopped(service => service.Stop());
                 });
 
-                host.RunAsNetworkService();
+                if (config.ServiceCredentials.Username.Equals("NETWORK SERVICE", StringComparison.OrdinalIgnoreCase))
+                    host.RunAsNetworkService();
+                else
+                    host.RunAs(config.ServiceCredentials.Username, config.ServiceCredentials.Password);
+
                 host.StartAutomatically();
 
                 host.SetServiceName(ServiceName);
@@ -69,6 +73,7 @@ namespace REstate.Services.Core
                 new LoggerConfiguration().MinimumLevel.Verbose()
                     .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
+                    .WriteTo.RollingFile($"..\\..\\..\\..\\logs\\{ServiceName}\\{{Date}}.log")
                     .CreateLogger());
 
             container.Register(context => new InstancesRoutePrefix("/machines"));

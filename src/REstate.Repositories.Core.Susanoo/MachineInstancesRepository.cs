@@ -31,7 +31,7 @@ namespace REstate.Repositories.Core.Susanoo
             CancellationToken cancellationToken)
         {
             await CommandManager.Instance
-                .DefineCommand("IF NOT EXISTS(SELECT TOP 1 MachineInstances.MachineInstanceId FROM MachineInstances WHERE MachineInstanceId = @MachineInstanceGuid)" +
+                .DefineCommand("IF NOT EXISTS(SELECT TOP 1 MachineInstances.MachineInstanceId FROM MachineInstances WHERE MachineInstanceId = @MachineInstanceId)" +
                                "\n\tINSERT INTO MachineInstances VALUES(@machineInstanceId, @MachineDefinitionId, @InitialStateName); ", CommandType.Text)
                 .Realize()
                 .ExecuteNonQueryAsync(DatabaseManagerPool.DatabaseManager, new

@@ -28,14 +28,7 @@ namespace REstate.Web.Chrono.Modules
             {
                 var addChronoTriggerRequest = this.Bind<ChronoTrigger>();
 
-                try
-                {
-                    await _chronoRepository.AddChronoTrigger(addChronoTriggerRequest, ct);
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
+                await _chronoRepository.AddChronoTrigger(addChronoTriggerRequest, ct);
 
                 return 200;
             };

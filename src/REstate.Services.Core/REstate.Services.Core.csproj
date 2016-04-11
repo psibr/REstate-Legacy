@@ -90,24 +90,24 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="OwinJwtAndCookie, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\OwinJwtAndCookie.1.0.0.0\lib\net461\OwinJwtAndCookie.dll</HintPath>
+    <Reference Include="OwinJwtAndCookie, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OwinJwtAndCookie.1.0.8.0\lib\net45\OwinJwtAndCookie.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Psibr.Platform, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.2.0.0.0\lib\net461\Psibr.Platform.dll</HintPath>
+    <Reference Include="Psibr.Platform, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.2.0.1.0\lib\net45\Psibr.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Psibr.Platform.Logging.Serilog, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.Logging.Serilog.1.0.0.0\lib\net461\Psibr.Platform.Logging.Serilog.dll</HintPath>
+    <Reference Include="Psibr.Platform.Logging.Serilog, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Logging.Serilog.1.0.1.0\lib\net45\Psibr.Platform.Logging.Serilog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Psibr.Platform.Nancy, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.Nancy.2.0.0.0\lib\net461\Psibr.Platform.Nancy.dll</HintPath>
+    <Reference Include="Psibr.Platform.Nancy, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Nancy.2.0.2.0\lib\net45\Psibr.Platform.Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Psibr.Platform.Nancy.Service, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.Nancy.Service.1.0.0.0\lib\net461\Psibr.Platform.Nancy.Service.dll</HintPath>
+    <Reference Include="Psibr.Platform.Nancy.Service, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Nancy.Service.1.0.1.0\lib\net45\Psibr.Platform.Nancy.Service.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">

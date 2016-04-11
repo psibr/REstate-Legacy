@@ -11,7 +11,7 @@ namespace REstate.Client
         Task<ICollection<Trigger>> GetAvailableTriggers(string machineInstanceId);
         Task<string> GetMachineDiagram(string machineInstanceId);
         Task<State> GetMachineState(string machineInstanceId);
-        Task<Guid> InstantiateMachine(string machineDefinitionId);
+        Task<string> InstantiateMachine(string machineDefinitionId);
         Task<bool> IsMachineInState(string machineInstanceId, string stateName);
     }
 }

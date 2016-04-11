@@ -4,6 +4,6 @@ namespace REstate.Client.Models
 {
     internal class MachineInstantiateResponse
     {
-        public Guid MachineInstanceGuid { get; set; }
+        public string MachineInstanceId { get; set; }
     }
 }

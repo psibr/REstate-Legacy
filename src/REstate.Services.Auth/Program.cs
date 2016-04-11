@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
 using REstate.Repositories.Auth.Susanoo;
 using AutofacSerilogIntegration;
 using Newtonsoft.Json;
@@ -38,11 +39,17 @@ namespace REstate.Services.Auth
                     svc.WhenStopped(service => service.Stop());
                 });
 
-                host.RunAsNetworkService();
+                if (config.ServiceCredentials.Username.Equals("NETWORK SERVICE", StringComparison.OrdinalIgnoreCase))
+                    host.RunAsNetworkService();
+                else
+                    host.RunAs(config.ServiceCredentials.Username, config.ServiceCredentials.Password);
+
                 host.StartAutomatically();
 
                 host.SetServiceName(ServiceName);
             });
+
+            Console.ReadLine();
         }
 
         private static ContainerBuilder BuildAndConfigureContainer(REstatePlatformConfiguration configuration)
@@ -65,6 +72,7 @@ namespace REstate.Services.Auth
                 new LoggerConfiguration().MinimumLevel.Verbose()
                     .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
+                    .WriteTo.RollingFile($"..\\..\\..\\..\\logs\\{ServiceName}\\{{Date}}.log")
                     .CreateLogger());
 
             container.Register(context => new AuthRoutePrefix(string.Empty));

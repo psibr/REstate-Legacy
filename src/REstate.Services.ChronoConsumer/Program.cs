@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using Autofac;
 using REstate.Chrono;
 using REstate.Client;
@@ -35,7 +37,11 @@ namespace REstate.Services.ChronoConsumer
                     svc.WhenStopped(service => service.Stop());
                 });
 
-                host.RunAsNetworkService();
+                if (config.ServiceCredentials.Username.Equals("NETWORK SERVICE", StringComparison.OrdinalIgnoreCase))
+                    host.RunAsNetworkService();
+                else
+                    host.RunAs(config.ServiceCredentials.Username, config.ServiceCredentials.Password);
+
                 host.StartAutomatically();
 
                 host.SetServiceName(ServiceName);
@@ -64,6 +70,7 @@ namespace REstate.Services.ChronoConsumer
                 new LoggerConfiguration().MinimumLevel.Verbose()
                     .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
+                    .WriteTo.RollingFile($"..\\..\\..\\..\\logs\\{ServiceName}\\{{Date}}.log")
                     .CreateLogger());
 
             container.RegisterType<ChronoRepositoryFactory>()
@@ -75,7 +82,7 @@ namespace REstate.Services.ChronoConsumer
                 .As<IREstateClientFactory>();
 
             container.Register(context => context.Resolve<IREstateClientFactory>()
-                .GetInstancesClient(configuration.CoreAddress.Address))
+                .GetInstancesClient(configuration.CoreAddress.Address + "machines/"))
                 .As<IAuthSessionClient<IInstancesSession>>();
 
             return container;

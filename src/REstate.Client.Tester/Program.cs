@@ -13,26 +13,26 @@ namespace REstate.Client.Tester
         static void Main(string[] args)
         {
 
-            var client = new ConsulClient(new ConsulClientConfiguration
-            {
-                Address = new Uri("http://68.97.116.37:8500", UriKind.Absolute),
-                Datacenter = "home"
-            });
+            //var client = new ConsulClient(new ConsulClientConfiguration
+            //{
+            //    Address = new Uri("http://68.97.116.37:8500", UriKind.Absolute),
+            //    Datacenter = "home"
+            //});
 
-            var putPair = new KVPair("hello")
-            {
-                Value = Encoding.UTF8.GetBytes("Hello Consul")
-            };
+            //var putPair = new KVPair("hello")
+            //{
+            //    Value = Encoding.UTF8.GetBytes("Hello Consul")
+            //};
 
-            var putAttempt = client.KV.Put(putPair).Result;
+            //var putAttempt = client.KV.Put(putPair).Result;
 
-            if (putAttempt.Response)
-            {
-                var getPair = client.KV.Get("hello").Result;
+            //if (putAttempt.Response)
+            //{
+            //    var getPair = client.KV.Get("hello").Result;
 
-                var res =  Encoding.UTF8.GetString(getPair.Response.Value, 0,
-                    getPair.Response.Value.Length);
-            }
+            //    var res =  Encoding.UTF8.GetString(getPair.Response.Value, 0,
+            //        getPair.Response.Value.Length);
+            //}
 
             var configString = PlatformConfiguration.LoadConfigurationFile("REstateConfig.json");
 
@@ -40,10 +40,8 @@ namespace REstate.Client.Tester
 
             var clientFactory = new REstateClientFactory($"{config.AuthAddress.Address}apikey");
 
-            
-
             var machine = clientFactory
-                .GetConfigurationClient(config.ConfigurationAddress.Address)
+                .GetConfigurationClient($"{config.CoreAddress.Address}configuration")
                 .GetSession("98EC17D7-7F31-4A44-A911-6B4D10B3DC2E").Result
                 .DefineStateMachine(new StateMachineConfiguration
                 {
@@ -114,15 +112,15 @@ namespace REstate.Client.Tester
                     }
                 }).Result;
 
-            var instanceSession = clientFactory.GetInstancesClient(config.InstancesAddress.Address)
+            var instanceSession = clientFactory.GetInstancesClient(config.CoreAddress.Address)
                 .GetSession("98EC17D7-7F31-4A44-A911-6B4D10B3DC2E").Result;
 
-            var instanceGuid = instanceSession
+            var instanceId = instanceSession
                 .InstantiateMachine(machine.MachineDefinition.MachineDefinitionId).Result;
 
-            Console.WriteLine(instanceSession.GetMachineState(instanceGuid).Result);
+            Console.WriteLine(instanceSession.GetMachineState(instanceId).Result);
 
-            Console.WriteLine(instanceSession.FireTrigger(instanceGuid, "Up").Result.StateName);
+            Console.WriteLine(instanceSession.FireTrigger(instanceId, "Up").Result.StateName);
 
 
         }

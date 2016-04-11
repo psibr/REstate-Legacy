@@ -36,7 +36,8 @@ namespace REstate.Services.ChronoConsumer
 
             Logger.Information("Authenticated session acquired.");
 
-            _chronoConsumer = new Repositories.Chrono.Susanoo.ChronoConsumer(ChronoRepository, _instanceSession);
+            _chronoConsumer = new Repositories.Chrono.Susanoo.ChronoConsumer(ChronoRepository, _instanceSession,
+                Logger.ForContext<Repositories.Chrono.Susanoo.ChronoConsumer>());
 
             _chronoConsumer.Start();
 

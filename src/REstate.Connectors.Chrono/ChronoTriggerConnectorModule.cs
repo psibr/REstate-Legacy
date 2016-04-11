@@ -17,7 +17,7 @@ namespace REstate.Connectors.Chrono
             builder.RegisterType<ChronoTriggerConnectorFactory>()
                 .As<IConnectorFactory>();
 
-            builder.Register(context => new REstateClientFactory(Configuration.AuthAddress + "apikey"))
+            builder.Register(context => new REstateClientFactory(Configuration.AuthAddress.Address + "apikey"))
                 .As<IREstateClientFactory>();
 
             builder.Register(context => context.Resolve<IREstateClientFactory>()

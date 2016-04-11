@@ -17,7 +17,7 @@ namespace REstate.Platform
         public static void RegisterConnectors(this ContainerBuilder builder, REstatePlatformConfiguration configuration)
         {
             var binFolder = new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent;
-            var pluginFolder = new DirectoryInfo(binFolder.Parent.Parent.Parent.FullName + "/Connectors");
+            var pluginFolder = new DirectoryInfo(Path.Combine(binFolder.Parent.Parent.Parent.FullName, "Connectors"));
             IEnumerable<FileInfo> pluginAssemblies = binFolder.GetFiles("REstate.Connectors.*.dll", SearchOption.TopDirectoryOnly);
 
             if (pluginFolder.Exists)
@@ -26,17 +26,15 @@ namespace REstate.Platform
                     .Union(pluginFolder.GetFiles("REstate.Connectors.*.dll", SearchOption.AllDirectories));
             }
             
-            foreach (var pluginAssemblyFile in pluginAssemblies)
+            foreach (var module in pluginAssemblies
+                .Select(pluginAssemblyFile => Assembly.LoadFrom(pluginAssemblyFile.FullName))
+                .Select(asm => asm.GetExportedTypes()
+                    .Where(t => t.GetInterfaces().Contains(typeof(IREstateConnectorModule))))
+                .SelectMany(connectorModules => connectorModules.Select(connectorModule => 
+                    (IREstateConnectorModule)Activator.CreateInstance(connectorModule))))
             {
-                var asm = Assembly.LoadFrom(pluginAssemblyFile.FullName);
-                var connectorModules = asm.GetExportedTypes().Where(t => t.GetInterfaces().Contains(typeof(IREstateConnectorModule)));
-
-                foreach (var connectorModule in connectorModules)
-                {
-                    var module = (IREstateConnectorModule)Activator.CreateInstance(connectorModule);
-                    module.Configuration = configuration;
-                    builder.RegisterModule(module);
-                }
+                module.Configuration = configuration;
+                builder.RegisterModule(module);
             }
         }
     }

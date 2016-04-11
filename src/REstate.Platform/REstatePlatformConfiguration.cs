@@ -20,5 +20,8 @@ namespace REstate.Platform
 
         public ProcessingServiceConfiguration ChronoConsumerConfig =>
             ProcessingServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "chronoConsumer")).Value;
+
+        public ServiceCredentials ServiceCredentials { get; set; }
+
     }
 }

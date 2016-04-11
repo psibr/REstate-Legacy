@@ -19,7 +19,7 @@ namespace REstate.Client
 
         }
 
-        public async Task<Guid> InstantiateMachine(string machineDefinitionId)
+        public async Task<string> InstantiateMachine(string machineDefinitionId)
         {
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
@@ -33,7 +33,7 @@ namespace REstate.Client
 
             var instance = JsonConvert.DeserializeObject<MachineInstantiateResponse>(responseBody);
 
-            return instance.MachineInstanceGuid;
+            return instance.MachineInstanceId;
         }
 
         public async Task<State> GetMachineState(string machineInstanceId)

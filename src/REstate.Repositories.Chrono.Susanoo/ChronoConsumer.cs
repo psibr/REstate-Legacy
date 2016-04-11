@@ -4,60 +4,78 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
-using IsolationLevel = System.Transactions.IsolationLevel;
+using Psibr.Platform.Logging;
 
 namespace REstate.Repositories.Chrono.Susanoo
 {
     public class ChronoConsumer : IChronoConsumer
     {
+        protected IPlatformLogger Logger { get; }
         private readonly IChronoRepository _repository;
         private readonly IInstancesSession _clientAuthenticatedSession;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-        public ChronoConsumer(IChronoRepository repository, IInstancesSession clientAuthenticatedSession)
+        public ChronoConsumer(IChronoRepository repository, IInstancesSession clientAuthenticatedSession, IPlatformLogger logger)
         {
+            Logger = logger;
             _repository = repository;
             _clientAuthenticatedSession = clientAuthenticatedSession;
         }
 
         public void Start() => Task.Run(() =>
         {
+            Logger.Debug("Beginning Chrono Stream.");
             foreach (var chronoTrigger in _repository.GetChronoStream(_cts.Token))
             {
+                Logger.Debug("ChronoTrigger found: {@chronoTrigger}", chronoTrigger);
+
                 try
                 {
+                    Logger.Verbose("Checking state to ensure ChronoTrigger {{{chronoTriggerId}}} is still valid.",
+                        chronoTrigger.ChronoTriggerId, chronoTrigger);
+
                     var currentState = _clientAuthenticatedSession
                         .GetMachineState(chronoTrigger.MachineInstanceId).Result;
 
                     if (currentState.StateName != chronoTrigger.StateName)
+                    {
+                        Logger.Debug(
+                            "ChronoTrigger {{{chronoTriggerId}}} trigger state ({triggerState}) did not match current state ({currentState}). Removing.",
+                            chronoTrigger.ChronoTriggerId, chronoTrigger.StateName, currentState.StateName);
+
                         _repository.RemoveChronoTrigger(chronoTrigger, _cts.Token).Wait();
+                    }
                     else
                     {
+                        Logger.Debug(
+                            "ChronoTrigger {{{chronoTriggerId}}} trigger state ({triggerState}) matched current state ({currentState}). Continuing.",
+                            chronoTrigger.ChronoTriggerId, chronoTrigger.StateName, currentState.StateName);
+
                         try
                         {
-                            using (var transaction = new TransactionScope(TransactionScopeOption.RequiresNew,
-                                new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
-                                TransactionScopeAsyncFlowOption.Enabled))
-                            {
-                                _clientAuthenticatedSession.FireTrigger(chronoTrigger.MachineInstanceId,
-                                    chronoTrigger.TriggerName, chronoTrigger.Payload).Wait();
+                            _clientAuthenticatedSession.FireTrigger(chronoTrigger.MachineInstanceId,
+                                chronoTrigger.TriggerName, chronoTrigger.Payload).Wait();
 
-                                _repository.RemoveChronoTrigger(chronoTrigger, _cts.Token).Wait();
+                            _repository.RemoveChronoTrigger(chronoTrigger, _cts.Token).Wait();
 
-                                transaction.Complete();
-                            }
+                            Logger.Information("ChronoTrigger {{{chronoTriggerId}}} fired successfully.",
+                                chronoTrigger.ChronoTriggerId, chronoTrigger);
                         }
-                        catch (StateConflictException) { }
+                        catch (StateConflictException ex)
+                        {
+                            Logger.Debug(ex, "State conflict occured on ChronoTrigger {{{chronoTriggerId}}} firing.",
+                                chronoTrigger.ChronoTriggerId, chronoTrigger);
+                        }
                         catch (AggregateException ex)
                             when (ex.InnerExceptions.First().GetType() == typeof(StateConflictException))
                         {
-                            //log here, but otherwise ignore, will be deleted on next pass.
+                            Logger.Debug(ex.InnerExceptions.First(), "State conflict occured on ChronoTrigger {{{chronoTriggerId}}} firing.",
+                                chronoTrigger.ChronoTriggerId, chronoTrigger);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    //Log
+                    Logger.Error(ex, "Unable to check current state.");
                 }
 
             }

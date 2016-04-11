@@ -19,7 +19,7 @@ namespace REstate.Repositories.Core.Susanoo
         public IInstanceRepository OpenInstanceRepositoryContext(string apiKey)
         {
             var connectionConfig = _configuration.Connections
-                .Single(ea => ea.Tags.Contains("instances"));
+                .Single(ea => ea.Tags.Contains("core"));
 
             return new InstanceRepository(
                 new DatabaseManagerPool(

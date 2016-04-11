@@ -4,6 +4,9 @@
   "hmacSaltBase64": "AQJ80f7/MC89",
   "claimsPrincipalResourceName": "REstate.Principal",
   "encryptionSaltBase64": "AQJ80f7/MC89",
+  "serviceCredentials": {
+    "username": "NETWORK SERVICE"
+  },
   "httpServices": {
     "admin": {
       "address": "http://localhost/restate/ui",
@@ -29,7 +32,7 @@
   "processingServices": {
     "chronoConsumer": {
       //This value must be changed to reflect the API key created at install.
-      "apiKey": "64FEAC8C-C00A-44F8-9B3E-C1FC836B1BA2"
+      "apiKey": "5ED9E73E-B9C1-40BA-80FC-FFFB140E6922"
     }
   },
   "cookieName": "REstate",
@@ -41,14 +44,9 @@
   },
   "connections": [
     {
-      "connectionString": "server=(LocalDB)\\MSSQLLocalDb;database=REstate;Application Name=REstate;Integrated Security=sspi;MultipleActiveResultSets=true",
+      "connectionString": "server=devsql;database=REstate;Application Name=REstate;Integrated Security=sspi;MultipleActiveResultSets=true",
       "providerName": "System.Data.SqlClient",
-      "tags": [ "configuration", "instances", "chrono", "core", "auth" ]
-    },
-    {
-      "connectionString": "http://68.97.116.11:8500",
-      "providerName": "consul",
-      "tags": [ "consul", "core" ]
+      "tags": [ "chrono", "core", "auth" ]
     }
   ]
 }

@@ -19,7 +19,7 @@ namespace REstate.Repositories.Core.Susanoo
         public IConfigurationRepository OpenConfigurationRepositoryContext(string apiKey)
         {
             var connectionConfig = _configuration.Connections
-                .Single(ea => ea.Tags.Contains("configuration"));
+                .Single(ea => ea.Tags.Contains("core"));
 
             return new ConfigurationRepository(
                 new DatabaseManagerPool(

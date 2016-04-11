@@ -10,9 +10,9 @@ namespace REstate.Database.SqlServer
     {
         public override void Up()
         {
-            Create.Table("Claims")
-                .WithColumn("ClaimName").AsString(255).NotNullable().PrimaryKey()
-                .WithColumn("ClaimDescription").AsString(500).Nullable();
+            //Create.Table("Claims")
+            //    .WithColumn("ClaimName").AsString(255).NotNullable().PrimaryKey()
+            //    .WithColumn("ClaimDescription").AsString(500).Nullable();
 
             Create.Table("Principals")
                 .WithColumn("ApiKey").AsGuid().NotNullable().PrimaryKey()
@@ -30,22 +30,22 @@ namespace REstate.Database.SqlServer
                 .FromTable("PrincipalClaims").ForeignColumns("ApiKey")
                 .ToTable("Principals").PrimaryColumns("ApiKey");
 
-            Create.ForeignKey("FK_PrincipalClaims_Claims")
-                .FromTable("PrincipalClaims").ForeignColumns("ClaimName")
-                .ToTable("Claims").PrimaryColumns("ClaimName");
+            //Create.ForeignKey("FK_PrincipalClaims_Claims")
+            //    .FromTable("PrincipalClaims").ForeignColumns("ClaimName")
+            //    .ToTable("Claims").PrimaryColumns("ClaimName");
         }
 
         public override void Down()
         {
-            Delete.ForeignKey("FK_PrincipalClaims_Claims")
-                .OnTable("PrincipalClaims");
+            //Delete.ForeignKey("FK_PrincipalClaims_Claims")
+            //    .OnTable("PrincipalClaims");
 
             Delete.ForeignKey("FK_PrincipalClaims_Principals")
                 .OnTable("PrincipalClaims");
 
             Delete.Table("PrincipalClaims");
             Delete.Table("Principals");
-            Delete.Table("Claims");
+            //Delete.Table("Claims");
         }
     }
 }
