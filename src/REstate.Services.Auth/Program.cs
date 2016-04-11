@@ -72,7 +72,7 @@ namespace REstate.Services.Auth
                 new LoggerConfiguration().MinimumLevel.Verbose()
                     .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
-                    .WriteTo.RollingFile($"..\\..\\..\\..\\logs\\{ServiceName}\\{{Date}}.log")
+                    .WriteTo.RollingFile($"{configuration.RollingFileLoggerPath}\\{ServiceName}\\{{Date}}.log")
                     .CreateLogger());
 
             container.Register(context => new AuthRoutePrefix(string.Empty));

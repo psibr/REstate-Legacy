@@ -23,5 +23,7 @@ namespace REstate.Platform
 
         public ServiceCredentials ServiceCredentials { get; set; }
 
+        public string RollingFileLoggerPath { get; set; } = "..\\..\\..\\..\\logs";
+
     }
 }

@@ -70,7 +70,7 @@ namespace REstate.Services.ChronoConsumer
                 new LoggerConfiguration().MinimumLevel.Verbose()
                     .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
-                    .WriteTo.RollingFile($"..\\..\\..\\..\\logs\\{ServiceName}\\{{Date}}.log")
+                    .WriteTo.RollingFile($"{configuration.RollingFileLoggerPath}\\{ServiceName}\\{{Date}}.log")
                     .CreateLogger());
 
             container.RegisterType<ChronoRepositoryFactory>()

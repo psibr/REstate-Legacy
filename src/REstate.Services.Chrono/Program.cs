@@ -71,7 +71,7 @@ namespace REstate.Services.Chrono
                 new LoggerConfiguration().MinimumLevel.Verbose()
                     .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
-                    .WriteTo.RollingFile($"..\\..\\..\\..\\logs\\{ServiceName}\\{{Date}}.log")
+                    .WriteTo.RollingFile($"{configuration.RollingFileLoggerPath}\\{ServiceName}\\{{Date}}.log")
                     .CreateLogger());
 
             container.Register(context => new ChronoRoutePrefix(string.Empty));

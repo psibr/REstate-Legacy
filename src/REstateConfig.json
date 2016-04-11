@@ -42,6 +42,7 @@
   "tokenLifeSpan": 30,
   "connectorConfig": {
   },
+  "rollingFileLoggerPath":  "C:\\REstate\\logs",
   "connections": [
     {
       "connectionString": "server=devsql;database=REstate;Application Name=REstate;Integrated Security=sspi;MultipleActiveResultSets=true",

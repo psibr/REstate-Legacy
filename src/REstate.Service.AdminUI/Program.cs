@@ -66,7 +66,7 @@ namespace REstate.Services.AdminUI
                 new LoggerConfiguration().MinimumLevel.Verbose()
                     .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
-                    .WriteTo.RollingFile($"..\\..\\..\\..\\logs\\{ServiceName}\\{{Date}}.log")
+                    .WriteTo.RollingFile($"{configuration.RollingFileLoggerPath}\\{ServiceName}\\{{Date}}.log")
                     .CreateLogger());
 
             return container;

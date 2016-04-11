@@ -73,7 +73,7 @@ namespace REstate.Services.Core
                 new LoggerConfiguration().MinimumLevel.Verbose()
                     .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
-                    .WriteTo.RollingFile($"..\\..\\..\\..\\logs\\{ServiceName}\\{{Date}}.log")
+                    .WriteTo.RollingFile($"{configuration.RollingFileLoggerPath}\\{ServiceName}\\{{Date}}.log")
                     .CreateLogger());
 
             container.Register(context => new InstancesRoutePrefix("/machines"));
@@ -94,6 +94,19 @@ namespace REstate.Services.Core
                 .As<IStateMachineFactory>();
 
             return container;
+        }
+    }
+
+    public static class FluentIfExtension
+    {
+        public static T If<T>(this T fluentObject, Func<T, bool> predicate, Action<T> fluentContinuation)
+        {
+            if (predicate(fluentObject))
+            {
+                fluentContinuation(fluentObject);
+            }
+
+            return fluentObject;
         }
     }
 }
