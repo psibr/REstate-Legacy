@@ -110,6 +110,10 @@
       <HintPath>..\packages\Psibr.Platform.Nancy.Service.1.0.1.0\lib\net45\Psibr.Platform.Nancy.Service.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="REstate.Domain.Core, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Domain.Core.1.0.1.0\lib\net45\REstate.Domain.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
       <Private>True</Private>
@@ -151,14 +155,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\REstate.Client.Chrono\REstate.Client.Chrono.csproj">
-      <Project>{af3a3ed1-2281-4c83-b939-50dce42d14b9}</Project>
-      <Name>REstate.Client.Chrono</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\REstate.Client\REstate.Client.csproj">
-      <Project>{bc6e21a3-4200-4681-b74a-b30b6f46bace}</Project>
-      <Name>REstate.Client</Name>
-    </ProjectReference>
     <ProjectReference Include="..\REstate.Connectors.Chrono\REstate.Connectors.Chrono.csproj">
       <Project>{3b215cfc-1cf6-47d8-96f0-053adbf2d9ba}</Project>
       <Name>REstate.Connectors.Chrono</Name>
@@ -190,10 +186,6 @@
     <ProjectReference Include="..\REstate.Web.Core\REstate.Web.Core.csproj">
       <Project>{a3090be0-89e4-4a70-ab11-321db6be43f0}</Project>
       <Name>REstate.Web.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\REstate\REstate.csproj">
-      <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>
-      <Name>REstate</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

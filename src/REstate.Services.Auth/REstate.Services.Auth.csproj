@@ -158,10 +158,6 @@
       <Project>{43c30519-a517-44e5-9767-79b90b0ce3eb}</Project>
       <Name>REstate.Repositories.Chrono.Susanoo</Name>
     </ProjectReference>
-    <ProjectReference Include="..\REstate.Chrono\REstate.Chrono.csproj">
-      <Project>{6ee10dc1-eaa1-4754-b207-d4c4b86eab9f}</Project>
-      <Name>REstate.Chrono</Name>
-    </ProjectReference>
     <ProjectReference Include="..\REstate.Connectors.RoslynScripting\REstate.Connectors.RoslynScripting.csproj">
       <Project>{310a26d6-518b-41a6-b5db-0b4a1b4a84c9}</Project>
       <Name>REstate.Connectors.RoslynScripting</Name>
@@ -181,10 +177,6 @@
     <ProjectReference Include="..\REstate.Web.Auth\REstate.Web.Auth.csproj">
       <Project>{c4c12bdf-551f-441f-8f02-4d706ab61127}</Project>
       <Name>REstate.Web.Auth</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\REstate\REstate.csproj">
-      <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>
-      <Name>REstate</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
