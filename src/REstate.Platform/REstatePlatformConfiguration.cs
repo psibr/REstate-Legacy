@@ -6,16 +6,16 @@ namespace REstate.Platform
     public class REstatePlatformConfiguration
         : PlatformConfiguration, IPlatformConfiguration
     {
-        public HttpServiceAddressConfiguration AuthAddress =>
+        public HttpServiceAddressConfiguration AuthHttpService =>
             HttpServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "auth")).Value;
 
-        public HttpServiceAddressConfiguration AdminAddress =>
+        public HttpServiceAddressConfiguration AdminHttpService =>
             HttpServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "admin")).Value;
 
-        public HttpServiceAddressConfiguration ChronoAddress =>
+        public HttpServiceAddressConfiguration ChronoHttpService =>
             HttpServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "chrono")).Value;
 
-        public HttpServiceAddressConfiguration CoreAddress =>
+        public HttpServiceAddressConfiguration CoreHttpService =>
             HttpServices.SingleOrDefault(kvp => string.Equals(kvp.Key, "core")).Value;
 
         public ProcessingServiceConfiguration ChronoConsumerConfig =>

@@ -34,8 +34,8 @@
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Nancy, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nancy.1.4.1\lib\net40\Nancy.dll</HintPath>
+    <Reference Include="Nancy, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.1.4.3\lib\net40\Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Nancy.Authentication.Stateless, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -58,12 +58,12 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Psibr.Platform, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.2.0.1.0\lib\net45\Psibr.Platform.dll</HintPath>
+    <Reference Include="Psibr.Platform, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.3.1.0\lib\net45\Psibr.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="REstate.Client, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\REstateClient.1.0.4.0\lib\net461\REstate.Client.dll</HintPath>
+    <Reference Include="REstate.Client, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstateClient.1.1.2\lib\net461\REstate.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="REstate.Domain.Chrono, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">

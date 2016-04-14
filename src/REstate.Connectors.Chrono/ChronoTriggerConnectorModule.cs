@@ -17,11 +17,11 @@ namespace REstate.Connectors.Chrono
             builder.RegisterType<ChronoTriggerConnectorFactory>()
                 .As<IConnectorFactory>();
 
-            builder.Register(context => new REstateClientFactory(Configuration.AuthAddress.Address + "apikey"))
+            builder.Register(context => new REstateClientFactory(Configuration.AuthHttpService.Address + "apikey"))
                 .As<IREstateClientFactory>();
 
             builder.Register(context => context.Resolve<IREstateClientFactory>()
-                .GetChronoClient(Configuration.ChronoAddress.Address))
+                .GetChronoClient(Configuration.ChronoHttpService.Address))
                 .As<IAuthSessionClient<IChronoSession>>();
         }
     }

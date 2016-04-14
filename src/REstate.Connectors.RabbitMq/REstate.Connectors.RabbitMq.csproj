@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6905FC7A-53DE-4454-A37B-5D53E4702785}</ProjectGuid>
+    <ProjectGuid>{9D8388D3-FB9E-45E8-BD94-E045F753616B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>REstate.Platform</RootNamespace>
-    <AssemblyName>REstate.Platform</AssemblyName>
+    <RootNamespace>REstate.Connectors.RabbitMq</RootNamespace>
+    <AssemblyName>REstate.Connectors.RabbitMq</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -38,6 +38,14 @@
       <HintPath>..\packages\Psibr.Platform.3.1.0\lib\net45\Psibr.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="RabbitMQ.Client, Version=3.6.1.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
+      <HintPath>..\packages\RabbitMQ.Client.3.6.1\lib\net45\RabbitMQ.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="REstate.Domain.Core, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Domain.Core.1.0.1.0\lib\net45\REstate.Domain.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,16 +56,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConnectorRegistrationExtensions.cs" />
-    <Compile Include="IREstateConnectorModule.cs" />
+    <Compile Include="ActionConfiguration.cs" />
+    <Compile Include="RabbitMqConnector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="REstatePlatformConfiguration.cs" />
-    <Compile Include="ServiceCredentials.cs" />
+    <Compile Include="RabbitMqConnectorFactory.cs" />
+    <Compile Include="RabbitMqConnectorModule.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
+      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
+      <Name>REstate.Platform</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

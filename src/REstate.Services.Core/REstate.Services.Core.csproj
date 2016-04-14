@@ -94,20 +94,24 @@
       <HintPath>..\packages\OwinJwtAndCookie.1.0.8.0\lib\net45\OwinJwtAndCookie.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Psibr.Platform, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.2.0.1.0\lib\net45\Psibr.Platform.dll</HintPath>
+    <Reference Include="Psibr.Platform, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.3.1.0\lib\net45\Psibr.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Psibr.Platform.Logging.Serilog, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Psibr.Platform.Logging.Serilog.1.0.1.0\lib\net45\Psibr.Platform.Logging.Serilog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Psibr.Platform.Nancy, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.Nancy.2.0.2.0\lib\net45\Psibr.Platform.Nancy.dll</HintPath>
+    <Reference Include="Psibr.Platform.Nancy, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Nancy.3.0.0\lib\net45\Psibr.Platform.Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Psibr.Platform.Nancy.Service, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.Nancy.Service.1.0.1.0\lib\net45\Psibr.Platform.Nancy.Service.dll</HintPath>
+    <Reference Include="Psibr.Platform.Nancy.Service, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Nancy.Service.3.0.0\lib\net45\Psibr.Platform.Nancy.Service.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform.Serialization.NewtonsoftJson, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Serialization.NewtonsoftJson.1.0.0.0\lib\net461\Psibr.Platform.Serialization.NewtonsoftJson.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="REstate.Domain.Core, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -158,6 +162,10 @@
     <ProjectReference Include="..\REstate.Connectors.Chrono\REstate.Connectors.Chrono.csproj">
       <Project>{3b215cfc-1cf6-47d8-96f0-053adbf2d9ba}</Project>
       <Name>REstate.Connectors.Chrono</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.Connectors.RabbitMq\REstate.Connectors.RabbitMq.csproj">
+      <Project>{9d8388d3-fb9e-45e8-bd94-e045f753616b}</Project>
+      <Name>REstate.Connectors.RabbitMq</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate.Connectors.RoslynScripting\REstate.Connectors.RoslynScripting.csproj">
       <Project>{310a26d6-518b-41a6-b5db-0b4a1b4a84c9}</Project>

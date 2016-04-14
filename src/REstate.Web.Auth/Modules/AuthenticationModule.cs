@@ -32,7 +32,7 @@ namespace REstate.Web.Auth.Modules
                 var credentials = this.Bind<CredentialAuthenticationRequest>();
 
                 if (string.IsNullOrWhiteSpace(credentials?.Username) || string.IsNullOrWhiteSpace(credentials.Password))
-                    return Response.AsRedirect(configuration.AuthAddress.Address + "login");
+                    return Response.AsRedirect(configuration.AuthHttpService.Address + "login");
 
                 var environment = Context.GetOwinEnvironment();
                 var signInDelegate = (SignInDelegate)environment["jwtandcookie.signin"];
@@ -48,7 +48,7 @@ namespace REstate.Web.Auth.Modules
                         .LoadPrincipalByCredentials(credentials.Username, passwordHash, ct);
                 }
 
-                if (principal == null) return Response.AsRedirect(configuration.AuthAddress.Address + "login");
+                if (principal == null) return Response.AsRedirect(configuration.AuthHttpService.Address + "login");
 
                 var jwt = signInDelegate((jti) => new Dictionary<string, object>
                 {
@@ -57,7 +57,7 @@ namespace REstate.Web.Auth.Modules
                     { "claims", principal.Claims }
                 }, true);
 
-                return Response.AsRedirect(configuration.AdminAddress.Address);
+                return Response.AsRedirect(configuration.AdminHttpService.Address);
             };
 
             Post["/apikey", true] = async (parameters, ct) =>

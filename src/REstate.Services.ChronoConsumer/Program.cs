@@ -78,11 +78,11 @@ namespace REstate.Services.ChronoConsumer
 
             container.Register(context => context.Resolve<IChronoRepositoryFactory>().OpenRepository());
 
-            container.Register(context => new REstateClientFactory(configuration.AuthAddress.Address + "apikey"))
+            container.Register(context => new REstateClientFactory(configuration.AuthHttpService.Address + "apikey"))
                 .As<IREstateClientFactory>();
 
             container.Register(context => context.Resolve<IREstateClientFactory>()
-                .GetInstancesClient(configuration.CoreAddress.Address + "machines/"))
+                .GetInstancesClient(configuration.CoreHttpService.Address + "machines/"))
                 .As<IAuthSessionClient<IInstancesSession>>();
 
             return container;

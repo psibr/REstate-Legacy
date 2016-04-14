@@ -6,6 +6,8 @@ using Psibr.Platform;
 using Psibr.Platform.Logging.Serilog;
 using Psibr.Platform.Nancy;
 using Psibr.Platform.Nancy.Service;
+using Psibr.Platform.Serialization;
+using Psibr.Platform.Serialization.NewtonsoftJson;
 using REstate.Platform;
 using REstate.Repositories.Configuration;
 using REstate.Repositories.Core.Susanoo;
@@ -33,9 +35,9 @@ namespace REstate.Services.Core
             HostFactory.Run(host =>
             {
                 host.UseSerilog(kernel.Resolve<ILogger>());
-                host.Service<PlatformApiService>(svc =>
+                host.Service<PlatformApiService<REstatePlatformConfiguration>>(svc =>
                 {
-                    svc.ConstructUsing(() => kernel.Resolve<PlatformApiService>());
+                    svc.ConstructUsing(() => kernel.Resolve<PlatformApiService<REstatePlatformConfiguration>>());
                     svc.WhenStarted(service => service.Start());
                     svc.WhenStopped(service => service.Stop());
                 });
@@ -60,12 +62,10 @@ namespace REstate.Services.Core
             container.Register(ctx => configuration)
                 .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
 
-            container.RegisterInstance(new ApiServiceConfiguration
-            {
-                HostBindingAddress = configuration.CoreAddress.Binding
-            });
+            container.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
+                configuration, configuration.CoreHttpService));
 
-            container.RegisterType<PlatformApiService>();
+            container.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
 
             container.RegisterModule<SerilogPlatformLoggingModule>();
 
@@ -75,6 +75,9 @@ namespace REstate.Services.Core
                     .WriteTo.LiterateConsole()
                     .WriteTo.RollingFile($"{configuration.RollingFileLoggerPath}\\{ServiceName}\\{{Date}}.log")
                     .CreateLogger());
+
+            container.RegisterType<NewtonsoftJsonSerializer>()
+                .As<IStringSerializer, IByteSerializer>();
 
             container.Register(context => new InstancesRoutePrefix("/machines"));
             container.Register(context => new ConfigurationRoutePrefix("/configuration"));

@@ -15,7 +15,7 @@ namespace REstate.Web.AdminUI.Modules
         public HomeModule(REstatePlatformConfiguration configuration)
         {
                 Get["/"] = _ => Context.CurrentUser == null 
-                    ? Response.AsRedirect(configuration.AdminAddress.Address)
+                    ? Response.AsRedirect(configuration.AdminHttpService.Address)
                     : 404;
         }
     }

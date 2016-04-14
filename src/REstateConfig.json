@@ -1,16 +1,13 @@
 {
-  "encryptionPassphrase": "ThisIsMySharedKeyAndPassPhrase",
-  "hmacPassphrase": "ThisIsMySharedKeyAndPassPhrase",
-  "hmacSaltBase64": "AQJ80f7/MC89",
-  "claimsPrincipalResourceName": "REstate.Principal",
-  "encryptionSaltBase64": "AQJ80f7/MC89",
   "serviceCredentials": {
     "username": "NETWORK SERVICE"
   },
   "httpServices": {
     "admin": {
       "address": "http://localhost/restate/ui",
-      "binding": "http://+:80/restate/ui"
+      "binding": "http://+:80/restate/ui",
+      "servesStaticContent": true,
+      "staticContentRootRoutePath": "wwwroot"
     },
     "chrono": {
       "address": "http://localhost/restate/chrono/",
@@ -23,24 +20,30 @@
     "auth": {
       "address": "http://localhost/restate/auth/",
       "binding": "http://+:80/restate/auth"
-    },
-    "messaging": {
-      "address": "http://localhost/restate/messaging/",
-      "binding": "http://+:80/restate/messaging"
     }
   },
   "processingServices": {
     "chronoConsumer": {
-      //This value must be changed to reflect the API key created at install.
       "apiKey": "5ED9E73E-B9C1-40BA-80FC-FFFB140E6922"
     }
   },
-  "cookieName": "REstate",
-  "cookiePath": "/",
-  "servesStaticContent": false,
-  "staticContentRootRoutePath": "/",
-  "tokenLifeSpan": 30,
-  "connectorConfig": {
+  "authenticationSettings": {
+    "encryptionPassphrase": "ThisIsMySharedKeyAndPassPhrase",
+    "hmacPassphrase": "ThisIsMySharedKeyAndPassPhrase",
+    "hmacSaltBase64": "AQJ80f7/MC89",
+    "claimsPrincipalResourceName": "REstate.Principal",
+    "encryptionSaltBase64": "AQJ80f7/MC89",
+    "cookieName": "REstate",
+    "cookiePath": "/",
+    "tokenLifeSpan": 30
+  },
+  "connectorConfigurations": {
+    "RabbitMq": {
+      "hostName": "host",
+      "virtualHost": "/",
+      "userName": "REstate",
+      "password": "REstate"
+    }
   },
   "rollingFileLoggerPath":  "C:\\REstate\\logs",
   "connections": [

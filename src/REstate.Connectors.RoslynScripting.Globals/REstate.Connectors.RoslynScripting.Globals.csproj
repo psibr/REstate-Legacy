@@ -36,8 +36,8 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Psibr.Platform, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.2.0.1.0\lib\net45\Psibr.Platform.dll</HintPath>
+    <Reference Include="Psibr.Platform, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.3.1.0\lib\net45\Psibr.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="REstate.Domain.Core, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">

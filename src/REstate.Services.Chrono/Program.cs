@@ -31,9 +31,9 @@ namespace REstate.Services.Chrono
             HostFactory.Run(host =>
             {
                 host.UseSerilog(kernel.Resolve<ILogger>());
-                host.Service<PlatformApiService>(svc =>
+                host.Service<PlatformApiService<REstatePlatformConfiguration>>(svc =>
                 {
-                    svc.ConstructUsing(() => kernel.Resolve<PlatformApiService>());
+                    svc.ConstructUsing(() => kernel.Resolve<PlatformApiService<REstatePlatformConfiguration>>());
                     svc.WhenStarted(service => service.Start());
                     svc.WhenStopped(service => service.Stop());
                 });
@@ -58,12 +58,10 @@ namespace REstate.Services.Chrono
             container.Register(ctx => configuration)
                 .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
 
-            container.RegisterInstance(new ApiServiceConfiguration
-            {
-                HostBindingAddress = configuration.ChronoAddress.Binding
-            });
+            container.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
+                configuration, configuration.ChronoHttpService));
 
-            container.RegisterType<PlatformApiService>();
+            container.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
 
             container.RegisterModule<SerilogPlatformLoggingModule>();
 
