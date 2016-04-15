@@ -52,10 +52,10 @@ namespace REstate.Connectors.RabbitMq
                             .ToDictionary<KeyValuePair<string, string>,
                                 string, object>(kvp => kvp.Key, kvp => kvp.Value);
 
-                    actionSettings.Headers = actionSettings.Headers ?? new Dictionary<string, string>();
+                    properties.Headers = properties.Headers ?? new Dictionary<string, object>();
 
-                    actionSettings.Headers.Add("MachineInstanceId", machineInstance.MachineInstanceId);
-                    actionSettings.Headers.Add("MachineDefinitionId", machineInstance.MachineDefinitionId);
+                    properties.Headers.Add("MachineInstanceId", machineInstance.MachineInstanceId);
+                    properties.Headers.Add("MachineDefinitionId", machineInstance.MachineDefinitionId);
 
                     try
                     {
