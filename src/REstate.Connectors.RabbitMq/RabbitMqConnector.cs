@@ -12,7 +12,7 @@ using REstate.Services;
 
 namespace REstate.Connectors.RabbitMq
 {
-    public class RabbitMqConnector 
+    public class RabbitMqConnector
         : IConnector
     {
         protected ConnectionFactory ConnectionFactory { get; set; }
@@ -47,20 +47,25 @@ namespace REstate.Connectors.RabbitMq
 
                     properties.ContentType = actionSettings.ContentType ?? "application/json";
                     properties.Type = actionSettings.MessageType;
-                    if(actionSettings.Headers != null)
+                    if (actionSettings.Headers != null)
                         properties.Headers = actionSettings.Headers
                             .ToDictionary<KeyValuePair<string, string>,
                                 string, object>(kvp => kvp.Key, kvp => kvp.Value);
 
+                    actionSettings.Headers = actionSettings.Headers ?? new Dictionary<string, string>();
+
+                    actionSettings.Headers.Add("MachineInstanceId", machineInstance.MachineInstanceId);
+                    actionSettings.Headers.Add("MachineDefinitionId", machineInstance.MachineDefinitionId);
+
                     try
                     {
-                        channel.BasicPublish(actionSettings.ExchangeName, 
+                        channel.BasicPublish(actionSettings.ExchangeName,
                             actionSettings.MessageType, properties, Encoding.UTF8.GetBytes(payload));
 
                         Logger
                             .ForContext("ActionConfiguration", actionSettings, true)
                             .Debug("Successfully published RabbitMq action message. " +
-                                   "MessageType: {messageType}, Payload: {payload}", 
+                                   "MessageType: {messageType}, Payload: {payload}",
                                    actionSettings.MessageType, payload);
                     }
                     catch (Exception ex)
