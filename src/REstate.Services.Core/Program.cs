@@ -3,6 +3,7 @@ using Autofac;
 using AutofacSerilogIntegration;
 using Newtonsoft.Json;
 using Psibr.Platform;
+using Psibr.Platform.Logging;
 using Psibr.Platform.Logging.Serilog;
 using Psibr.Platform.Nancy;
 using Psibr.Platform.Nancy.Service;
@@ -95,6 +96,10 @@ namespace REstate.Services.Core
 
             container.RegisterType<StatelessStateMachineFactory>()
                 .As<IStateMachineFactory>();
+
+            container.Register<Func<IConnector, IPlatformLogger, IConnector>>(ctx => 
+                ((connector, logger) =>
+                    new TaskConnectorDecorator(connector, logger))).SingleInstance();
 
             return container;
         }
