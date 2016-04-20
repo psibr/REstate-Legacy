@@ -5,6 +5,7 @@ using Stateless;
 using System;
 using System.Linq;
 using System.Threading;
+using Psibr.Platform.Logging;
 
 namespace REstate.Stateless
 {
@@ -12,11 +13,15 @@ namespace REstate.Stateless
         : IStateMachineFactory
     {
         private readonly IConnectorFactoryResolver _connectorFactoryResolver;
+        public IPlatformLogger Logger { get; }
+        private readonly Func<IConnector, IPlatformLogger, IConnector> _connectorTransform;
 
         public StatelessStateMachineFactory(
-            IConnectorFactoryResolver connectorFactoryResolver)
+            IConnectorFactoryResolver connectorFactoryResolver, IPlatformLogger logger, Func<IConnector, IPlatformLogger, IConnector> connectorTransform = null)
         {
             _connectorFactoryResolver = connectorFactoryResolver;
+            Logger = logger;
+            _connectorTransform = connectorTransform ?? ((connector, platformLogger) => connector);
         }
 
         public IStateMachine ConstructFromConfiguration(string apiKey, string machineInstanceId,
@@ -124,7 +129,7 @@ namespace REstate.Stateless
 
             var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(codeElement.ConnectorKey);
             Func<bool> guard = () =>
-                hostFactory.BuildConnector(apiKey).Result
+                _connectorTransform(hostFactory.BuildConnector(apiKey).Result, Logger)
                     .ConstructPredicate(stateMachine, codeElement)
                     .Invoke(CancellationToken.None).Result;
 
@@ -144,7 +149,7 @@ namespace REstate.Stateless
 
             var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(codeElement.ConnectorKey);
             stateSettings.OnExit(() =>
-                hostFactory.BuildConnector(apiKey).Result
+                _connectorTransform(hostFactory.BuildConnector(apiKey).Result, Logger)
                     .ConstructAction(stateMachine, codeElement)
                     .Invoke(CancellationToken.None)
             , stateConfiguration.OnExitAction.StateActionDescription ?? codeElement.CodeElementDescription);
@@ -165,7 +170,7 @@ namespace REstate.Stateless
             stateSettings.OnEntryFrom(
                 new StateMachine<State, Trigger>.TriggerWithParameters<string>(
                     new Trigger(stateConfiguration.State.MachineDefinitionId, stateConfiguration.OnEntryFromAction.TriggerName)), payload =>
-                        hostFactory.BuildConnector(apiKey).Result
+                        _connectorTransform(hostFactory.BuildConnector(apiKey).Result,Logger)
                             .ConstructAction(stateMachine, payload, codeElement)
                             .Invoke(CancellationToken.None),
                 stateConfiguration.OnEntryFromAction.StateActionDescription ?? codeElement.CodeElementDescription);
@@ -185,7 +190,7 @@ namespace REstate.Stateless
 
             var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(codeElement.ConnectorKey);
             stateSettings.OnEntry(() =>
-                hostFactory.BuildConnector(apiKey).Result
+                _connectorTransform(hostFactory.BuildConnector(apiKey).Result, Logger)
                     .ConstructAction(stateMachine, codeElement)
                     .Invoke(CancellationToken.None),
                 stateConfiguration.OnEntryAction.StateActionDescription ?? codeElement.CodeElementDescription);

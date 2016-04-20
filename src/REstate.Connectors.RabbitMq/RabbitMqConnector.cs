@@ -42,11 +42,15 @@ namespace REstate.Connectors.RabbitMq
                     payload = actionSettings.MessageBody;
 
                 Policy.Handle<Exception>().WaitAndRetryForever((i) =>
-                    TimeSpan.FromSeconds((System.Math.Floor(15 * (System.Math.Log10(30 * i) * i)) - 7) * (i <= 5 ? 1 : (i - 4))),
+                    {
+                        i = i > 10 ? 10 : i; //Limit to 10th iteration time.
+                        return TimeSpan.FromSeconds(
+                            (Math.Floor(15 * (Math.Log10(30 * i) * i)) - 7) * (i <= 5 ? 1 : (i - 4)));
+                    },
                     (ex, timespan, ctx) =>
                         Logger
                             .ForContext("retryContext", ctx)
-                            .Error(ex, "An error occured while attempting to send a RabbitMq message. Will retry after {time} seconds.", timespan.Seconds))
+                            .Error(ex, "An error occured while attempting to send a RabbitMq message. Will retry after {time} seconds.", timespan.TotalSeconds))
                     .Execute(() =>
                     {
                         using (var connection = ConnectionFactory.CreateConnection())
@@ -93,7 +97,7 @@ namespace REstate.Connectors.RabbitMq
                                 throw;
                             }
                         }
-                    });                
+                    });
 
                 return Task.CompletedTask;
             };
