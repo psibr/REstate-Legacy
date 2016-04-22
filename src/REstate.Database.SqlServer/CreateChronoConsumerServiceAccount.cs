@@ -11,19 +11,22 @@ namespace REstate.Database.SqlServer
     {
         public override void Up()
         {
+            var apiKey = Guid.NewGuid();
+
             Insert.IntoTable("Principals")
                 .Row(new
                 {
-                    ApiKey = Guid.NewGuid(),
+                    ApiKey = apiKey,
                     PrincipalType = "Application",
                     UserOrApplicationName = "ChronoConsumer"
                 });
+
+            Insert.IntoTable("PrincipalClaims")
+                .Row(new { ApiKey = apiKey, ClaimName = "operator" });
         }
 
         public override void Down()
         {
-            Delete.FromTable("Principals")
-                .Row(new { PrincipalType = "Application", UserOrApplicationName = "ChronoConsumer" });
         }
     }
 }
