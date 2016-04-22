@@ -106,16 +106,16 @@
       <HintPath>..\packages\Psibr.Platform.Nancy.3.0.0\lib\net45\Psibr.Platform.Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Psibr.Platform.Nancy.Service, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.Nancy.Service.3.0.0\lib\net45\Psibr.Platform.Nancy.Service.dll</HintPath>
+    <Reference Include="Psibr.Platform.Nancy.Service, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Nancy.Service.3.0.1\lib\net45\Psibr.Platform.Nancy.Service.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Psibr.Platform.Serialization.NewtonsoftJson, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Psibr.Platform.Serialization.NewtonsoftJson.1.0.0.0\lib\net461\Psibr.Platform.Serialization.NewtonsoftJson.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="REstate.Domain.Core, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\REstate.Domain.Core.1.0.1.0\lib\net45\REstate.Domain.Core.dll</HintPath>
+    <Reference Include="REstate.Domain.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Domain.Core.2.0.0.0\lib\net45\REstate.Domain.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
@@ -162,6 +162,10 @@
     <ProjectReference Include="..\REstate.Connectors.Chrono\REstate.Connectors.Chrono.csproj">
       <Project>{3b215cfc-1cf6-47d8-96f0-053adbf2d9ba}</Project>
       <Name>REstate.Connectors.Chrono</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.Connectors.Decorators.Task\REstate.Connectors.Decorators.Task.csproj">
+      <Project>{71a57dea-fc17-4b35-8928-6a2396fdb8b2}</Project>
+      <Name>REstate.Connectors.Decorators.Task</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate.Connectors.RabbitMq\REstate.Connectors.RabbitMq.csproj">
       <Project>{9d8388d3-fb9e-45e8-bd94-e045f753616b}</Project>

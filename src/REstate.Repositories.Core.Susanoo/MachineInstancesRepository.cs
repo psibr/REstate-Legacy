@@ -8,6 +8,7 @@ using REstate.Configuration;
 using REstate.Repositories.Instances;
 using Susanoo;
 using Susanoo.Processing;
+using Susanoo.Proxies.Transforms;
 using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace REstate.Repositories.Core.Susanoo

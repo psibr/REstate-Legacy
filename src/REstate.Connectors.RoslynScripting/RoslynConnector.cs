@@ -88,6 +88,8 @@ namespace REstate.Connectors.RoslynScripting
                         }, ct);
                 };
 
+        public string ConnectorKey { get; } = "REstate.Connectors.RoslynScripting";
+
         public void Dispose()
         {
             //Nothing to do.

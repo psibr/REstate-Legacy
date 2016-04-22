@@ -50,5 +50,7 @@ namespace REstate.Connectors.Chrono
         {
             throw new NotSupportedException();
         }
+
+        public string ConnectorKey { get; } = "REstate.Connectors.Chrono";
     }
 }

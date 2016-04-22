@@ -39,9 +39,11 @@ namespace REstate.Services.ChronoConsumer
             _chronoConsumer = new Repositories.Chrono.Susanoo.ChronoConsumer(ChronoRepository, _instanceSession,
                 Logger.ForContext<Repositories.Chrono.Susanoo.ChronoConsumer>());
 
+            Logger.Information("Starting ChronoConsumer.");
+
             _chronoConsumer.Start();
 
-            Logger.Information("Starting ChronoConsumer.");
+
 
         }
 

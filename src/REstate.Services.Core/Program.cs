@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Autofac;
 using AutofacSerilogIntegration;
 using Newtonsoft.Json;
@@ -9,6 +10,7 @@ using Psibr.Platform.Nancy;
 using Psibr.Platform.Nancy.Service;
 using Psibr.Platform.Serialization;
 using Psibr.Platform.Serialization.NewtonsoftJson;
+using REstate.Connectors.Decorators.Task;
 using REstate.Platform;
 using REstate.Repositories.Configuration;
 using REstate.Repositories.Core.Susanoo;
@@ -91,15 +93,29 @@ namespace REstate.Services.Core
 
             container.RegisterConnectors(configuration);
 
-            container.RegisterType<DefaultConnectorFactoryResolver>()
-                .As<IConnectorFactoryResolver>();
-
             container.RegisterType<StatelessStateMachineFactory>()
                 .As<IStateMachineFactory>();
 
-            container.Register<Func<IConnector, IPlatformLogger, IConnector>>(ctx => 
-                ((connector, logger) =>
-                    new TaskConnectorDecorator(connector, logger))).SingleInstance();
+            container.RegisterType<DecoratingConnectorFactoryResolver>()
+                .UsingConstructor(() => new DecoratingConnectorFactoryResolver(
+                    null, (ConnectorDecoratorAssociations)null))
+                .As<IConnectorFactoryResolver>();
+
+            container.Register(ctx => new TaskConnectorDecorator(ctx.Resolve<IPlatformLogger>()))
+                .AsSelf()
+                .Named<IConnectorDecorator>("REstate.Connectors.Decorators.Task")
+                .As<IConnectorDecorator>();
+
+            container.Register(ctx => new ConnectorDecoratorAssociations
+            {
+                Associations = new Dictionary<string, IEnumerable<IConnectorDecorator>>
+                {
+                    { "REstate.Connectors.RabbitMq", new []
+                    {
+                        ctx.ResolveNamed<IConnectorDecorator>("REstate.Connectors.Decorators.Task")
+                    }}
+                }
+            });
 
             return container;
         }

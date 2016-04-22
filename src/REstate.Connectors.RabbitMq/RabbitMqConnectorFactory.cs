@@ -29,7 +29,9 @@ namespace REstate.Connectors.RabbitMq
         {
             return Task.FromResult<IConnector>(new RabbitMqConnector(_connectionFactory, _stringSerializer, _logger));
         }
+        
+        string IConnectorFactory.ConnectorKey => ConnectorKey;
 
-        public string ConnectorKey { get; } = "REstate.Connectors.RabbitMq";
+        public static string ConnectorKey => "REstate.Connectors.RabbitMq";
     }
 }

@@ -107,5 +107,7 @@ namespace REstate.Connectors.RabbitMq
         {
             throw new NotSupportedException();
         }
+
+        public string ConnectorKey => "REstate.Connectors.RabbitMq";
     }
 }

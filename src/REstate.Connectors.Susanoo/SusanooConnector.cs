@@ -65,5 +65,7 @@ namespace REstate.Connectors.Susanoo
         public Func<CancellationToken, Task<bool>> ConstructPredicate(IStateMachine machineInstance,
             ICodeWithDatabaseConfiguration code) => async (cancellationToken) =>
                 await ExecuteGuardClause(code, cancellationToken);
+
+        public string ConnectorKey { get; } = "REstate.Connectors.Susanoo";
     }
 }

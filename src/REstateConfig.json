@@ -39,7 +39,7 @@
   },
   "connectorConfigurations": {
     "RabbitMq": {
-      "hostName": "host",
+      "hostName": "DEVTEST01",
       "virtualHost": "/",
       "userName": "REstate",
       "password": "REstate"
