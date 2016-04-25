@@ -147,7 +147,10 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="wwwroot\package.json" />
     <None Include="packages.config" />
+    <None Include="wwwroot\tsconfig.json" />
+    <None Include="wwwroot\typings.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
@@ -158,6 +161,19 @@
       <Project>{85f6276a-c3f1-4496-b8d5-b0df9a9aad60}</Project>
       <Name>REstate.Web.AdminUI</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\app\about.component.ts" />
+    <TypeScriptCompile Include="wwwroot\app\app.component.ts" />
+    <TypeScriptCompile Include="wwwroot\app\graph-viz.component.ts" />
+    <TypeScriptCompile Include="wwwroot\app\home.component.ts" />
+    <TypeScriptCompile Include="wwwroot\app\main.ts" />
+    <TypeScriptCompile Include="wwwroot\app\navbar.component.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="wwwroot\app\navbar.component.html" />
+    <Content Include="wwwroot\index.html" />
+    <Content Include="wwwroot\styles.css" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

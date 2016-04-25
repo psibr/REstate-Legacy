@@ -4,10 +4,10 @@
   },
   "httpServices": {
     "admin": {
-      "address": "http://localhost/restate/ui",
-      "binding": "http://+:80/restate/ui",
+      "address": "http://localhost/restate/admin/",
+      "binding": "http://+:80/restate/admin",
       "servesStaticContent": true,
-      "staticContentRootRoutePath": "wwwroot"
+      "staticContentRootRoutePath": "../../wwwroot"
     },
     "chrono": {
       "address": "http://localhost/restate/chrono/",
@@ -39,7 +39,7 @@
   },
   "connectorConfigurations": {
     "RabbitMq": {
-      "hostName": "DEVTEST01",
+      "hostName": "lambda",
       "virtualHost": "/",
       "userName": "REstate",
       "password": "REstate"
@@ -48,7 +48,7 @@
   "rollingFileLoggerPath":  "C:\\REstate\\logs",
   "connections": [
     {
-      "connectionString": "server=devsql;database=REstate;Application Name=REstate;Integrated Security=sspi;MultipleActiveResultSets=true",
+      "connectionString": "server=lambda;database=REstate;Application Name=REstate;User Id=sa;Password=psiphi_01;MultipleActiveResultSets=true",
       "providerName": "System.Data.SqlClient",
       "tags": [ "chrono", "core", "auth" ]
     }

@@ -40,7 +40,6 @@ namespace REstate.Web.Auth.Modules
                 var passwordHash = Convert.ToBase64String(crypto.HmacProvider
                     .GenerateHmac(credentials.Password));
 
-                ;
                 IPrincipal principal;
                 using (var repository = authRepositoryContextFactory.OpenAuthRepositoryContext())
                 {
