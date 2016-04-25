@@ -271,6 +271,16 @@ namespace REstate.Repositories.Core.Susanoo
             return newGuards.ToList();
         }
 
+        public async Task<ICollection<IMachineDefinition>> ListMachines(CancellationToken cancellationToken)
+        {
+            return (await CommandManager.Instance
+                .DefineCommand("SELECT * FROM MachineDefinitions", CommandType.Text)
+                .DefineResults<MachineDefinition>()
+                .Realize()
+                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, cancellationToken))
+                .ToList<IMachineDefinition>();
+        }
+
         public async Task<ITransition> UpdateTransition(ITransition transition, CancellationToken cancellationToken)
         {
             if (transition == null) throw new ArgumentNullException(nameof(transition));

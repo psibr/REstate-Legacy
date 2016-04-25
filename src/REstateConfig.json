@@ -39,7 +39,7 @@
   },
   "connectorConfigurations": {
     "RabbitMq": {
-      "hostName": "lambda",
+      "hostName": "devsql",
       "virtualHost": "/",
       "userName": "REstate",
       "password": "REstate"
@@ -48,7 +48,7 @@
   "rollingFileLoggerPath":  "C:\\REstate\\logs",
   "connections": [
     {
-      "connectionString": "server=lambda;database=REstate;Application Name=REstate;User Id=sa;Password=psiphi_01;MultipleActiveResultSets=true",
+      "connectionString": "server=devsql;database=REstate;Application Name=REstate;integrated security=sspi;MultipleActiveResultSets=true",
       "providerName": "System.Data.SqlClient",
       "tags": [ "chrono", "core", "auth" ]
     }

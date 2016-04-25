@@ -32,6 +32,21 @@ namespace REstate.Web.Core.Modules
             GetDiagramForDefinition(configurationRepositoryContextFactory, stateMachineFactory);
 
             DefineStateMachine(configurationRepositoryContextFactory);
+            ListMachines(configurationRepositoryContextFactory);
+        }
+
+        private void ListMachines(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
+        {
+            Get["ListDefinitions", "/", true] = async (parameters, ct) =>
+            {
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
+                {
+                    return Negotiate
+                        .WithModel(await repository.Machines.ListMachines(ct))
+                        .WithAllowedMediaRange(new MediaRange("application/json"));
+                }
+            };
         }
 
         private void DefineStateMachine(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
