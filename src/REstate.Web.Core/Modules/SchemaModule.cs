@@ -22,6 +22,12 @@ namespace REstate.Web.Core.Modules
                     .Replace("{host}", configuration.CoreHttpService.Address)
                     .Replace("//", "/")
                     .Replace(":/", "://"), "application/schema+json");
+
+            Get["StateSchema", "/state"] = (parameters) =>
+                Response.AsText(Schemas.State
+                    .Replace("{host}", configuration.CoreHttpService.Address)
+                    .Replace("//", "/")
+                    .Replace(":/", "://"), "application/schema+json");
         }
         
     }

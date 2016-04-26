@@ -120,32 +120,84 @@
   <data name="Machine" xml:space="preserve">
     <value>{
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "http://localhost/restate/machine",
+  "id": "{host}/machine",
   "type": "object",
   "name": "Machine",
   "title": "Machine",
+  "required": [
+    "machineName",
+    "triggers"
+  ],
   "properties": {
     "machineName": {
-      "id": "http://localhost/restate/machine/name",
+      "id": "{host}/machine/name",
       "type": "string",
       "name": "Name",
       "title": "Name"
     },
-    "triggers": {
-      "id": "http://localhost/restate/machine/triggers",
+    "stateConfigurations": {
+      "id": "{host}/machine/state-configurations",
       "type": "array",
-      "title": "Triggers",
+      "title": "State Configurations",
       "items": {
         "type": "object",
-        "name": "Trigger",
-        "properties": {},
-        "$ref": "http://localhost/restate/trigger"
+        "name": "State Configuration",
+        "title": "State Configuration",
+        "headerTemplate": "{{ self.state.stateName }}",
+        "minItems": 1,
+        "properties": {
+          "state": {
+            "id": "{host}/machine/state-configurations/state",
+            "type": "object",
+            "name": "State",
+            "title": "State",
+            "$ref": "{host}/state"
+          }
+        },
+        "required": [ "state" ]
       }
+    },
+    "triggers": {
+        "id": "{host}/machine/triggers",
+        "type": "array",
+        "title": "Triggers",
+        "items": {
+        "headerTemplate": "{{ self.triggerName }}",
+        "type": "object",
+        "name": "Trigger",
+        "$ref": "{host}/trigger"
+        }
+      }
+    }
+  }</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "{host}/state",
+  "type": "object",
+  "properties": {
+    "stateName": {
+      "id": "{host}/state/name",
+      "type": "string",
+      "name": "Name",
+      "title": "Name"
+    },
+    "stateDescription": {
+      "id": "{host}/state/description",
+      "type": "string",
+      "name": "Description",
+      "title": "Description"
+    },
+    "parentStateName": {
+      "id": "{host}/state/parent-state-name",
+      "type": "string",
+      "name": "Parent State Name",
+      "title": "Parent State Name"
     }
   },
   "required": [
-    "machineName",
-    "triggers"
+    "stateName"
   ]
 }</value>
   </data>

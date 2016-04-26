@@ -6,6 +6,7 @@ interface JSONEditor {
 
 interface JSONEditorOptions {
     theme?: string,
+    iconlib?: string,
     schema: any,
     ajax: boolean
 }

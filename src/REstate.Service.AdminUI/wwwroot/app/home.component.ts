@@ -33,10 +33,6 @@ declare var JSONEditor: JSONEditor;
         </table>
         <div id="json-editor"></div>
         <graph-viz [graphVizText] = "graphVizText"></graph-viz>`,
-    styles: [ `
-    table tbody tr:hover {
-        color: #09a2e8
-    }` ],
     directives: [GraphVizComponent, ROUTER_DIRECTIVES],
     providers: [REstateService]
 })
@@ -62,6 +58,7 @@ export class HomeComponent implements OnInit {
             .subscribe(
                 schema => new JSONEditor(element, {
                     theme: 'bootstrap3',
+                    iconlib: "bootstrap3",
                     ajax: true,
                     schema: schema 
                 }),

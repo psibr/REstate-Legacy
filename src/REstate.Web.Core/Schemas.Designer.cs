@@ -63,27 +63,57 @@ namespace REstate.Web.Core {
         /// <summary>
         ///   Looks up a localized string similar to {
         ///  &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
-        ///  &quot;id&quot;: &quot;http://localhost/restate/machine&quot;,
+        ///  &quot;id&quot;: &quot;{host}/machine&quot;,
         ///  &quot;type&quot;: &quot;object&quot;,
         ///  &quot;name&quot;: &quot;Machine&quot;,
         ///  &quot;title&quot;: &quot;Machine&quot;,
+        ///  &quot;required&quot;: [
+        ///    &quot;machineName&quot;,
+        ///    &quot;triggers&quot;
+        ///  ],
         ///  &quot;properties&quot;: {
         ///    &quot;machineName&quot;: {
-        ///      &quot;id&quot;: &quot;http://localhost/restate/machine/name&quot;,
+        ///      &quot;id&quot;: &quot;{host}/machine/name&quot;,
         ///      &quot;type&quot;: &quot;string&quot;,
         ///      &quot;name&quot;: &quot;Name&quot;,
         ///      &quot;title&quot;: &quot;Name&quot;
         ///    },
-        ///    &quot;triggers&quot;: {
-        ///      &quot;id&quot;: &quot;http://localhost/restate/machine/triggers&quot;,
+        ///    &quot;stateConfigurations&quot;: {
+        ///      &quot;id&quot;: &quot;{host}/machine/state-configurations&quot;,
         ///      &quot;type&quot;: &quot;array&quot;,
-        ///      &quot;title&quot;: &quot;Triggers&quot;,
-        ///      &quot;items&quot;: {
-        ///        &quot;type&quot;: &quot;obj [rest of string was truncated]&quot;;.
+        ///      &quot;title&quot;: &quot;State Configurations&quot;, [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Machine {
             get {
                 return ResourceManager.GetString("Machine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///  &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
+        ///  &quot;id&quot;: &quot;{host}/state&quot;,
+        ///  &quot;type&quot;: &quot;object&quot;,
+        ///  &quot;properties&quot;: {
+        ///    &quot;stateName&quot;: {
+        ///      &quot;id&quot;: &quot;{host}/state/name&quot;,
+        ///      &quot;type&quot;: &quot;string&quot;,
+        ///      &quot;name&quot;: &quot;Name&quot;,
+        ///      &quot;title&quot;: &quot;Name&quot;
+        ///    },
+        ///    &quot;stateDescription&quot;: {
+        ///      &quot;id&quot;: &quot;{host}/state/description&quot;,
+        ///      &quot;type&quot;: &quot;string&quot;,
+        ///      &quot;name&quot;: &quot;Description&quot;,
+        ///      &quot;title&quot;: &quot;Description&quot;
+        ///    },
+        ///    &quot;parentStateName&quot;: {
+        ///      &quot;id&quot;: &quot;{host}/state/parent-state-name&quot;,
+        ///      &quot;type&quot;: &quot;strin [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string State {
+            get {
+                return ResourceManager.GetString("State", resourceCulture);
             }
         }
         
