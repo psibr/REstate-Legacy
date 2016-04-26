@@ -117,13 +117,23 @@
     <Compile Include="Modules\CodeElementsModule.cs" />
     <Compile Include="Modules\ConfigurationModule.cs" />
     <Compile Include="Modules\MachineDefinitionsModule.cs" />
+    <Compile Include="Modules\SchemaModule.cs" />
     <Compile Include="Modules\MachinesModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Requests\StateConfiguration.cs" />
     <Compile Include="Requests\StateMachineConfigurationRequest.cs" />
     <Compile Include="Requests\TriggerFireRequest.cs" />
+    <Compile Include="Schemas.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Schemas.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
+      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
+      <Name>REstate.Platform</Name>
+    </ProjectReference>
     <ProjectReference Include="..\REstate.Repositories.Core.Susanoo\REstate.Repositories.Core.Susanoo.csproj">
       <Project>{692dca0e-3b2c-4919-8c2d-1af9e665d521}</Project>
       <Name>REstate.Repositories.Core.Susanoo</Name>
@@ -132,6 +142,12 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Schemas.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Schemas.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

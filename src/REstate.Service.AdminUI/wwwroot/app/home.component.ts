@@ -1,78 +1,71 @@
+/// <reference path="../typings/json-editor.d.ts" />
 import {Component, OnInit} from 'angular2/core';
-import {GraphVizComponent} from './graph-viz.component'
-
-interface JSONEditor {
-    new (element: Element, options: JSONEditorOptions),
-    element: Element,
-    options: JSONEditorOptions
-}
-
-interface JSONEditorOptions {
-    theme?: string,
-    schema: any
-}
+import {GraphVizComponent} from './graph-viz.component';
+import {REstateService} from './restate.service';
+import {MachineDefinition} from './machine-definition';
+import { ROUTER_DIRECTIVES } from 'angular2/router';
 
 declare var JSONEditor: JSONEditor;
 
 @Component({
-    template: `<div id="json-editor"></div><graph-viz [graphVizText] = "graphVizText"></graph-viz>`,
-    directives: [GraphVizComponent]
+    template: `
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Initial State</th>
+                    <th>Auto Ignore</th>
+                    <th>Active</th>
+                </tr>    
+            </thead>
+            <tbody>
+                <tr *ngFor="#definition of definitions" [routerLink]="['About']">
+                    <td>{{definition.machineDefinitionId}}</td>
+                    <td>{{definition.machineName}}</td>
+                    <td>{{definition.machineDescription}}</td>
+                    <td>{{definition.initialStateName}}</td>
+                    <td>{{definition.autoIgnoreNotConfiguredTriggers}}</td>
+                    <td>{{definition.isActive}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="json-editor"></div>
+        <graph-viz [graphVizText] = "graphVizText"></graph-viz>`,
+    styles: [ `
+    table tbody tr:hover {
+        color: #09a2e8
+    }` ],
+    directives: [GraphVizComponent, ROUTER_DIRECTIVES],
+    providers: [REstateService]
 })
 export class HomeComponent implements OnInit {
     graphVizText: string = `digraph g { a -> b; }`;
+    definitions: MachineDefinition[];
+    schema: Object;
+    errorMessage: string;
+    
+    constructor (private REstateService: REstateService) { }
     
     ngOnInit() {
+        
         var element = document.getElementById('json-editor');
-
-
-        var editor = new JSONEditor(element, {
-            theme: 'bootstrap3',
-            schema: {
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "id": "http://jsonschema.net",
-                "type": "object",
-                "properties": {
-                    "address": {
-                        "id": "http://jsonschema.net/address",
-                        "type": "object",
-                        "properties": {
-                            "streetAddress": {
-                                "id": "http://jsonschema.net/address/streetAddress",
-                                "type": "string"
-                            },
-                            "city": {
-                                "id": "http://jsonschema.net/address/city",
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "streetAddress",
-                            "city"
-                        ]
-                    },
-                    "phoneNumber": {
-                        "id": "http://jsonschema.net/phoneNumber",
-                        "type": "array",
-                        "items": {
-                            "id": "http://jsonschema.net/phoneNumber/0",
-                            "type": "object",
-                            "properties": {
-                                "location": {
-                                    "id": "http://jsonschema.net/phoneNumber/0/location",
-                                    "type": "string"
-                                },
-                                "code": {
-                                    "id": "http://jsonschema.net/phoneNumber/0/code",
-                                    "type": "integer"
-                                }
-                            }
-                        }
-                    }
-                },
-                "required": [
-                    "address",
-                    "phoneNumber"
-                ]
-            });
+        
+        this.REstateService.getMachineDefinitions()
+            .subscribe(
+                definitions => this.definitions = definitions,
+                error => this.errorMessage = error
+            );
+            
+        this.REstateService.getMachineSchema()
+            .subscribe(
+                schema => new JSONEditor(element, {
+                    theme: 'bootstrap3',
+                    ajax: true,
+                    schema: schema 
+                }),
+                error => this.errorMessage = error
+            );
     }
 }

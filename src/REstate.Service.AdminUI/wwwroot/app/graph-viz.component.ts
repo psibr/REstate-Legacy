@@ -1,13 +1,5 @@
+/// <reference path="../typings/viz.d.ts" />
 import {Component, OnInit, Input} from 'angular2/core';
-
-export interface Viz {
-    (data: string, options: VizOptions): string
-}
-
-interface VizOptions {
-    format: string;
-    engine: string;
-}
 
 declare var Viz: Viz;
 

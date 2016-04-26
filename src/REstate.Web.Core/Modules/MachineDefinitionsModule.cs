@@ -89,6 +89,10 @@ namespace REstate.Web.Core.Modules
                         Contents = stream => stream.Close()
                     };
 
+                //transform configuration
+
+                
+
                 return Negotiate
                     .WithModel(configuration)
                     .WithAllowedMediaRange(new MediaRange("application/json"));

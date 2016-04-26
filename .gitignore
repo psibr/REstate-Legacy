@@ -185,3 +185,4 @@ src/Susanoo.sln.GhostDoc.xml
 
 src/REstate.Service.AdminUI/wwwroot/app/*.js
 src/REstate.Service.AdminUI/wwwroot/app/*.js.map
+/src/REstate.Service.AdminUI/wwwroot/.vscode/.browse.VC.db

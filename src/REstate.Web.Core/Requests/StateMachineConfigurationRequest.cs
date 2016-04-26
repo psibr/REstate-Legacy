@@ -10,7 +10,7 @@ namespace REstate.Web.Core.Requests
 
         public ICollection<StateConfiguration> StateConfigurations { get; set; }
 
-        public ICollection<REstate.Configuration.Trigger> Triggers { get; set; }
+        public ICollection<Configuration.Trigger> Triggers { get; set; }
         public ICollection<CodeWithDatabaseConfiguration> CodeElements { get; set; }
 
         public ICollection<Guard> Guards { get; set; }
@@ -22,7 +22,7 @@ namespace REstate.Web.Core.Requests
                 MachineDefinition = request.MachineDefinition,
                 Triggers = request.Triggers?.Cast<ITrigger>().ToList() ?? new List<ITrigger>(),
                 Guards = request.Guards?.Cast<IGuard>().ToList() ?? new List<IGuard>(),
-                StateConfigurations = request.StateConfigurations?.Select(sc => new REstate.Configuration.StateConfiguration
+                StateConfigurations = request.StateConfigurations?.Select(sc => new Configuration.StateConfiguration
                 {
                     State = sc.State,
                     OnEntryAction = sc.OnEntryAction,
@@ -32,8 +32,6 @@ namespace REstate.Web.Core.Requests
                     IgnoreRules = sc.IgnoreRules?.Cast<IIgnoreRule>().ToList() ?? new List<IIgnoreRule>()
                 }).Cast<IStateConfiguration>().ToList() ?? new List<IStateConfiguration>()
             };
-
-
         }
     }
 }
