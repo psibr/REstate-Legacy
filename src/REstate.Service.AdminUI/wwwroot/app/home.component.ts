@@ -46,6 +46,8 @@ export class HomeComponent implements OnInit {
     
     ngOnInit() {
         
+        JSONEditor.defaults.options.object_layout = "grid";
+        
         var element = document.getElementById('json-editor');
         
         this.REstateService.getMachineDefinitions()
@@ -57,10 +59,10 @@ export class HomeComponent implements OnInit {
         this.REstateService.getMachineSchema()
             .subscribe(
                 schema => new JSONEditor(element, {
-                    theme: 'bootstrap3',
+                    theme: 'material',
                     iconlib: "bootstrap3",
                     ajax: true,
-                    schema: schema 
+                    schema: schema
                 }),
                 error => this.errorMessage = error
             );

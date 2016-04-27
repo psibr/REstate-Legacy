@@ -94,6 +94,7 @@ namespace REstate.Web.Core {
         ///  &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
         ///  &quot;id&quot;: &quot;{host}/state&quot;,
         ///  &quot;type&quot;: &quot;object&quot;,
+        ///  &quot;format&quot;: &quot;grid&quot;,
         ///  &quot;properties&quot;: {
         ///    &quot;stateName&quot;: {
         ///      &quot;id&quot;: &quot;{host}/state/name&quot;,
@@ -108,8 +109,7 @@ namespace REstate.Web.Core {
         ///      &quot;title&quot;: &quot;Description&quot;
         ///    },
         ///    &quot;parentStateName&quot;: {
-        ///      &quot;id&quot;: &quot;{host}/state/parent-state-name&quot;,
-        ///      &quot;type&quot;: &quot;strin [rest of string was truncated]&quot;;.
+        ///      &quot;id&quot;: &quot;{host}/state/parent-state-name&quot;,        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string State {
             get {

@@ -1,5 +1,8 @@
-/// <reference path="../typings/viz.d.ts" />
 import {Component, OnInit, Input} from 'angular2/core';
+
+export interface Viz {
+    (data: string, type: string): string
+}
 
 declare var Viz: Viz;
 
@@ -15,6 +18,6 @@ export class GraphVizComponent implements OnInit {
     
     ngOnInit() {
         
-        this.svgText = Viz(this.graphVizText, { format: "svg", engine: "dot" });
+        this.svgText = Viz(this.graphVizText, "svg");
     }
 }

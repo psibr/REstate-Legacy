@@ -176,6 +176,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "id": "{host}/state",
   "type": "object",
+  "format": "grid",
   "properties": {
     "stateName": {
       "id": "{host}/state/name",

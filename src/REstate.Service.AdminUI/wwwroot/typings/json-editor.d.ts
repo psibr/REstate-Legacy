@@ -1,7 +1,8 @@
 interface JSONEditor {
     new (element: Element, options: JSONEditorOptions),
-    element: Element,
-    options: JSONEditorOptions
+    
+    defaults: any
+    
 }
 
 interface JSONEditorOptions {
