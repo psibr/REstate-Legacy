@@ -68,8 +68,9 @@ JSONEditor.defaults.themes.material = JSONEditor.AbstractTheme.extend({
   },
   getIndentedPanel: function() {
     var el = document.createElement('div');
-    el.className = 'well well-sm';
+    el.className = 'panel';
     el.style.paddingBottom = 0;
+    el.style.paddingLeft = '10px';
     return el;
   },
   getFormInputDescription: function(text) {

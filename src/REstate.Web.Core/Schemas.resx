@@ -194,7 +194,8 @@
       "id": "{host}/state/parent-state-name",
       "type": "string",
       "name": "Parent State Name",
-      "title": "Parent State Name"
+      "title": "Parent State Name",
+      "format": "date"
     }
   },
   "required": [

@@ -1,6 +1,7 @@
 ﻿using Nancy;
 using Nancy.Responses;
 using REstate.Platform;
+using Nancy.Owin;
 
 namespace REstate.Web.AdminUI.Modules
 {
@@ -17,11 +18,12 @@ namespace REstate.Web.AdminUI.Modules
         {
             Get["/"] = _ =>
             {
-                return this.Response.AsRedirect(configuration.AdminHttpService.Address + "ui" + this.Request.Url.Query, RedirectResponse.RedirectType.Permanent);
-            };
+                if(string.IsNullOrWhiteSpace(this.Context.GetOwinEnvironment()["owin.RequestPath"] as string))
+                {
+                    return Response.AsRedirect(configuration.AdminHttpService.Address, RedirectResponse.RedirectType.SeeOther);
+                }
 
-            Get["/ui"] = _ =>
-            {
+
                 if (Context.CurrentUser == null)
                     return Response.AsRedirect($"{configuration.AuthHttpService.Address}login");
 
@@ -30,13 +32,12 @@ namespace REstate.Web.AdminUI.Modules
                 {
                     var indexHtml = streamReader.ReadToEnd();
 
-                    indexHtml = indexHtml.Replace(@"<base href=""/"">", @"<base href=""./ui"">");
+                    //not sure if this is needed now
+                    indexHtml = indexHtml.Replace(@"<base href=""/"">", @"<base href=""./"">"); 
 
 
                     return Response.AsText(indexHtml, "text/html");
                 }
-
-
             };
         }
     }
