@@ -1,4 +1,5 @@
-﻿using Nancy;
+﻿using System.IO;
+using Nancy;
 using Nancy.Responses;
 using REstate.Platform;
 using Nancy.Owin;
@@ -18,23 +19,24 @@ namespace REstate.Web.AdminUI.Modules
         {
             Get["/"] = _ =>
             {
-                if(string.IsNullOrWhiteSpace(this.Context.GetOwinEnvironment()["owin.RequestPath"] as string))
+                if(string.IsNullOrWhiteSpace(Context.GetOwinEnvironment()["owin.RequestPath"] as string))
                 {
-                    return Response.AsRedirect(configuration.AdminHttpService.Address, RedirectResponse.RedirectType.SeeOther);
+                    return Response.AsRedirect(configuration.AdminHttpService.Address, 
+                        RedirectResponse.RedirectType.Permanent);
                 }
-
 
                 if (Context.CurrentUser == null)
                     return Response.AsRedirect($"{configuration.AuthHttpService.Address}login");
 
-                using (var fread = new System.IO.FileStream($"{configuration.AdminHttpService.StaticContentRootRoutePath}\\index.html", System.IO.FileMode.Open))
-                using (var streamReader = new System.IO.StreamReader(fread))
+                using (var fread = new FileStream(
+                    $"{configuration.AdminHttpService.StaticContentRootRoutePath}\\index.html",
+                    FileMode.Open))
+                using (var streamReader = new StreamReader(fread))
                 {
                     var indexHtml = streamReader.ReadToEnd();
 
                     //not sure if this is needed now
                     indexHtml = indexHtml.Replace(@"<base href=""/"">", @"<base href=""./"">"); 
-
 
                     return Response.AsText(indexHtml, "text/html");
                 }
