@@ -62,30 +62,86 @@ namespace REstate.Web.Core {
         
         /// <summary>
         ///   Looks up a localized string similar to {
-        ///  &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
-        ///  &quot;id&quot;: &quot;{host}/machine&quot;,
-        ///  &quot;type&quot;: &quot;object&quot;,
-        ///  &quot;name&quot;: &quot;Machine&quot;,
-        ///  &quot;title&quot;: &quot;Machine&quot;,
-        ///  &quot;required&quot;: [
-        ///    &quot;machineName&quot;,
-        ///    &quot;triggers&quot;
-        ///  ],
-        ///  &quot;properties&quot;: {
-        ///    &quot;machineName&quot;: {
-        ///      &quot;id&quot;: &quot;{host}/machine/name&quot;,
-        ///      &quot;type&quot;: &quot;string&quot;,
-        ///      &quot;name&quot;: &quot;Name&quot;,
-        ///      &quot;title&quot;: &quot;Name&quot;
+        ///    &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
+        ///    &quot;id&quot;: &quot;http://localhost/restate/code&quot;,
+        ///    &quot;type&quot;: &quot;object&quot;,
+        ///    &quot;name&quot;: &quot;OnExitAction&quot;,
+        ///    &quot;title&quot;: &quot;On Exit Action&quot;,
+        ///    &quot;default&quot;: null,
+        ///    &quot;format&quot;: &quot;normal&quot;,
+        ///    &quot;options&quot;: {
+        ///        &quot;disable_edit_json&quot;: true
         ///    },
-        ///    &quot;stateConfigurations&quot;: {
-        ///      &quot;id&quot;: &quot;{host}/machine/state-configurations&quot;,
-        ///      &quot;type&quot;: &quot;array&quot;,
-        ///      &quot;title&quot;: &quot;State Configurations&quot;, [rest of string was truncated]&quot;;.
+        ///    &quot;additionalProperties&quot;: false,
+        ///    &quot;defaultProperties&quot;: [
+        ///        &quot;name&quot;,
+        ///        &quot;connectorKey&quot;,
+        ///        &quot;body&quot;,
+        ///        &quot;description&quot;
+        ///    ],
+        ///    &quot;properties&quot;: {
+        ///        &quot;name&quot;: {
+        ///            &quot;id&quot;: &quot;h [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Code {
+            get {
+                return ResourceManager.GetString("Code", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///    &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
+        ///    &quot;id&quot;: &quot;http://localhost/restate/machine&quot;,
+        ///    &quot;type&quot;: &quot;object&quot;,
+        ///    &quot;name&quot;: &quot;Machine&quot;,
+        ///    &quot;title&quot;: &quot;Machine Definition&quot;,
+        ///    &quot;required&quot;: [
+        ///        &quot;machineName&quot;,
+        ///        &quot;initialState&quot;,
+        ///        &quot;autoIgnoreTriggers&quot;,
+        ///        &quot;stateConfigurations&quot;
+        ///    ],
+        ///    &quot;additionalProperties&quot;: false,
+        ///    &quot;options&quot;: {
+        ///        &quot;disable_properties&quot;: true
+        ///    },
+        ///    &quot;properties&quot;: {
+        ///        &quot;machineName&quot;: {
+        ///            &quot;id&quot;: &quot;http://localhost/r [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Machine {
             get {
                 return ResourceManager.GetString("Machine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///    &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
+        ///    &quot;id&quot;: &quot;http://localhost/restate/on-entry-from&quot;,
+        ///    &quot;type&quot;: &quot;object&quot;,
+        ///    &quot;name&quot;: &quot;OnEntryFromAction&quot;,
+        ///    &quot;default&quot;: null,
+        ///    &quot;format&quot;: &quot;normal&quot;,
+        ///    &quot;options&quot;: {
+        ///        &quot;disable_edit_json&quot;: true
+        ///    },
+        ///    &quot;additionalProperties&quot;: false,
+        ///    &quot;defaultProperties&quot;: [
+        ///        &quot;name&quot;,
+        ///        &quot;fromTrigger&quot;,
+        ///        &quot;connectorKey&quot;,
+        ///        &quot;body&quot;,
+        ///        &quot;description&quot;
+        ///    ],
+        ///    &quot;properties&quot;: {
+        ///        &quot;name&quot;: {
+        ///            &quot;i [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string OnEntryFrom {
+            get {
+                return ResourceManager.GetString("OnEntryFrom", resourceCulture);
             }
         }
         
@@ -106,10 +162,11 @@ namespace REstate.Web.Core {
         ///      &quot;id&quot;: &quot;{host}/state/description&quot;,
         ///      &quot;type&quot;: &quot;string&quot;,
         ///      &quot;name&quot;: &quot;Description&quot;,
-        ///      &quot;title&quot;: &quot;Description&quot;
+        ///      &quot;title&quot;: &quot;Description&quot;,
+        ///      &quot;format&quot;: &quot;textarea&quot;
         ///    },
         ///    &quot;parentStateName&quot;: {
-        ///      &quot;id&quot;: &quot;{host}/state/parent-state-name&quot;,        /// [rest of string was truncated]&quot;;.
+        ///      &quot;id&quot;: &quot;{hos [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string State {
             get {

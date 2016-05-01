@@ -1,0 +1,30 @@
+body {
+  padding-top: 70px;
+}
+  
+a.navbar-brand {
+    background-color: #D84315;
+    border-right: #424242 solid 5px;
+}
+
+.navbar-default .navbar-brand:focus, .navbar-default .navbar-brand:hover {
+      background-color: #D84315;
+    border-right: #424242 solid 5px;
+}
+
+.nav.navbar-nav li a.router-link-active {
+    border-bottom: #D84315 solid 5px;
+    margin-top: -6px;
+    padding-top: 26px !important;
+    padding-bottom: 15px !important;
+  }
+
+@media (max-width: 1199px) {
+  .nav.navbar-nav li a.router-link-active {
+    border-bottom: #D84315 solid 5px;
+    margin-top: -5px;
+    padding-top: 20px !important;
+    padding-bottom: 10px !important;
+  }
+}
+

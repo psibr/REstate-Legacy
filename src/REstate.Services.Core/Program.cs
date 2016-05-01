@@ -14,7 +14,6 @@ using REstate.Connectors.Decorators.Task;
 using REstate.Platform;
 using REstate.Repositories.Configuration;
 using REstate.Repositories.Core.Susanoo;
-using REstate.Repositories.Instances;
 using REstate.Stateless;
 using REstate.Web.Core;
 using Serilog;
@@ -82,14 +81,8 @@ namespace REstate.Services.Core
             container.RegisterType<NewtonsoftJsonSerializer>()
                 .As<IStringSerializer, IByteSerializer>();
 
-            container.Register(context => new InstancesRoutePrefix("/machines"));
-            container.Register(context => new ConfigurationRoutePrefix("/configuration"));
-
             container.RegisterType<ConfigurationRepositoryContextFactory>()
                 .As<IConfigurationRepositoryContextFactory>();
-
-            container.RegisterType<InstanceRepositoryContextFactory>()
-                .As<IInstanceRepositoryContextFactory>();
 
             container.RegisterConnectors(configuration);
 

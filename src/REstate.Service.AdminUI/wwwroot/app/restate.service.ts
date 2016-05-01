@@ -8,7 +8,7 @@ export class REstateService {
     constructor (private http: Http) {}
     
     getMachineDefinitions () : Observable<MachineDefinition[]> {
-        return this.http.get("/restate/configuration/machinedefinitions/")
+        return this.http.get("/restate/machines/")
             .map(this.extractData)
             .catch(this.handleError)
     }

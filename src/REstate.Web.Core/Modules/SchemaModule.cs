@@ -28,6 +28,18 @@ namespace REstate.Web.Core.Modules
                     .Replace("{host}", configuration.CoreHttpService.Address)
                     .Replace("//", "/")
                     .Replace(":/", "://"), "application/schema+json");
+
+            Get["CodeSchema", "/code"] = (parameters) =>
+                Response.AsText(Schemas.Code
+                    .Replace("{host}", configuration.CoreHttpService.Address)
+                    .Replace("//", "/")
+                    .Replace(":/", "://"), "application/schema+json");
+
+            Get["OnEntryFromSchema", "/on-entry-from"] = (parameters) =>
+                Response.AsText(Schemas.OnEntryFrom
+                    .Replace("{host}", configuration.CoreHttpService.Address)
+                    .Replace("//", "/")
+                    .Replace(":/", "://"), "application/schema+json");
         }
         
     }

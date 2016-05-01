@@ -1,0 +1,76 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "http://localhost/restate/on-entry-from",
+    "type": "object",
+    "name": "OnEntryFromAction",
+    "default": null,
+    "format": "normal",
+    "options": {
+        "disable_edit_json": true
+    },
+    "additionalProperties": false,
+    "defaultProperties": [
+        "name",
+        "fromTrigger",
+        "connectorKey",
+        "body",
+        "description"
+    ],
+    "properties": {
+        "name": {
+            "id": "http://localhost/restate/on-entry-from/name",
+            "type": "string",
+            "name": "Name",
+            "title": "Name",
+            "default": null
+        },
+        "fromTrigger": {
+            "id": "http://localhost/restate/on-entry-from/from-trigger-name",
+            "type": "string",
+            "name": "FromTrigger",
+            "title": "From Trigger Name",
+            "default": null
+        },
+        "connectorKey": {
+            "id": "http://localhost/restate/on-entry-from/connector-key",
+            "type": "string",
+            "name": "ConnectorKey",
+            "title": "Connector Key",
+            "default": null
+        },
+        "body": {
+            "id": "http://localhost/restate/on-entry-from/body",
+            "type": "string",
+            "name": "Body",
+            "title": "Body",
+            "format": "code",
+            "options": {
+                "input_height": "100px",
+                "format": "text"
+            }
+        },
+        "options": {
+            "id": "http://localhost/restate/on-entry-from/options",
+            "type": "object",
+            "name": "Options",
+            "title": "Options",
+            "default": null
+        },
+        "description": {
+            "id": "http://localhost/restate/on-entry-from/description",
+            "type": "string",
+            "name": "Description",
+            "title": "Description",
+            "format": "textarea",
+            "default": null,
+            "options": {
+                "input_height": "100px"
+            }
+        }
+    },
+    "required": [
+        "name",
+        "connectorKey",
+        "body"
+    ]
+}

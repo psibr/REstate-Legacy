@@ -1,11 +1,11 @@
 ﻿using REstate.Configuration;
-using REstate.Repositories.Instances;
 using REstate.Services;
 using Stateless;
 using System;
 using System.Linq;
 using System.Threading;
 using Psibr.Platform.Logging;
+using REstate.Repositories.Configuration;
 
 namespace REstate.Stateless
 {
@@ -23,15 +23,15 @@ namespace REstate.Stateless
         }
 
         public IStateMachine ConstructFromConfiguration(string apiKey, string machineInstanceId,
-            IStateMachineConfiguration configuration,
-            IInstanceRepositoryContextFactory instanceRepositoryContextFactory)
+            Machine configuration,
+            IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
-            var accessorMutator = new PersistentStateAccessorMutator(instanceRepositoryContextFactory, apiKey, machineInstanceId);
+            var accessorMutator = new PersistentStateAccessorMutator(configurationRepositoryContextFactory, apiKey, machineInstanceId);
 
             return ConstructFromConfiguration(apiKey, accessorMutator, configuration);
         }
 
-        public IStateMachine ConstructFromConfiguration(string apiKey, IStateMachineConfiguration configuration)
+        public IStateMachine ConstructFromConfiguration(string apiKey, Machine configuration)
         {
             var accessorMutator = new InMemoryStateAccessorMutator();
 
@@ -39,76 +39,81 @@ namespace REstate.Stateless
         }
 
         protected IStateMachine ConstructFromConfiguration(string apiKey, IStateAccessorMutator accessorMutator,
-            IStateMachineConfiguration configuration)
+            Machine configuration)
         {
             var machine = new StateMachine<State, Trigger>(accessorMutator.Accessor, accessorMutator.Mutator);
 
             var stateMachine = new StatelessStateMachineAdapter(machine,
-                configuration.MachineDefinition.MachineDefinitionId, accessorMutator.MachineInstanceId);
+                configuration.MachineName, accessorMutator.MachineInstanceId);
 
-            if (configuration.MachineDefinition.AutoIgnoreNotConfiguredTriggers)
+            if (configuration.AutoIgnoreTriggers)
                 machine.OnUnhandledTrigger((i, i1) => { /* ignore */ });
 
-            foreach (var trigger in configuration.Triggers)
+            foreach (var trigger in configuration.StateConfigurations
+                .SelectMany(sc => sc.Transitions)
+                .Select(tr => tr.TriggerName)
+                .Distinct())
             {
-                machine.SetTriggerParameters<string>(new Trigger(trigger.MachineDefinitionId, trigger.TriggerName));
+                machine.SetTriggerParameters<string>(new Trigger(configuration.MachineName, trigger));
             }
 
             foreach (var stateConfiguration in configuration.StateConfigurations)
             {
-                var stateSettings = machine.Configure(new State(stateConfiguration.State.MachineDefinitionId, stateConfiguration.State.StateName));
+                var stateSettings = machine.Configure(new State(configuration.MachineName, stateConfiguration.StateName));
 
-                if (configuration.CodeElements != null)
-                {
 
-                    if (stateConfiguration.OnEntryAction != null)
+                    if (stateConfiguration.OnEntry != null)
                     {
                         ConfigureOnEntryAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
                     }
 
-                    if (stateConfiguration.OnEntryFromAction != null)
+                    if (stateConfiguration.OnEntryFrom != null)
                     {
-                        ConfigureOnEntryFromAction(apiKey, stateMachine, configuration, stateConfiguration,
-                            stateSettings);
+                        foreach (var onEntryFromAction in stateConfiguration.OnEntryFrom)
+                        {
+                            ConfigureOnEntryFromAction(apiKey, stateMachine, configuration, onEntryFromAction,
+                                stateSettings);
+                        }
+                        
                     }
 
-                    if (stateConfiguration.OnExitAction != null)
+                    if (stateConfiguration.OnExit != null)
                     {
                         ConfigureOnExitAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
                     }
-                }
 
 
                 //Configure as substate if needed
-                if (stateConfiguration.State.ParentStateName != null)
-                    stateSettings.SubstateOf(new State(stateConfiguration.State.MachineDefinitionId, stateConfiguration.State.ParentStateName));
+                if (stateConfiguration.ParentStateName != null)
+                    stateSettings.SubstateOf(new State(configuration.MachineName, stateConfiguration.ParentStateName));
 
                 foreach (var transition in stateConfiguration.Transitions)
                 {
 
-                    if (configuration.CodeElements == null || transition.GuardName == null)
-                        if (transition.StateName != transition.ResultantStateName)
-                            stateSettings.Permit(new Trigger(transition.MachineDefinitionId, transition.TriggerName),
-                                new State(transition.MachineDefinitionId, transition.ResultantStateName));
+                    if (transition.Guard == null)
+                        if (stateConfiguration.StateName != transition.ResultantStateName)
+                            stateSettings.Permit(new Trigger(configuration.MachineName, transition.TriggerName),
+                                new State(configuration.MachineName, transition.ResultantStateName));
                         else
-                            stateSettings.PermitReentry(new Trigger(transition.MachineDefinitionId, transition.TriggerName));
+                            stateSettings.PermitReentry(new Trigger(configuration.MachineName, transition.TriggerName));
                     else
                     {
                         //Retrieve guard definition and construct
-                        var guardDefinition = configuration.Guards.Single(d => d.GuardName == transition.GuardName);
+                        var guardDefinition = transition.Guard;
                         var guard = CreateGuardClause(apiKey, stateMachine, configuration, guardDefinition);
 
-                        if (transition.StateName != transition.ResultantStateName)
-                            stateSettings.PermitIf(new Trigger(transition.MachineDefinitionId, transition.TriggerName),
-                                new State(transition.MachineDefinitionId, transition.ResultantStateName), guard, guardDefinition.GuardName);
+                        if (stateConfiguration.StateName != transition.ResultantStateName)
+                            stateSettings.PermitIf(new Trigger(configuration.MachineName, transition.TriggerName),
+                                new State(configuration.MachineName, transition.ResultantStateName), guard, guardDefinition.Name);
                         else
-                            stateSettings.PermitReentryIf(new Trigger(transition.MachineDefinitionId, transition.TriggerName), guard, guardDefinition.GuardName);
+                            stateSettings.PermitReentryIf(new Trigger(
+                                configuration.MachineName, transition.TriggerName), guard, guardDefinition.Name);
                     }
                 }
 
-                foreach (var ignoreRule in stateConfiguration.IgnoreRules)
+                foreach (var trigger in stateConfiguration.IgnoreRules)
                 {
-                    stateSettings.Ignore(new Trigger(ignoreRule.MachineDefinitionId, ignoreRule.TriggerName));
+                    stateSettings.Ignore(new Trigger(configuration.MachineName, trigger));
                 }
             }
 
@@ -116,82 +121,57 @@ namespace REstate.Stateless
         }
 
 
-        protected Func<bool> CreateGuardClause(string apiKey, IStateMachine stateMachine, IStateMachineConfiguration configuration, IGuard guardDefinition)
+        protected Func<bool> CreateGuardClause(string apiKey, IStateMachine stateMachine, Machine configuration, Code guardDefinition)
         {
-            if (guardDefinition.CodeElementId == null) return () => false; //No code found, assume this is an unsafe operation.
-
-            var codeElement = configuration.CodeElements.SingleOrDefault(ce =>
-                ce.CodeElementId == guardDefinition.CodeElementId);
-
-            if (codeElement == null) throw new ArgumentException($"CodeElement with Id {guardDefinition.CodeElementId} was not found.");
-
-            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(codeElement.ConnectorKey);
+            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(guardDefinition.ConnectorKey);
             Func<bool> guard = () =>
                 hostFactory.BuildConnector(apiKey).Result
-                    .ConstructPredicate(stateMachine, codeElement)
+                    .ConstructPredicate(stateMachine, guardDefinition)
                     .Invoke(CancellationToken.None).Result;
 
             return guard;
         }
 
         protected void ConfigureOnExitAction(string apiKey,
-            IStateMachine stateMachine, IStateMachineConfiguration configuration,
-            IStateConfiguration stateConfiguration,
+            IStateMachine stateMachine, Machine configuration,
+            StateConfiguration stateConfiguration,
             StateMachine<State, Trigger>.StateConfiguration stateSettings)
         {
-            if (stateConfiguration.OnExitAction.CodeElementId == null) return;
-            var codeElement = configuration.CodeElements.SingleOrDefault(ce =>
-                ce.CodeElementId == stateConfiguration.OnExitAction.CodeElementId);
-
-            if (codeElement == null) throw new ArgumentException($"CodeElement with Id {stateConfiguration.OnExitAction.CodeElementId} was not found.");
-
-            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(codeElement.ConnectorKey);
+            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(stateConfiguration.OnExit.ConnectorKey);
             stateSettings.OnExit(() =>
                 hostFactory.BuildConnector(apiKey).Result
-                    .ConstructAction(stateMachine, codeElement)
+                    .ConstructAction(stateMachine, stateConfiguration.OnExit)
                     .Invoke(CancellationToken.None)
-            , stateConfiguration.OnExitAction.StateActionDescription ?? codeElement.CodeElementDescription);
+            , stateConfiguration.OnExit.Description);
         }
 
         protected void ConfigureOnEntryFromAction(string apiKey,
-            IStateMachine stateMachine, IStateMachineConfiguration configuration,
-            IStateConfiguration stateConfiguration,
+            IStateMachine stateMachine, Machine configuration,
+            OnEntryFrom onEntryFrom,
             StateMachine<State, Trigger>.StateConfiguration stateSettings)
         {
-            if (stateConfiguration.OnEntryFromAction.CodeElementId == null) return;
-            var codeElement = configuration.CodeElements.SingleOrDefault(ce =>
-                ce.CodeElementId == stateConfiguration.OnEntryFromAction.CodeElementId);
-
-            if (codeElement == null) throw new ArgumentException($"CodeElement with Id {stateConfiguration.OnEntryFromAction.CodeElementId} was not found.");
-
-            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(codeElement.ConnectorKey);
+            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(onEntryFrom.ConnectorKey);
             stateSettings.OnEntryFrom(
                 new StateMachine<State, Trigger>.TriggerWithParameters<string>(
-                    new Trigger(stateConfiguration.State.MachineDefinitionId, stateConfiguration.OnEntryFromAction.TriggerName)), payload =>
+                    new Trigger(configuration.MachineName, onEntryFrom.FromTrigger)), payload =>
                         hostFactory.BuildConnector(apiKey).Result
-                            .ConstructAction(stateMachine, payload, codeElement)
+                            .ConstructAction(stateMachine, payload, onEntryFrom)
                             .Invoke(CancellationToken.None),
-                stateConfiguration.OnEntryFromAction.StateActionDescription ?? codeElement.CodeElementDescription);
+                onEntryFrom.Description);
 
         }
 
         protected void ConfigureOnEntryAction(string apiKey,
-            IStateMachine stateMachine, IStateMachineConfiguration configuration,
-            IStateConfiguration stateConfiguration,
+            IStateMachine stateMachine, Machine configuration,
+            StateConfiguration stateConfiguration,
             StateMachine<State, Trigger>.StateConfiguration stateSettings)
         {
-            if (stateConfiguration.OnEntryAction.CodeElementId == null) return;
-            var codeElement = configuration.CodeElements.SingleOrDefault(ce =>
-                ce.CodeElementId == stateConfiguration.OnEntryAction.CodeElementId);
-
-            if (codeElement == null) throw new ArgumentException($"CodeElement with Id {stateConfiguration.OnEntryFromAction.CodeElementId} was not found.");
-
-            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(codeElement.ConnectorKey);
+            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(stateConfiguration.OnEntry.ConnectorKey);
             stateSettings.OnEntry(() =>
                 hostFactory.BuildConnector(apiKey).Result
-                    .ConstructAction(stateMachine, codeElement)
+                    .ConstructAction(stateMachine, stateConfiguration.OnEntry)
                     .Invoke(CancellationToken.None),
-                stateConfiguration.OnEntryAction.StateActionDescription ?? codeElement.CodeElementDescription);
+                stateConfiguration.OnEntry.Description);
         }
 
         protected interface IStateAccessorMutator
@@ -205,15 +185,15 @@ namespace REstate.Stateless
 
         protected class PersistentStateAccessorMutator : IStateAccessorMutator
         {
-            private State _lastState;
-            private readonly IInstanceRepository _context;
+            private InstanceRecord _lastState;
+            private readonly IConfigurationRepository _context;
 
-            public PersistentStateAccessorMutator(IInstanceRepositoryContextFactory instanceRepositoryContextFactory,
+            public PersistentStateAccessorMutator(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
                 string apiKey, string machineInstanceId)
             {
                 MachineInstanceId = machineInstanceId;
 
-                _context = instanceRepositoryContextFactory.OpenInstanceRepositoryContext(apiKey);
+                _context = configurationRepositoryContextFactory.OpenConfigurationRepositoryContext(apiKey);
             }
 
             public string MachineInstanceId { get; }
@@ -222,12 +202,12 @@ namespace REstate.Stateless
             {
                 _lastState = _context.MachineInstances.GetInstanceState(MachineInstanceId);
 
-                return _lastState;
+                return new  State(_lastState.MachineName, _lastState.StateName);
             }
 
             public void Mutator(State state)
             {
-                _context.MachineInstances.SetInstanceState(MachineInstanceId, state, _lastState);
+                _context.MachineInstances.SetInstanceState(MachineInstanceId, state.StateName, _lastState.CommitTag);
             }
 
             ~PersistentStateAccessorMutator()

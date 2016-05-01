@@ -1,0 +1,67 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "http://localhost/restate/code",
+    "type": "object",
+    "default": null,
+    "format": "normal",
+    "options": {
+        "disable_edit_json": true
+    },
+    "additionalProperties": false,
+    "defaultProperties": [
+        "name",
+        "connectorKey",
+        "body",
+        "description"
+    ],
+    "properties": {
+        "name": {
+            "id": "http://localhost/restate/code/name",
+            "type": "string",
+            "name": "Name",
+            "title": "Name",
+            "default": null
+        },
+        "connectorKey": {
+            "id": "http://localhost/restate/code/connector-key",
+            "type": "string",
+            "name": "ConnectorKey",
+            "title": "Connector Key",
+            "default": null
+        },
+        "body": {
+            "id": "http://localhost/restate/code/body",
+            "type": "string",
+            "name": "Body",
+            "title": "Body",
+            "format": "code",
+            "options": {
+                "input_height": "100px",
+                "format": "text"
+            }
+        },
+        "options": {
+            "id": "http://localhost/restate/code/options",
+            "type": "object",
+            "name": "Options",
+            "title": "Options",
+            "default": null
+        },
+        "description": {
+            "id": "http://localhost/restate/code/description",
+            "type": "string",
+            "name": "Description",
+            "title": "Description",
+            "format": "textarea",
+            "default": null,
+            "options": {
+                "input_height": "100px"
+            }
+        }
+    },
+    "required": [
+        "name",
+        "connectorKey",
+        "body"
+    ]
+}

@@ -46,19 +46,13 @@
   <ItemGroup>
     <Compile Include="CreateBaselineAuthTables.cs" />
     <Compile Include="CreateBaselineChronoTables.cs" />
-    <Compile Include="CreateBaselineConfigurationTables.cs" />
-    <Compile Include="CreateBaselineInstancesTables.cs" />
     <Compile Include="CreateChronoConsumerServiceAccount.cs" />
     <Compile Include="CreateDefaultAdminUsers.cs" />
-    <Compile Include="CreateLoadMachineConfiguration.cs" />
-    <Compile Include="CreateTableTypesAndProcs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UpgradeToVersion5.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="CreateLoadMachineConfiguration.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

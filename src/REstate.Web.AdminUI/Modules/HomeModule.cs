@@ -17,30 +17,35 @@ namespace REstate.Web.AdminUI.Modules
         /// </summary>
         public HomeModule(REstatePlatformConfiguration configuration)
         {
-            Get["/"] = _ =>
+            Get["/"] = _ => BuildPageOrRredirect(configuration);
+            Get[@"/(.*)"] = _ => BuildPageOrRredirect(configuration);
+
+
+        }
+
+        private dynamic BuildPageOrRredirect(REstatePlatformConfiguration configuration)
+        {
+            if (string.IsNullOrWhiteSpace(Context.GetOwinEnvironment()["owin.RequestPath"] as string))
             {
-                if(string.IsNullOrWhiteSpace(Context.GetOwinEnvironment()["owin.RequestPath"] as string))
-                {
-                    return Response.AsRedirect(configuration.AdminHttpService.Address, 
-                        RedirectResponse.RedirectType.Permanent);
-                }
+                return Response.AsRedirect(configuration.AdminHttpService.Address,
+                    RedirectResponse.RedirectType.Permanent);
+            }
 
-                if (Context.CurrentUser == null)
-                    return Response.AsRedirect($"{configuration.AuthHttpService.Address}login");
+            if (Context.CurrentUser == null)
+                return Response.AsRedirect($"{configuration.AuthHttpService.Address}login");
 
-                using (var fread = new FileStream(
-                    $"{configuration.AdminHttpService.StaticContentRootRoutePath}\\index.html",
-                    FileMode.Open))
-                using (var streamReader = new StreamReader(fread))
-                {
-                    var indexHtml = streamReader.ReadToEnd();
+            using (var fread = new FileStream(
+                $"{configuration.AdminHttpService.StaticContentRootRoutePath}\\index.html",
+                FileMode.Open))
+            using (var streamReader = new StreamReader(fread))
+            {
+                var indexHtml = streamReader.ReadToEnd();
 
-                    //not sure if this is needed now
-                    indexHtml = indexHtml.Replace(@"<base href=""/"">", @"<base href=""./"">"); 
+                //not sure if this is needed now
+                indexHtml = indexHtml.Replace(@"<base href=""/"">", @"<base href=""./"">");
 
-                    return Response.AsText(indexHtml, "text/html");
-                }
-            };
+                return Response.AsText(indexHtml, "text/html");
+            }
         }
     }
 }

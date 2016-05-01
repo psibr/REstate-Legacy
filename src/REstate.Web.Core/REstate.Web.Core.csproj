@@ -86,8 +86,8 @@
       <HintPath>..\packages\Psibr.Platform.Nancy.3.0.0\lib\net45\Psibr.Platform.Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="REstate.Domain.Core, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\REstate.Domain.Core.2.1.0.0\lib\net45\REstate.Domain.Core.dll</HintPath>
+    <Reference Include="REstate.Domain.Core, Version=5.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Domain.Core.5.0.1.0\lib\net45\REstate.Domain.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
@@ -112,16 +112,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigurationRoutePrefix.cs" />
-    <Compile Include="InstancesRoutePrefix.cs" />
-    <Compile Include="Modules\CodeElementsModule.cs" />
-    <Compile Include="Modules\ConfigurationModule.cs" />
     <Compile Include="Modules\MachineDefinitionsModule.cs" />
     <Compile Include="Modules\SchemaModule.cs" />
-    <Compile Include="Modules\MachinesModule.cs" />
+    <Compile Include="Modules\InstancesModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Requests\StateConfiguration.cs" />
-    <Compile Include="Requests\StateMachineConfigurationRequest.cs" />
     <Compile Include="Requests\TriggerFireRequest.cs" />
     <Compile Include="Schemas.Designer.cs">
       <AutoGen>True</AutoGen>

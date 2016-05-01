@@ -37,7 +37,16 @@ declare var JSONEditor: JSONEditor;
     providers: [REstateService]
 })
 export class HomeComponent implements OnInit {
-    graphVizText: string = `digraph g { a -> b; }`;
+    graphVizText: string = `digraph {
+ AutoRotateFinished -> BatchUnlockReceived [label="Receive"];
+ AutoRotateReceived -> AutoRotateFinished [label="Finish"];
+ BatchUnlockReceived -> Completed [label="Finish"];
+ Configured -> AutoRotateReceived [label="Receive"];
+ Created -> Configured [label="NotifyConfigured"];
+node [shape=box];
+ AutoRotateFinished -> "Indicates batch is now ready for unlocking." [label="On Entry" style=dotted];
+ Configured -> "Indicates work ready for AutoRotate." [label="On Entry" style=dotted];
+}`;
     definitions: MachineDefinition[];
     schema: Object;
     errorMessage: string;
@@ -45,8 +54,6 @@ export class HomeComponent implements OnInit {
     constructor (private REstateService: REstateService) { }
     
     ngOnInit() {
-        
-        JSONEditor.defaults.options.object_layout = "grid";
         
         var element = document.getElementById('json-editor');
         

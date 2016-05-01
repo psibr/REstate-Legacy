@@ -24,7 +24,7 @@ namespace REstate.Connectors.Decorators.Task
 
         protected IPlatformLogger Logger { get; }
 
-        public Func<CancellationToken, System.Threading.Tasks.Task> ConstructAction(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code)
+        public Func<CancellationToken, System.Threading.Tasks.Task> ConstructAction(IStateMachine machineInstance, Code code)
         {
             return (cancellationToken) =>
             {
@@ -41,7 +41,7 @@ namespace REstate.Connectors.Decorators.Task
             };
         }
 
-        public Func<CancellationToken, System.Threading.Tasks.Task> ConstructAction(IStateMachine machineInstance, string payload, ICodeWithDatabaseConfiguration code)
+        public Func<CancellationToken, System.Threading.Tasks.Task> ConstructAction(IStateMachine machineInstance, string payload, Code code)
         {
             return (cancellationToken) =>
             {
@@ -58,7 +58,7 @@ namespace REstate.Connectors.Decorators.Task
             };
         }
 
-        public Func<CancellationToken, Task<bool>> ConstructPredicate(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code) =>
+        public Func<CancellationToken, Task<bool>> ConstructPredicate(IStateMachine machineInstance, Code code) =>
             _connector.ConstructPredicate(machineInstance, code);
 
         public string ConnectorKey => $"Task<{_connector.ConnectorKey}>";

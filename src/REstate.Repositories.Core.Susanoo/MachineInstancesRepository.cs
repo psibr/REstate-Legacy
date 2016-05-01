@@ -1,104 +1,105 @@
-using System;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
 using REstate.Configuration;
-using REstate.Repositories.Instances;
+using REstate.Repositories.Configuration;
 using Susanoo;
-using Susanoo.Processing;
-using Susanoo.Proxies.Transforms;
-using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace REstate.Repositories.Core.Susanoo
 {
     public class MachineInstancesRepository
-        : InstanceContextualRepository, IMachineInstancesRepository
+        : ConfigurationContextualRepository, IMachineInstancesRepository
     {
-        private static readonly ISingleResultSetCommandProcessor<dynamic,REstate.Configuration.State> GetStateCommandProcessor = 
-            CommandManager.Instance
-                .DefineCommand("SELECT MachineDefinitionId, StateName FROM MachineInstances WHERE MachineInstanceId = @MachineInstanceId",
-                    CommandType.Text)
-                .DefineResults<REstate.Configuration.State>()
-                .Realize();
-
-        public MachineInstancesRepository(InstanceRepository root)
+        public MachineInstancesRepository(ConfigurationRepository root)
             : base(root)
         {
         }
 
-        public async Task EnsureInstanceExists(IStateMachineConfiguration configuration, string machineInstanceId,
-            CancellationToken cancellationToken)
+        public async Task EnsureInstanceExists(string machineName, string instanceId, CancellationToken cancellationToken)
         {
             await CommandManager.Instance
-                .DefineCommand("IF NOT EXISTS(SELECT TOP 1 MachineInstances.MachineInstanceId FROM MachineInstances WHERE MachineInstanceId = @MachineInstanceId)" +
-                               "\n\tINSERT INTO MachineInstances VALUES(@machineInstanceId, @MachineDefinitionId, @InitialStateName); ", CommandType.Text)
+                .DefineCommand(
+@"
+IF NOT EXISTS (SELECT TOP 1 InstanceId FROM Instances WHERE InstanceId = @InstanceId)
+BEGIN
+
+    DECLARE @InitialState varchar(250);
+
+    SELECT TOP 1 @InitialState = InitialState FROM Machines WHERE MachineName = @MachineName;
+
+    INSERT INTO Instances (InstanceId, MachineName, StateName)
+    VALUES (@InstanceId, @MachineName, @InitialState);
+END", CommandType.Text)
                 .Realize()
                 .ExecuteNonQueryAsync(DatabaseManagerPool.DatabaseManager, new
                 {
-                    machineInstanceId,
-                    configuration.MachineDefinition.MachineDefinitionId,
-                    configuration.MachineDefinition.InitialStateName
+                    InstanceId = instanceId,
+                    MachineName = machineName
                 }, null, cancellationToken);
         }
 
-        public async Task DeleteInstance(string machineInstanceId, CancellationToken cancellationToken)
+        public async Task DeleteInstance(string instanceId, CancellationToken cancellationToken)
         {
             await CommandManager.Instance
-                .DefineCommand("DELETE FROM MachineInstances WHERE MachineInstanceId = @machineInstanceId",
-                    CommandType.Text)
+                .DefineCommand("DELETE FROM Instances WHERE InstanceId = @InstanceId", CommandType.Text)
                 .Realize()
-                .ExecuteNonQueryAsync(DatabaseManagerPool.DatabaseManager, new { machineInstanceId }, null,
+                .ExecuteNonQueryAsync(DatabaseManagerPool.DatabaseManager, new { InstanceId = instanceId }, null,
                     cancellationToken);
         }
 
-        public State GetInstanceState(string machineInstanceId)
+        public InstanceRecord GetInstanceState(string instanceId)
         {
-            var results = GetStateCommandProcessor
-                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { MachineInstanceId = machineInstanceId },
-                    CancellationToken.None).Result;
-
-            var result = results
-                .SingleOrDefault();
-
-            return result == null 
-                ? null 
-                : new State(result.MachineDefinitionId, result.StateName);
+            return CommandManager.Instance
+                .DefineCommand("SELECT TOP 1 * " +
+                               "FROM Instances " +
+                               "WHERE InstanceId = @InstanceId " +
+                               "ORDER BY StateChangedDateTime DESC;", CommandType.Text)
+                .DefineResults<InstanceRecord>()
+                .Realize()
+                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { InstanceId = instanceId }, CancellationToken.None)
+                .Result
+                .Single();
         }
 
-        public void SetInstanceState(string machineInstanceId, State state, State lastState)
+        public void SetInstanceState(string instanceId, string stateName, string lastCommitTag)
         {
-            if (state == null) throw new ArgumentNullException(nameof(state));
 
-            var manager = DatabaseManagerPool.DatabaseManager;
+            var result = CommandManager.Instance
+                .DefineCommand(
+@"
+BEGIN TRANSACTION
 
-            using (var transaction = new TransactionScope(TransactionScopeOption.Required,
-                new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
-                TransactionScopeAsyncFlowOption.Enabled))
-            {
-                manager.OpenConnection();
-                var results = CommandManager.Instance
-                    .DefineCommand(
-                        "EXEC sp_getapplock @Resource = @machineInstanceId, @LockMode='Update', @LockTimeout='2000'" +
-                        "\n\n" +
-                        "UPDATE MachineInstances SET StateName = @StateName \n" +
-                        "WHERE MachineInstanceId = @machineInstanceId AND StateName = @LastStateName;" +
-                        "\n\n" +
-                        "EXEC sp_releaseapplock @Resource = @machineInstanceId",
-                        CommandType.Text)
-                    .Realize()
-                    .SetTimeout(TimeSpan.FromSeconds(3))
-                    .ExecuteNonQuery(manager,
-                        new { machineInstanceId, state.StateName, LastStateName = lastState.StateName });
+EXEC sp_getapplock @Resource = @InstanceId, @LockMode = 'Update'
 
-                if(results <= 0)
-                    throw new StateConflictException("State did not reflect original state when attempting to transition.");
+DECLARE @MachineName varchar(250);
+DECLARE @CommitTag varchar(250);
 
+SELECT TOP 1 @MachineName = MachineName, @CommitTag = CommitTag
+FROM Instances
+WHERE InstanceId = @InstanceId
+ORDER BY StateChangedDateTime DESC
 
-                transaction.Complete();
-            }
-            manager.CloseConnection();
+IF(@CommitTag = @LastCommitTag)
+BEGIN
+    INSERT INTO Instances (InstanceId, MachineName, StateName)
+    VALUES (@InstanceId, @MachineName, @StateName);
+
+    SELECT Success = 1;
+END
+ELSE
+    SELECT Success = 0;
+
+COMMIT
+", CommandType.Text)
+                .Realize()
+                .ExecuteScalarAsync<int>(DatabaseManagerPool.DatabaseManager, new
+                {
+                    InstanceId = instanceId, StateName = stateName, LastCommitTag = lastCommitTag
+                }, null, CancellationToken.None).Result;
+
+            if(result <= 0)
+                throw new StateConflictException("State did not reflect original state when attempting to transition.");
         }
     }
 }

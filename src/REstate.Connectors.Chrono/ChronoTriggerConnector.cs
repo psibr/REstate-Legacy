@@ -30,23 +30,23 @@ namespace REstate.Connectors.Chrono
             }
         }
 
-        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code)
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, Code code)
         {
             return async (cancellationToken) =>
             {
-                await _chronoSession.AddChronoTrigger(machineInstance.MachineInstanceId, code.CodeBody);
+                await _chronoSession.AddChronoTrigger(machineInstance.MachineInstanceId, code.Body);
             };
         }
 
-        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, string payload, ICodeWithDatabaseConfiguration code)
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, string payload, Code code)
         {
             return async (cancellationToken) =>
             {
-                await _chronoSession.AddChronoTrigger(machineInstance.MachineInstanceId, code.CodeBody, payload);
+                await _chronoSession.AddChronoTrigger(machineInstance.MachineInstanceId, code.Body, payload);
             };
         }
 
-        public Func<CancellationToken, Task<bool>> ConstructPredicate(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code)
+        public Func<CancellationToken, Task<bool>> ConstructPredicate(IStateMachine machineInstance, Code code)
         {
             throw new NotSupportedException();
         }

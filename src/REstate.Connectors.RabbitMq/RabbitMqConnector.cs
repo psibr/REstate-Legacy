@@ -27,16 +27,16 @@ namespace REstate.Connectors.RabbitMq
             Logger = logger;
         }
 
-        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code)
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, Code code)
         {
             return ConstructAction(machineInstance, null, code);
         }
 
-        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, string payload, ICodeWithDatabaseConfiguration code)
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, string payload, Code code)
         {
             return (cancellationToken) =>
             {
-                var actionSettings = StringSerializer.Deserialize<ActionConfiguration>(code.CodeBody);
+                var actionSettings = StringSerializer.Deserialize<ActionConfiguration>(code.Body);
 
                 if (payload == null)
                     payload = actionSettings.MessageBody;
@@ -103,7 +103,7 @@ namespace REstate.Connectors.RabbitMq
             };
         }
 
-        public Func<CancellationToken, Task<bool>> ConstructPredicate(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code)
+        public Func<CancellationToken, Task<bool>> ConstructPredicate(IStateMachine machineInstance, Code code)
         {
             throw new NotSupportedException();
         }

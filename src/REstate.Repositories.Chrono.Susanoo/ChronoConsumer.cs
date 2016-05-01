@@ -34,7 +34,7 @@ namespace REstate.Repositories.Chrono.Susanoo
                         chronoTrigger.ChronoTriggerId, chronoTrigger);
 
                     var currentState = _clientAuthenticatedSession
-                        .GetMachineState(chronoTrigger.MachineInstanceId).Result;
+                        .GetState(chronoTrigger.MachineInstanceId).Result;
 
                     if (currentState.StateName != chronoTrigger.StateName)
                     {

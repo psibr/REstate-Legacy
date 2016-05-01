@@ -18,8 +18,8 @@ namespace REstate.Connectors.Decorators.Task
                 logger.Debug("Task completion successful for connector action.");
         }
 
-        public Action<System.Threading.Tasks.Task, IStateMachine, ICodeWithDatabaseConfiguration, IPlatformLogger, string> SuccessAction { get; set; }
+        public Action<System.Threading.Tasks.Task, IStateMachine, Code, IPlatformLogger, string> SuccessAction { get; set; }
 
-        public Action<System.Threading.Tasks.Task, IStateMachine, ICodeWithDatabaseConfiguration, IPlatformLogger, string> FailureAction { get; set; }
+        public Action<System.Threading.Tasks.Task, IStateMachine, Code, IPlatformLogger, string> FailureAction { get; set; }
     }
 }

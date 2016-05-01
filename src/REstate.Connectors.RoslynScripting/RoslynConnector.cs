@@ -30,13 +30,13 @@ namespace REstate.Connectors.RoslynScripting
             new Dictionary<string, ScriptRunner<bool>>();
 
         public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, string payload,
-            ICodeWithDatabaseConfiguration code) =>
+            Code code) =>
                 async ct =>
                 {
                     ScriptRunner<object> runner;
-                    if (!ActionDelegateCache.TryGetValue(code.CodeBody, out runner))
+                    if (!ActionDelegateCache.TryGetValue(code.Body, out runner))
                     {
-                        runner = CSharpScript.Create(code.CodeBody,
+                        runner = CSharpScript.Create(code.Body,
                             ScriptOptions.Default
                                 .WithReferences(typeof (Console).Assembly)
                                 .WithReferences(typeof (HttpClient).Assembly)
@@ -44,7 +44,7 @@ namespace REstate.Connectors.RoslynScripting
                             typeof (RoslynScriptGlobals))
                             .CreateDelegate();
 
-                        ActionDelegateCache.Add(code.CodeBody, runner);
+                        ActionDelegateCache.Add(code.Body, runner);
                     }
 
                     await runner
@@ -58,16 +58,16 @@ namespace REstate.Connectors.RoslynScripting
                         }, ct);
                 };
 
-        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code) =>
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, Code code) =>
             ConstructAction(machineInstance, null, code);
 
-        public Func<CancellationToken, Task<bool>> ConstructPredicate(IStateMachine machineInstance, ICodeWithDatabaseConfiguration code) =>
+        public Func<CancellationToken, Task<bool>> ConstructPredicate(IStateMachine machineInstance, Code code) =>
                 async ct =>
                 {
                     ScriptRunner<bool> runner;
-                    if (!PredicateDelegateCache.TryGetValue(code.CodeBody, out runner))
+                    if (!PredicateDelegateCache.TryGetValue(code.Body, out runner))
                     {
-                        runner = CSharpScript.Create<bool>(code.CodeBody,
+                        runner = CSharpScript.Create<bool>(code.Body,
                             ScriptOptions.Default
                                 .WithReferences(typeof(Console).Assembly)
                                 .WithReferences(typeof(HttpClient).Assembly)
@@ -75,7 +75,7 @@ namespace REstate.Connectors.RoslynScripting
                             typeof(RoslynScriptGlobals))
                             .CreateDelegate();
 
-                        PredicateDelegateCache.Add(code.CodeBody, runner);
+                        PredicateDelegateCache.Add(code.Body, runner);
                     }
 
                     return await runner

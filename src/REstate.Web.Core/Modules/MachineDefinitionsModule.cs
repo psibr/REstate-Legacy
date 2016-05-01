@@ -1,12 +1,13 @@
+using System;
 using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Responses.Negotiation;
 using Nancy.Security;
 using Psibr.Platform.Nancy;
+using Psibr.Platform.Nancy.Modules;
 using REstate.Configuration;
 using REstate.Repositories.Configuration;
 using REstate.Services;
-using REstate.Web.Core.Requests;
 
 namespace REstate.Web.Core.Modules
 {
@@ -14,26 +15,46 @@ namespace REstate.Web.Core.Modules
     /// Machine Definitions configuration module.
     /// </summary>
     public class MachineDefinitionsModule
-        : ConfigurationModule
+        : SecuredModule
     {
         /// <summary>
         /// Registers routes for defining new machines.
         /// </summary>
-        /// <param name="prefix"></param>
         /// <param name="configurationRepositoryContextFactory">The repository context factory.</param>
         /// <param name="stateMachineFactory">The state machine factory.</param>
-        public MachineDefinitionsModule(ConfigurationRoutePrefix prefix,
+        public MachineDefinitionsModule(
             IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
             IStateMachineFactory stateMachineFactory)
-            : base(prefix + "/machinedefinitions", "machineBuilder")
+            : base("/machines", "machineBuilder")
         {
             GetMachine(configurationRepositoryContextFactory);
 
             GetDiagramForDefinition(configurationRepositoryContextFactory, stateMachineFactory);
 
             DefineStateMachine(configurationRepositoryContextFactory);
+
             ListMachines(configurationRepositoryContextFactory);
+
+            InstantiateMachine(configurationRepositoryContextFactory);
         }
+
+
+        private void InstantiateMachine(
+            IConfigurationRepositoryContextFactory configurationRepositoryContextFactory) =>
+            Post["InstantiateMachine", "{MachineDefinitionId}/instantiate/", true] = async (parameters, ct) =>
+            {
+                string machineDefinitionId = parameters.MachineDefinitionId;
+                string machineInstanceId = Guid.NewGuid().ToString();
+
+                using (var configruationRepository = configurationRepositoryContextFactory.OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
+                {
+                    await configruationRepository.MachineInstances.EnsureInstanceExists(machineDefinitionId, machineInstanceId, ct);
+                }
+
+                return Negotiate
+                    .WithModel(new { machineInstanceId })
+                    .WithAllowedMediaRange(new MediaRange("application/json"));
+            };
 
         private void ListMachines(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
@@ -53,8 +74,8 @@ namespace REstate.Web.Core.Modules
         {
             Post["DefineStateMachine", "/", true] = async (parameters, ct) =>
             {
-                StateMachineConfiguration stateMachineConfiguration = this.Bind<StateMachineConfigurationRequest>();
-                IStateMachineConfiguration newMachineConfiguration;
+                var stateMachineConfiguration = this.Bind<Machine>();
+                Machine newMachineConfiguration;
                 using (var repository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
@@ -71,13 +92,13 @@ namespace REstate.Web.Core.Modules
             Get["GetMachine", "/{MachineDefinitionId}", true] = async (parameters, ct) =>
             {
                 string machineDefinitionId = parameters.MachineDefinitionId;
-                IStateMachineConfiguration configuration;
+                Machine configuration;
 
                 using (var repository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
                     configuration = await repository.Machines
-                        .RetrieveMachineConfiguration(machineDefinitionId, Context.CurrentUser.HasClaim("developer"), ct);
+                        .RetrieveMachineConfiguration(machineDefinitionId, ct);
                 }
 
                 if (configuration == null)
@@ -88,9 +109,6 @@ namespace REstate.Web.Core.Modules
                         ContentType = "application/json",
                         Contents = stream => stream.Close()
                     };
-
-                //transform configuration
-
                 
 
                 return Negotiate
@@ -103,13 +121,13 @@ namespace REstate.Web.Core.Modules
             Get["GetDiagramForDefinition", "/{MachineDefinitionId}/diagram", true] = async (parameters, ct) =>
             {
                 string machineDefinitionId = parameters.MachineDefinitionId;
-                IStateMachineConfiguration configuration;
+                Machine configuration;
 
                 using (var repository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
                     configuration = await repository.Machines
-                        .RetrieveMachineConfiguration(machineDefinitionId, true, ct);
+                        .RetrieveMachineConfiguration(machineDefinitionId, ct);
                 }
 
                 var machine = stateMachineFactory

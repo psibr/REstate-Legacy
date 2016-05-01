@@ -171,7 +171,6 @@
     <TypeScriptCompile Include="wwwroot\app\navbar.component.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="wwwroot\app\json-editor.styles.css" />
     <Content Include="wwwroot\app\navbar.component.html" />
     <Content Include="wwwroot\index.html" />
     <Content Include="wwwroot\styles.css" />

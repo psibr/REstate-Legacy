@@ -7,10 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <!--<link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap-theme.min.css">-->
     <link rel="stylesheet" href="./css/ripples.min.css">
     <link rel="stylesheet" href="./css/bootstrap-material-design.css">
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./css/styles.css">
 
 
     <!-- 1. Load libraries -->
@@ -19,7 +18,8 @@
     <script src="./node_modules/systemjs/dist/system-polyfills.js"></script>
     <script src="./node_modules/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
 
-    <script src="./node_modules/json-editor/dist/jsoneditor.min.js"></script>
+    <script src="./node_modules/json-editor/dist/jsoneditor.js"></script>
+    <script src="./js/json-editor.code.editor.js"></script>
     <script src="./node_modules/viz.js/viz.js"></script>
 
     <script src="./node_modules/angular2/bundles/angular2-polyfills.js"></script>
@@ -40,7 +40,7 @@
             }
         });
         System.import('app/main')
-              .then(null, console.error.bind(console));
+            .then(null, console.error.bind(console));
     </script>
 </head>
 
@@ -54,8 +54,27 @@
     <script src="./js/ripples.min.js"></script>
     <script src="./js/material.min.js"></script>
     <script src="./js/json-editor.material.theme.js"></script>
+    <script src="./node_modules/ace-builds/src-noconflict/ace.js"></script>
+    <script src="./node_modules/ace-builds/src-noconflict/mode-json.js"></script>
+    <script src="./node_modules/ace-builds/src-noconflict/mode-sql.js"></script>
+    <script src="./node_modules/ace-builds/src-noconflict/mode-sqlserver.js"></script>
+    <script src="./node_modules/ace-builds/src-noconflict/mode-csharp.js"></script>
+    <script src="./node_modules/ace-builds/src-noconflict/mode-yaml.js"></script>
+    <script src="./node_modules/ace-builds/src-noconflict/mode-javascript.js"></script>
+    <script src="./node_modules/ace-builds/src-noconflict/mode-typescript.js"></script>
+    <script src="./node_modules/ace-builds/src-noconflict/mode-html.js"></script>
     <script>
         $.material.init();
+        
+        JSONEditor.defaults.resolvers.unshift(function(schema) {
+            if(schema.type === "string" && schema.format === "code") {
+                return "code";
+            }
+        });
+        
+        JSONEditor.plugins.ace.theme = 'ambiance';
+        JSONEditor.defaults.editors.object.options.remove_empty_properties = true;
+
     </script>
 
 
