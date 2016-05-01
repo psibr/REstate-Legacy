@@ -83,7 +83,7 @@ namespace REstate.Services.ChronoConsumer
 
             container.Register(context => context.Resolve<IREstateClientFactory>()
                 .GetConfigurationClient(configuration.CoreHttpService.Address))
-                .As<IAuthSessionClient<IInstancesSession>>();
+                .As<REstateConfigurationClient>();
 
             return container;
         }

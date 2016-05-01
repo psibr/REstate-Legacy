@@ -13,15 +13,15 @@ namespace REstate.Services.ChronoConsumer
     public class ChronoConsumerService
         : IDisposable
     {
-        private IAuthSessionClient<IInstancesSession> InstanceSessionClient { get; }
+        private REstateConfigurationClient InstanceSessionClient { get; }
         private IInstancesSession _instanceSession;
         private IPlatformLogger Logger { get; }
         private ConsumerServiceConfiguration Configuration { get; }
         private IChronoRepository ChronoRepository { get; }
         private Repositories.Chrono.Susanoo.ChronoConsumer _chronoConsumer;
 
-        public ChronoConsumerService(ConsumerServiceConfiguration configuration, IChronoRepository chronoRepository, 
-            IAuthSessionClient<IInstancesSession> instanceSessionClient, IPlatformLogger logger)
+        public ChronoConsumerService(ConsumerServiceConfiguration configuration, IChronoRepository chronoRepository,
+            REstateConfigurationClient instanceSessionClient, IPlatformLogger logger)
         {
             InstanceSessionClient = instanceSessionClient;
             Logger = logger;
