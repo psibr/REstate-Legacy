@@ -3,38 +3,15 @@ import {Component, OnInit} from 'angular2/core';
 import {GraphVizComponent} from './graph-viz.component';
 import {REstateService} from './restate.service';
 import {MachineDefinition} from './machine-definition';
-import { ROUTER_DIRECTIVES } from 'angular2/router';
-
-declare var JSONEditor: JSONEditor;
+import {MachineEditorComponent} from './machine-editor.component';
+import {MachineListComponent} from './machine-list.component';
 
 @Component({
     template: `
-        <table class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Initial State</th>
-                    <th>Auto Ignore</th>
-                    <th>Active</th>
-                </tr>    
-            </thead>
-            <tbody>
-                <tr *ngFor="#definition of definitions" [routerLink]="['About']">
-                    <td>{{definition.machineDefinitionId}}</td>
-                    <td>{{definition.machineName}}</td>
-                    <td>{{definition.machineDescription}}</td>
-                    <td>{{definition.initialStateName}}</td>
-                    <td>{{definition.autoIgnoreNotConfiguredTriggers}}</td>
-                    <td>{{definition.isActive}}</td>
-                </tr>
-            </tbody>
-        </table>
-        <div id="json-editor"></div>
+        <machine-list></machine-list>
+        <machine-editor></machine-editor>
         <graph-viz [graphVizText] = "graphVizText"></graph-viz>`,
-    directives: [GraphVizComponent, ROUTER_DIRECTIVES],
-    providers: [REstateService]
+    directives: [MachineListComponent, GraphVizComponent, MachineEditorComponent]
 })
 export class HomeComponent implements OnInit {
     graphVizText: string = `digraph {
@@ -47,31 +24,7 @@ node [shape=box];
  AutoRotateFinished -> "Indicates batch is now ready for unlocking." [label="On Entry" style=dotted];
  Configured -> "Indicates work ready for AutoRotate." [label="On Entry" style=dotted];
 }`;
-    definitions: MachineDefinition[];
-    schema: Object;
-    errorMessage: string;
-    
-    constructor (private REstateService: REstateService) { }
     
     ngOnInit() {
-        
-        var element = document.getElementById('json-editor');
-        
-        this.REstateService.getMachineDefinitions()
-            .subscribe(
-                definitions => this.definitions = definitions,
-                error => this.errorMessage = error
-            );
-            
-        this.REstateService.getMachineSchema()
-            .subscribe(
-                schema => new JSONEditor(element, {
-                    theme: 'material',
-                    iconlib: "bootstrap3",
-                    ajax: true,
-                    schema: schema
-                }),
-                error => this.errorMessage = error
-            );
     }
 }

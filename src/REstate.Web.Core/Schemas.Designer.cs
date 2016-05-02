@@ -63,10 +63,8 @@ namespace REstate.Web.Core {
         /// <summary>
         ///   Looks up a localized string similar to {
         ///    &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
-        ///    &quot;id&quot;: &quot;http://localhost/restate/code&quot;,
+        ///    &quot;id&quot;: &quot;{host}/code&quot;,
         ///    &quot;type&quot;: &quot;object&quot;,
-        ///    &quot;name&quot;: &quot;OnExitAction&quot;,
-        ///    &quot;title&quot;: &quot;On Exit Action&quot;,
         ///    &quot;default&quot;: null,
         ///    &quot;format&quot;: &quot;normal&quot;,
         ///    &quot;options&quot;: {
@@ -81,7 +79,10 @@ namespace REstate.Web.Core {
         ///    ],
         ///    &quot;properties&quot;: {
         ///        &quot;name&quot;: {
-        ///            &quot;id&quot;: &quot;h [rest of string was truncated]&quot;;.
+        ///            &quot;id&quot;: &quot;{host}/code/name&quot;,
+        ///            &quot;type&quot;: &quot;string&quot;,
+        ///            &quot;name&quot;: &quot;Name&quot;,
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Code {
             get {
@@ -92,7 +93,7 @@ namespace REstate.Web.Core {
         /// <summary>
         ///   Looks up a localized string similar to {
         ///    &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
-        ///    &quot;id&quot;: &quot;http://localhost/restate/machine&quot;,
+        ///    &quot;id&quot;: &quot;{host}/machine&quot;,
         ///    &quot;type&quot;: &quot;object&quot;,
         ///    &quot;name&quot;: &quot;Machine&quot;,
         ///    &quot;title&quot;: &quot;Machine Definition&quot;,
@@ -108,7 +109,8 @@ namespace REstate.Web.Core {
         ///    },
         ///    &quot;properties&quot;: {
         ///        &quot;machineName&quot;: {
-        ///            &quot;id&quot;: &quot;http://localhost/r [rest of string was truncated]&quot;;.
+        ///            &quot;id&quot;: &quot;{host}/machine/name&quot;,
+        ///            &quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Machine {
             get {
@@ -119,7 +121,7 @@ namespace REstate.Web.Core {
         /// <summary>
         ///   Looks up a localized string similar to {
         ///    &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
-        ///    &quot;id&quot;: &quot;http://localhost/restate/on-entry-from&quot;,
+        ///    &quot;id&quot;: &quot;{host}/on-entry-from&quot;,
         ///    &quot;type&quot;: &quot;object&quot;,
         ///    &quot;name&quot;: &quot;OnEntryFromAction&quot;,
         ///    &quot;default&quot;: null,
@@ -137,7 +139,7 @@ namespace REstate.Web.Core {
         ///    ],
         ///    &quot;properties&quot;: {
         ///        &quot;name&quot;: {
-        ///            &quot;i [rest of string was truncated]&quot;;.
+        ///            &quot;id&quot;: &quot;{host}/on-ent [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string OnEntryFrom {
             get {

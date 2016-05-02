@@ -2,8 +2,9 @@ interface JSONEditor {
     new (element: Element, options: JSONEditorOptions),
     
     defaults: any,
-    plugins: any
-    
+    plugins: any,
+    setValue(value:Object),
+    on(event:string, callback:Function)
 }
 
 interface JSONEditorOptions {

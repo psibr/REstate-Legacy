@@ -74,6 +74,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Decorators", "Decorators", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Connectors.Decorators.Task", "REstate.Connectors.Decorators.Task\REstate.Connectors.Decorators.Task.csproj", "{71A57DEA-FC17-4B35-8928-6A2396FDB8B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Psibr.Platform.Nancy.Service", "..\..\Platform.Nancy.Service\src\Psibr.Platform.Nancy.Service\Psibr.Platform.Nancy.Service.csproj", "{E6F516B4-429A-4F93-932B-2B651E0F8DE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -168,6 +170,10 @@ Global
 		{71A57DEA-FC17-4B35-8928-6A2396FDB8B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71A57DEA-FC17-4B35-8928-6A2396FDB8B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71A57DEA-FC17-4B35-8928-6A2396FDB8B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6F516B4-429A-4F93-932B-2B651E0F8DE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6F516B4-429A-4F93-932B-2B651E0F8DE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6F516B4-429A-4F93-932B-2B651E0F8DE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6F516B4-429A-4F93-932B-2B651E0F8DE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -196,5 +202,6 @@ Global
 		{9D8388D3-FB9E-45E8-BD94-E045F753616B} = {D7041CED-4AEA-4882-853A-10049AA6AA5D}
 		{187984C9-5602-4A64-A804-CA2B2E8DD8E5} = {D7041CED-4AEA-4882-853A-10049AA6AA5D}
 		{71A57DEA-FC17-4B35-8928-6A2396FDB8B2} = {187984C9-5602-4A64-A804-CA2B2E8DD8E5}
+		{E6F516B4-429A-4F93-932B-2B651E0F8DE0} = {A342B55B-655B-4613-90AB-BD0C392F82FE}
 	EndGlobalSection
 EndGlobal

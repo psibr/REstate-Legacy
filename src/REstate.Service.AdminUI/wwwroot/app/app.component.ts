@@ -3,6 +3,9 @@ import { RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS } from 'angular2/route
 import {NavbarComponent} from './navbar.component'
 import {HomeComponent} from './home.component'
 import {AboutComponent} from './about.component'
+import {MachineListComponent} from './machine-list.component';
+import {MachineEditorComponent} from './machine-editor.component';
+import {REstateService} from './restate.service';
 
 @Component({
     selector: 'restate-admin',
@@ -16,20 +19,31 @@ import {AboutComponent} from './about.component'
         NavbarComponent
     ],
     providers: [
-        ROUTER_PROVIDERS
+        ROUTER_PROVIDERS,
+        REstateService
     ]
 })
 @RouteConfig([
     {
         path: '/',
         name: 'Home',
-        component: HomeComponent,
-        useAsDefault: true
+        component: HomeComponent
     },
     {
         path: '/about',
         name: 'About',
         component: AboutComponent
+    },
+    {
+        path: '/machines',
+        name: 'MachineList',
+        component: MachineListComponent
+    },
+    {
+        path: '/machines/editor',
+        name: 'MachineEditor',
+        component: MachineEditorComponent
     }
+    
 ])
 export class AppComponent { }

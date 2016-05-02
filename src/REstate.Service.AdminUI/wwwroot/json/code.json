@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "id": "http://localhost/restate/code",
+    "id": "{host}/code",
     "type": "object",
     "default": null,
     "format": "normal",
@@ -16,21 +16,21 @@
     ],
     "properties": {
         "name": {
-            "id": "http://localhost/restate/code/name",
+            "id": "{host}/code/name",
             "type": "string",
             "name": "Name",
             "title": "Name",
             "default": null
         },
         "connectorKey": {
-            "id": "http://localhost/restate/code/connector-key",
+            "id": "{host}/code/connector-key",
             "type": "string",
             "name": "ConnectorKey",
             "title": "Connector Key",
             "default": null
         },
         "body": {
-            "id": "http://localhost/restate/code/body",
+            "id": "{host}/code/body",
             "type": "string",
             "name": "Body",
             "title": "Body",
@@ -41,14 +41,14 @@
             }
         },
         "options": {
-            "id": "http://localhost/restate/code/options",
+            "id": "{host}/code/options",
             "type": "object",
             "name": "Options",
             "title": "Options",
             "default": null
         },
         "description": {
-            "id": "http://localhost/restate/code/description",
+            "id": "{host}/code/description",
             "type": "string",
             "name": "Description",
             "title": "Description",

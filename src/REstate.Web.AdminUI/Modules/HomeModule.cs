@@ -17,13 +17,12 @@ namespace REstate.Web.AdminUI.Modules
         /// </summary>
         public HomeModule(REstatePlatformConfiguration configuration)
         {
-            Get["/"] = _ => BuildPageOrRredirect(configuration);
-            Get[@"/(.*)"] = _ => BuildPageOrRredirect(configuration);
-
-
+            Get["/"] = _ => BuildPageOrRedirect(configuration);
+            Get[@"/(.*)"] = _ => BuildPageOrRedirect(configuration);
+            Get[@"/(.*)/(.*)"] = _ => BuildPageOrRedirect(configuration);
         }
 
-        private dynamic BuildPageOrRredirect(REstatePlatformConfiguration configuration)
+        private dynamic BuildPageOrRedirect(REstatePlatformConfiguration configuration)
         {
             if (string.IsNullOrWhiteSpace(Context.GetOwinEnvironment()["owin.RequestPath"] as string))
             {
@@ -42,7 +41,7 @@ namespace REstate.Web.AdminUI.Modules
                 var indexHtml = streamReader.ReadToEnd();
 
                 //not sure if this is needed now
-                indexHtml = indexHtml.Replace(@"<base href=""/"">", @"<base href=""./"">");
+                indexHtml = indexHtml.Replace(@"<base href=""/"">", @"<base href=""/restate/admin/"">");
 
                 return Response.AsText(indexHtml, "text/html");
             }

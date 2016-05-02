@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "id": "http://localhost/restate/on-entry-from",
+    "id": "{host}/on-entry-from",
     "type": "object",
     "name": "OnEntryFromAction",
     "default": null,
@@ -18,28 +18,28 @@
     ],
     "properties": {
         "name": {
-            "id": "http://localhost/restate/on-entry-from/name",
+            "id": "{host}/on-entry-from/name",
             "type": "string",
             "name": "Name",
             "title": "Name",
             "default": null
         },
         "fromTrigger": {
-            "id": "http://localhost/restate/on-entry-from/from-trigger-name",
+            "id": "{host}/on-entry-from/from-trigger-name",
             "type": "string",
             "name": "FromTrigger",
             "title": "From Trigger Name",
             "default": null
         },
         "connectorKey": {
-            "id": "http://localhost/restate/on-entry-from/connector-key",
+            "id": "{host}/on-entry-from/connector-key",
             "type": "string",
             "name": "ConnectorKey",
             "title": "Connector Key",
             "default": null
         },
         "body": {
-            "id": "http://localhost/restate/on-entry-from/body",
+            "id": "{host}/on-entry-from/body",
             "type": "string",
             "name": "Body",
             "title": "Body",
@@ -50,14 +50,14 @@
             }
         },
         "options": {
-            "id": "http://localhost/restate/on-entry-from/options",
+            "id": "{host}/on-entry-from/options",
             "type": "object",
             "name": "Options",
             "title": "Options",
             "default": null
         },
         "description": {
-            "id": "http://localhost/restate/on-entry-from/description",
+            "id": "{host}/on-entry-from/description",
             "type": "string",
             "name": "Description",
             "title": "Description",
