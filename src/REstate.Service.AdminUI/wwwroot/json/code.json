@@ -31,14 +31,24 @@
         },
         "body": {
             "id": "{host}/code/body",
-            "type": "string",
             "name": "Body",
             "title": "Body",
-            "format": "code",
-            "options": {
-                "input_height": "100px",
-                "format": "text"
-            }
+            "oneOf": [
+                {
+                    "title": "Code",
+                    "type": "string",
+                    "format": "code",
+                    "options": {
+                        "input_height": "100px",
+                        "format": "text"
+                    }
+                },
+                {
+                    "title": "REstate.Connectors.Chrono",
+                    "type": "object",
+                    "$ref": "{host}/connectors/chrono"
+                }
+            ]
         },
         "options": {
             "id": "{host}/code/options",

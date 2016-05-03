@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Psibr.Platform.Logging;
 using Psibr.Platform.Serialization;
 using RabbitMQ.Client;
@@ -10,6 +6,7 @@ using REstate.Services;
 
 namespace REstate.Connectors.RabbitMq
 {
+
     public class RabbitMqConnectorFactory
         : IConnectorFactory
     {

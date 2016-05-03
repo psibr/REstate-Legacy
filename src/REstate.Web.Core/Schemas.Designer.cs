@@ -62,8 +62,55 @@ namespace REstate.Web.Core {
         
         /// <summary>
         ///   Looks up a localized string similar to {
+        ///            &quot;id&quot;: &quot;{host}/code/body&quot;,
+        ///            &quot;name&quot;: &quot;Body&quot;,
+        ///            &quot;title&quot;: &quot;Body&quot;,
+        ///             &quot;type&quot;: &quot;string&quot;,
+        ///             &quot;format&quot;: &quot;code&quot;,
+        ///             &quot;options&quot;: {
+        ///                   &quot;input_height&quot;: &quot;100px&quot;,
+        ///                   &quot;format&quot;: &quot;text&quot;
+        ///              }
+        ///}.
+        /// </summary>
+        internal static string Body {
+            get {
+                return ResourceManager.GetString("Body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///    &quot;id&quot;: &quot;{host}/connectors/chrono/body&quot;,
+        ///    &quot;title&quot;:&quot;Body&quot;,
+        ///    &quot;type&quot;: &quot;object&quot;,
+        ///    &quot;format&quot;: &quot;normal&quot;,
+        ///    &quot;additionalProperties&quot;: false,
+        ///    &quot;defaultProperties&quot;: [
+        ///        &quot;name&quot;,
+        ///        &quot;delay&quot;,
+        ///        &quot;payload&quot;
+        ///    ],
+        ///    &quot;properties&quot;: {
+        ///        &quot;name&quot;: {
+        ///            &quot;id&quot;: &quot;{host}/connectors/chrono/body/trigger-name&quot;,
+        ///            &quot;type&quot;: &quot;string&quot;,
+        ///            &quot;name&quot;: &quot;TriggerName&quot;,
+        ///            &quot;title&quot;: &quot;Trigger Name&quot;,
+        ///            &quot;default&quot;: null
+        ///        },
+        ///        &quot;delay&quot;: {        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ChronoConnector {
+            get {
+                return ResourceManager.GetString("ChronoConnector", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
         ///    &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
-        ///    &quot;id&quot;: &quot;{host}/code&quot;,
+        ///    &quot;id&quot;: &quot;{host}/code/{connectorName}&quot;,
         ///    &quot;type&quot;: &quot;object&quot;,
         ///    &quot;default&quot;: null,
         ///    &quot;format&quot;: &quot;normal&quot;,
@@ -81,8 +128,7 @@ namespace REstate.Web.Core {
         ///        &quot;name&quot;: {
         ///            &quot;id&quot;: &quot;{host}/code/name&quot;,
         ///            &quot;type&quot;: &quot;string&quot;,
-        ///            &quot;name&quot;: &quot;Name&quot;,
-        /// [rest of string was truncated]&quot;;.
+        ///            &quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Code {
             get {
@@ -92,25 +138,23 @@ namespace REstate.Web.Core {
         
         /// <summary>
         ///   Looks up a localized string similar to {
-        ///    &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
-        ///    &quot;id&quot;: &quot;{host}/machine&quot;,
-        ///    &quot;type&quot;: &quot;object&quot;,
-        ///    &quot;name&quot;: &quot;Machine&quot;,
-        ///    &quot;title&quot;: &quot;Machine Definition&quot;,
-        ///    &quot;required&quot;: [
-        ///        &quot;machineName&quot;,
-        ///        &quot;initialState&quot;,
-        ///        &quot;autoIgnoreTriggers&quot;,
-        ///        &quot;stateConfigurations&quot;
-        ///    ],
-        ///    &quot;additionalProperties&quot;: false,
-        ///    &quot;options&quot;: {
-        ///        &quot;disable_properties&quot;: true
-        ///    },
-        ///    &quot;properties&quot;: {
-        ///        &quot;machineName&quot;: {
-        ///            &quot;id&quot;: &quot;{host}/machine/name&quot;,
-        ///            &quot; [rest of string was truncated]&quot;;.
+        ///        &quot;$schema&quot;: &quot;http://json-schema.org/draft-04/schema#&quot;,
+        ///        &quot;id&quot;: &quot;{host}/machine&quot;,
+        ///        &quot;type&quot;: &quot;object&quot;,
+        ///        &quot;name&quot;: &quot;Machine&quot;,
+        ///        &quot;title&quot;: &quot;Machine Definition&quot;,
+        ///        &quot;required&quot;: [
+        ///            &quot;machineName&quot;,
+        ///            &quot;initialState&quot;,
+        ///            &quot;autoIgnoreTriggers&quot;,
+        ///            &quot;stateConfigurations&quot;
+        ///        ],
+        ///        &quot;additionalProperties&quot;: false,
+        ///        &quot;options&quot;: {
+        ///            &quot;disable_properties&quot;: true
+        ///        },
+        ///        &quot;properties&quot;: {
+        ///            &quot;mach [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Machine {
             get {

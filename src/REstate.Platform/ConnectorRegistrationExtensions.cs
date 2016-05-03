@@ -17,7 +17,7 @@ namespace REstate.Platform
         public static void RegisterConnectors(this ContainerBuilder builder, REstatePlatformConfiguration configuration)
         {
             var binFolder = new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent;
-            var pluginFolder = new DirectoryInfo(Path.Combine(binFolder.Parent.Parent.Parent.FullName, "Connectors"));
+            var pluginFolder = new DirectoryInfo(Path.Combine(binFolder.Parent.Parent.Parent.FullName, "connectors"));
             IEnumerable<FileInfo> pluginAssemblies = binFolder.GetFiles("REstate.Connectors.*.dll", SearchOption.TopDirectoryOnly);
 
             if (pluginFolder.Exists)
