@@ -105,8 +105,8 @@
       <HintPath>..\packages\Psibr.Platform.Nancy.3.0.0\lib\net45\Psibr.Platform.Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Psibr.Platform.Nancy.Service, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.Nancy.Service.3.0.2.0\lib\net45\Psibr.Platform.Nancy.Service.dll</HintPath>
+    <Reference Include="Psibr.Platform.Nancy.Service, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Nancy.Service.3.0.3\lib\net45\Psibr.Platform.Nancy.Service.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">

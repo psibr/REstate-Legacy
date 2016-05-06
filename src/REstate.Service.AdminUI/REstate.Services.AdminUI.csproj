@@ -105,6 +105,10 @@
       <HintPath>..\packages\Psibr.Platform.Nancy.3.0.0\lib\net45\Psibr.Platform.Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Psibr.Platform.Nancy.Service, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Nancy.Service.3.0.3\lib\net45\Psibr.Platform.Nancy.Service.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
       <Private>True</Private>
@@ -146,10 +150,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Platform.Nancy.Service\src\Psibr.Platform.Nancy.Service\Psibr.Platform.Nancy.Service.csproj">
-      <Project>{e6f516b4-429a-4f93-932b-2b651e0f8de0}</Project>
-      <Name>Psibr.Platform.Nancy.Service</Name>
-    </ProjectReference>
     <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
       <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
       <Name>REstate.Platform</Name>
