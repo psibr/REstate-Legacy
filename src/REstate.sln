@@ -78,6 +78,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Domain.Core", "REst
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REstate.Domain.Chrono", "REstate.Domain.Chrono\src\REstate.Domain.Chrono\REstate.Domain.Chrono.csproj", "{6EE10DC1-EAA1-4754-B207-D4C4B86EAB9F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Psibr.Platform.Nancy.Service", "..\..\Platform.Nancy.Service\src\Psibr.Platform.Nancy.Service\Psibr.Platform.Nancy.Service.csproj", "{E6F516B4-429A-4F93-932B-2B651E0F8DE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -180,6 +182,10 @@ Global
 		{6EE10DC1-EAA1-4754-B207-D4C4B86EAB9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EE10DC1-EAA1-4754-B207-D4C4B86EAB9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EE10DC1-EAA1-4754-B207-D4C4B86EAB9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6F516B4-429A-4F93-932B-2B651E0F8DE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6F516B4-429A-4F93-932B-2B651E0F8DE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6F516B4-429A-4F93-932B-2B651E0F8DE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6F516B4-429A-4F93-932B-2B651E0F8DE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

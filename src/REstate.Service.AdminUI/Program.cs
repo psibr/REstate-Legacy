@@ -63,7 +63,7 @@ namespace REstate.Services.AdminUI
 
             container.RegisterModule<SerilogPlatformLoggingModule>();
 
-            container.Register(context => new FavIconBootstrapper())
+            container.Register(context => new PlatformNancyBootstrapper())
                 .As<INancyBootstrapper>();
 
             container.RegisterLogger(
