@@ -20,7 +20,7 @@ namespace REstate.Web.Core.Modules
             {
                 ctx.Response.Headers.Add("Cache-Control", "public, max-age=7200");
 
-                return Task.FromResult<Response>(ctx.Response);
+                return Task.FromResult(ctx.Response);
             };
 
             Get["TriggerSchema", "/trigger"] = (parameters) =>

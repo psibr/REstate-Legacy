@@ -24,14 +24,6 @@ export class MachineEditorComponent implements OnInit {
         var element = document.getElementById('json-editor');
         let machineName = this.routeParams.get('machineName');
 
-        if (machineName) {
-            this.REstateService.getMachineDefinition(machineName)
-                .subscribe((
-                machine => {
-                    this.machine = machine;
-                }).bind(this));
-        }
-
         this.REstateService.getMachineSchema()
             .subscribe(
             schema => {
@@ -43,9 +35,15 @@ export class MachineEditorComponent implements OnInit {
                 });
 
                 this.jsonEditor.on('ready', function () {
-                    this.jsonEditor.setValue(this.machine);
-                    if(this.machine) {
-                        this.jsonEditor.disable();
+                    
+                    if (machineName) {
+                        this.REstateService.getMachineDefinition(machineName)
+                            .subscribe((
+                            machine => {
+                                this.machine = machine;
+                                this.jsonEditor.setValue(this.machine);
+                                this.jsonEditor.disable();
+                            }).bind(this));
                     }
                     
                     document.getElementById("json-editor")
