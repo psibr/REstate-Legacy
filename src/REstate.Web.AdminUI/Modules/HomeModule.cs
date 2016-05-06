@@ -41,7 +41,7 @@ namespace REstate.Web.AdminUI.Modules
                 var indexHtml = streamReader.ReadToEnd();
 
                 //not sure if this is needed now
-                indexHtml = indexHtml.Replace(@"<base href=""/"">", @"<base href=""/restate/admin/"">");
+                //indexHtml = indexHtml.Replace(@"<base href=""/"">", @"<base href=""/restate/admin/"">");
 
                 return Response.AsText(indexHtml, "text/html");
             }

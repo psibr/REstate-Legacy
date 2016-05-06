@@ -4,22 +4,22 @@
   },
   "httpServices": {
     "admin": {
-      "address": "http://localhost/restate/admin/",
-      "binding": "http://+:80/restate/admin",
+      "address": "http://localhost/",
+      "binding": "http://+:80",
       "servesStaticContent": true,
       "staticContentRootRoutePath": "../../wwwroot"
     },
     "chrono": {
-      "address": "http://localhost/restate/chrono/",
-      "binding": "http://+:80/restate/chrono"
+      "address": "http://localhost/api/chrono/",
+      "binding": "http://+:80/api/chrono"
     },
     "core": {
-      "address": "http://localhost/restate/",
-      "binding": "http://+:80/restate"
+      "address": "http://localhost/api/",
+      "binding": "http://+:80/api"
     },
     "auth": {
-      "address": "http://localhost/restate/auth/",
-      "binding": "http://+:80/restate/auth"
+      "address": "http://localhost/auth/",
+      "binding": "http://+:80/auth"
     }
   },
   "processingServices": {
@@ -45,7 +45,7 @@
       "password": "REstate"
     }
   },
-  "rollingFileLoggerPath":  "C:\\REstate\\logs",
+  "rollingFileLoggerPath":  "C:\\services\\REstate\\logs",
   "connections": [
     {
       "connectionString": "server=devsql;database=REstate;Application Name=REstate;integrated security=sspi;MultipleActiveResultSets=true",

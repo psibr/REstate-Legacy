@@ -9,21 +9,19 @@ export class REstateService {
     constructor (private http: Http) {}
     
     getMachineDefinitions () : Observable<MachineDefinition[]> {
-        return this.http.get("/restate/machines/")
+        return this.http.get("api/machines/")
             .map(this.extractData)
             .catch(this.handleError)
     }
     
-    
-    
     getMachineSchema () : Observable<Object> {
-        return this.http.get("/restate/machine")
+        return this.http.get("api/machine")
             .map(this.extractData)
             .catch(this.handleError)
     }
     
     getMachineDefinition (machineName:string) : Observable<Object> {
-        return this.http.get("/restate/machines/" + machineName)
+        return this.http.get("api/machines/" + machineName)
             .map(this.extractAndPrune.bind(this))
             .catch(this.handleError)
     }
