@@ -66,10 +66,6 @@
       <HintPath>..\packages\REstateClient.5.0.0.0\lib\net45\REstate.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="REstate.Domain.Chrono, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\REstate.Domain.Chrono.1.0.1.0\lib\net45\REstate.Domain.Chrono.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Susanoo.Core, Version=1.2.4.2, Culture=neutral, PublicKeyToken=0a505ce04f8a59d5, processorArchitecture=MSIL">
       <HintPath>..\packages\Susanoo.Core.1.2.4.2\lib\net45\Susanoo.Core.dll</HintPath>
       <Private>True</Private>
@@ -92,6 +88,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\REstate.Domain.Chrono\src\REstate.Domain.Chrono\REstate.Domain.Chrono.csproj">
+      <Project>{6ee10dc1-eaa1-4754-b207-d4c4b86eab9f}</Project>
+      <Name>REstate.Domain.Chrono</Name>
+    </ProjectReference>
     <ProjectReference Include="..\REstate.Domain.Core\src\REstate.Domain.Core\REstate.Domain.Core.csproj">
       <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>
       <Name>REstate.Domain.Core</Name>
