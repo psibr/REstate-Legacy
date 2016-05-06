@@ -1,6 +1,7 @@
 ﻿using System;
 using Autofac;
 using AutofacSerilogIntegration;
+using Nancy.Bootstrapper;
 using Newtonsoft.Json;
 using Psibr.Platform;
 using Psibr.Platform.Logging.Serilog;
@@ -61,6 +62,9 @@ namespace REstate.Services.AdminUI
             container.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
 
             container.RegisterModule<SerilogPlatformLoggingModule>();
+
+            container.Register(context => new FavIconBootstrapper())
+                .As<INancyBootstrapper>();
 
             container.RegisterLogger(
                 new LoggerConfiguration().MinimumLevel.Verbose()

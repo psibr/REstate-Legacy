@@ -1,0 +1,6 @@
+[submodule "src/REstate.Domain.Core"]
+	path = src/REstate.Domain.Core
+	url = http://github.com/psibr/restate.domain.core
+[submodule "src/REstate.Domain.Chrono"]
+	path = src/REstate.Domain.Chrono
+	url = http://github.com/psibr/restate.domain.chrono

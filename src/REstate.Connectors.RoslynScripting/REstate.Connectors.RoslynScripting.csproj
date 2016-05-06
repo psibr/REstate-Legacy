@@ -57,10 +57,6 @@
       <HintPath>..\packages\Psibr.Platform.3.1.0\lib\net45\Psibr.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="REstate.Domain.Core, Version=5.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\REstate.Domain.Core.5.0.1.0\lib\net45\REstate.Domain.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.AppContext.4.0.0\lib\net46\System.AppContext.dll</HintPath>
@@ -112,6 +108,10 @@
     <ProjectReference Include="..\REstate.Connectors.RoslynScripting.Globals\REstate.Connectors.RoslynScripting.Globals.csproj">
       <Project>{57e152ae-7b7d-4026-a8e3-d8b45b0c26dc}</Project>
       <Name>REstate.Connectors.RoslynScripting.Globals</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\REstate.Domain.Core\src\REstate.Domain.Core\REstate.Domain.Core.csproj">
+      <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>
+      <Name>REstate.Domain.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
       <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
