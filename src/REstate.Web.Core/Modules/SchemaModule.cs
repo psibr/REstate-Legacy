@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Nancy;
 using REstate.Platform;
 using REstate.Services;
@@ -15,6 +16,13 @@ namespace REstate.Web.Core.Modules
 
         public SchemaModule(REstatePlatformConfiguration configuration, IEnumerable<IConnectorFactory> connectorFactories)
         {
+            this.After += (ctx, ct) =>
+            {
+                ctx.Response.Headers.Add("Cache-Control", "public, max-age=7200");
+
+                return Task.FromResult<Response>(ctx.Response);
+            };
+
             Get["TriggerSchema", "/trigger"] = (parameters) =>
                 Response.AsText(Schemas.Trigger
                     .Replace("{host}", configuration.CoreHttpService.Address)
