@@ -3,9 +3,12 @@ StateMachine configured and accessed over HTTP REST API
 
 ###What is a state machine??
 
-A State machine, in this specific case a Finite State Machine, is a model of computation that can represent a "machine" and all of its possible states and how each state is to be triggered.
+A State machine, in this specific case a Finite State Machine, is a model of computation that can represent a "machine" and all of its possible states and how each state is to be triggered. [Wikipedia article which dives into theory here.](https://en.wikipedia.org/wiki/Finite-state_machine)
 
-[Wikipedia article which dives into theory here.](https://en.wikipedia.org/wiki/Finite-state_machine)
+###Build Status
+[![Build status](https://ci.appveyor.com/api/projects/status/oc6s5hm8a3xqd024/branch/master?svg=true)](https://ci.appveyor.com/project/psibernetic/restate/branch/master)
+
+
 
 ###Getting Started
 

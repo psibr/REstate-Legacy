@@ -48,8 +48,6 @@ namespace REstate.Services.Auth
 
                 host.SetServiceName(ServiceName);
             });
-
-            Console.ReadLine();
         }
 
         private static ContainerBuilder BuildAndConfigureContainer(REstatePlatformConfiguration configuration)

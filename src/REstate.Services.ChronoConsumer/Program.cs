@@ -46,8 +46,6 @@ namespace REstate.Services.ChronoConsumer
 
                 host.SetServiceName(ServiceName);
             });
-
-            Console.ReadLine();
         }
 
         private static ContainerBuilder BuildAndConfigureContainer(REstatePlatformConfiguration configuration)
