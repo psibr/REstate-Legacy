@@ -53,8 +53,6 @@ namespace REstate.Services.Core
 
                 host.SetServiceName(ServiceName);
             });
-
-            Console.ReadLine();
         }
 
         private static ContainerBuilder BuildAndConfigureContainer(REstatePlatformConfiguration configuration)

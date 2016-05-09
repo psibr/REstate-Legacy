@@ -45,8 +45,6 @@ namespace REstate.Services.AdminUI
 
                 host.SetServiceName(ServiceName);
             });
-
-            Console.ReadLine();
         }
 
         private static ContainerBuilder BuildAndConfigureContainer(REstatePlatformConfiguration configuration)
