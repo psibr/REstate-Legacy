@@ -1,3 +1,4 @@
+
 start cmd.exe /C "src\REstate.Services.Auth\bin\Release\REstate.Services.Auth.exe"
 start cmd.exe /C "src\REstate.Services.Core\bin\Release\REstate.Services.Core.exe"
 start cmd.exe /C "src\REstate.Services.Chrono\bin\Release\REstate.Services.Chrono.exe"
