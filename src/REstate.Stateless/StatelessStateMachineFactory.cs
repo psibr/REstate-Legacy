@@ -2,6 +2,7 @@
 using REstate.Services;
 using Stateless;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Psibr.Platform.Logging;
@@ -87,7 +88,7 @@ namespace REstate.Stateless
                 if (stateConfiguration.ParentStateName != null)
                     stateSettings.SubstateOf(new State(configuration.MachineName, stateConfiguration.ParentStateName));
 
-                foreach (var transition in stateConfiguration.Transitions)
+                foreach (var transition in stateConfiguration.Transitions ?? new Transition[0])
                 {
 
                     if (transition.Guard == null)
@@ -111,7 +112,7 @@ namespace REstate.Stateless
                     }
                 }
 
-                foreach (var trigger in stateConfiguration.IgnoreRules)
+                foreach (var trigger in stateConfiguration.IgnoreRules ?? new string[0])
                 {
                     stateSettings.Ignore(new Trigger(configuration.MachineName, trigger));
                 }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Responses.Negotiation;
@@ -36,6 +37,8 @@ namespace REstate.Web.Core.Modules
             ListMachines(configurationRepositoryContextFactory);
 
             InstantiateMachine(configurationRepositoryContextFactory);
+
+            PreviewDiagram(stateMachineFactory);
         }
 
 
@@ -88,6 +91,21 @@ namespace REstate.Web.Core.Modules
             };
         }
 
+        private void PreviewDiagram(IStateMachineFactory stateMachineFactory)
+        {
+            Post["PreviewDiagram", "/preview", true] = (parameters, ct) =>
+            {
+
+                var stateMachineConfiguration = this.Bind<Machine>();
+
+                var machine = stateMachineFactory.ConstructFromConfiguration(Context.CurrentUser.GetApiKey(),
+                    stateMachineConfiguration);
+
+                return Task.FromResult<dynamic>(Response.AsText(machine.ToString(), "text/plain"));
+
+            };
+        }
+
         private void GetMachine(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory) =>
             Get["GetMachine", "/{MachineDefinitionId}", true] = async (parameters, ct) =>
             {
@@ -109,7 +127,7 @@ namespace REstate.Web.Core.Modules
                         ContentType = "application/json",
                         Contents = stream => stream.Close()
                     };
-                
+
 
                 return Negotiate
                     .WithModel(configuration)
