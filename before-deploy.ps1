@@ -1,1 +1,2 @@
+dir
 ./svc-stop.bat

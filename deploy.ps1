@@ -1,1 +1,1 @@
-./svc-start.bar
+./svc-start.bat
