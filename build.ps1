@@ -50,6 +50,13 @@ if (!(Test-Path $CAKE_EXE)) {
     Throw "Could not find Cake.exe"
 }
 
+cd "src/REstate.Service.AdminUI/wwwroot"
+
+npm install
+npm run tsc
+
+cd ../../..
+
 # Start Cake
 Invoke-Expression "$CAKE_EXE `"$Script`" -target=`"$Target`" -configuration=`"$Configuration`" -verbosity=`"$Verbosity`" $UseDryRun $UseExperimental"
 Write-Host
