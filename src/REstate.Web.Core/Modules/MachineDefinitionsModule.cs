@@ -93,15 +93,22 @@ namespace REstate.Web.Core.Modules
 
         private void PreviewDiagram(IStateMachineFactory stateMachineFactory)
         {
-            Post["PreviewDiagram", "/preview", true] = (parameters, ct) =>
+            Post["PreviewDiagram", "/preview", true] = async (parameters, ct) =>
             {
+                try
+                {
+                    var stateMachineConfiguration = this.Bind<Machine>();
 
-                var stateMachineConfiguration = this.Bind<Machine>();
+                    var machine = stateMachineFactory.ConstructFromConfiguration(Context.CurrentUser.GetApiKey(),
+                        stateMachineConfiguration);
 
-                var machine = stateMachineFactory.ConstructFromConfiguration(Context.CurrentUser.GetApiKey(),
-                    stateMachineConfiguration);
-
-                return Task.FromResult<dynamic>(Response.AsText(machine.ToString(), "text/plain"));
+                    return await Task.FromResult<dynamic>(Response.AsText(machine.ToString(), "text/plain"));
+                }
+                catch (Exception ex)
+                {
+                    return Negotiate.WithStatusCode(403)
+                        .WithReasonPhrase(ex.Message);
+                }
 
             };
         }

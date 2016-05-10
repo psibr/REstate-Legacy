@@ -51,7 +51,7 @@ namespace REstate.Stateless
                 machine.OnUnhandledTrigger((i, i1) => { /* ignore */ });
 
             foreach (var trigger in configuration.StateConfigurations
-                .SelectMany(sc => sc.Transitions)
+                .SelectMany(sc => sc.Transitions ?? new Transition[0])
                 .Select(tr => tr.TriggerName)
                 .Distinct())
             {
