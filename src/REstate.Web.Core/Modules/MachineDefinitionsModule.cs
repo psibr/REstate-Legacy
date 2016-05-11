@@ -4,6 +4,7 @@ using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Responses.Negotiation;
 using Nancy.Security;
+using Psibr.Platform.Logging;
 using Psibr.Platform.Nancy;
 using Psibr.Platform.Nancy.Modules;
 using REstate.Configuration;
@@ -18,16 +19,22 @@ namespace REstate.Web.Core.Modules
     public class MachineDefinitionsModule
         : SecuredModule
     {
+        protected IPlatformLogger Logger { get; set; }
+
         /// <summary>
         /// Registers routes for defining new machines.
         /// </summary>
         /// <param name="configurationRepositoryContextFactory">The repository context factory.</param>
         /// <param name="stateMachineFactory">The state machine factory.</param>
+        /// <param name="logger"></param>
         public MachineDefinitionsModule(
             IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
-            IStateMachineFactory stateMachineFactory)
+            IStateMachineFactory stateMachineFactory,
+            IPlatformLogger logger)
             : base("/machines", "machineBuilder")
         {
+            Logger = logger;
+
             GetMachine(configurationRepositoryContextFactory);
 
             GetDiagramForDefinition(configurationRepositoryContextFactory, stateMachineFactory);
@@ -102,12 +109,18 @@ namespace REstate.Web.Core.Modules
                     var machine = stateMachineFactory.ConstructFromConfiguration(Context.CurrentUser.GetApiKey(),
                         stateMachineConfiguration);
 
+                    if(machine == null)
+                        throw new Exception("Unable to construct machine.");
+
                     return await Task.FromResult<dynamic>(Response.AsText(machine.ToString(), "text/plain"));
                 }
                 catch (Exception ex)
                 {
-                    return Negotiate.WithStatusCode(403)
-                        .WithReasonPhrase(ex.Message);
+                    Logger.Error(ex, "Request exception encountered. Message: {message}",
+                        ex.Message.Replace("/r", "").Replace("/n", " "));
+
+                    return Negotiate.WithStatusCode(400)
+                        .WithReasonPhrase(ex.Message.Replace("\r", "").Replace("\n", " "));
                 }
 
             };
@@ -134,7 +147,6 @@ namespace REstate.Web.Core.Modules
                         ContentType = "application/json",
                         Contents = stream => stream.Close()
                     };
-
 
                 return Negotiate
                     .WithModel(configuration)

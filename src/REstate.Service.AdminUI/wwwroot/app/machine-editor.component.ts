@@ -54,7 +54,5 @@ export class MachineEditorComponent implements OnInit {
                             
                 }.bind(this));
             });
-
-
     }
 }
