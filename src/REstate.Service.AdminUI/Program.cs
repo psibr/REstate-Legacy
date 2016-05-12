@@ -68,7 +68,13 @@ namespace REstate.Services.AdminUI
                 new LoggerConfiguration().MinimumLevel.Verbose()
                     .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
-                    .WriteTo.RollingFile($"{configuration.RollingFileLoggerPath}\\{ServiceName}\\{{Date}}.log")
+                    .If((loggerConfig) => configuration.LoggerConfigurations.ContainsKey("rollingFile")
+                        && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"), (loggerConfig) =>
+                           loggerConfig.WriteTo
+                               .RollingFile($"{configuration.LoggerConfigurations["rollingFile"]["path"]}\\{ServiceName}\\{{Date}}.log"))
+                    .If(_ => configuration.LoggerConfigurations.ContainsKey("seq"), loggerConfig =>
+                        loggerConfig.WriteTo.Seq(configuration.LoggerConfigurations["seq"]["serverUrl"],
+                            apiKey: configuration.LoggerConfigurations["seq"]["apiKey"]))
                     .CreateLogger());
 
             return container;
