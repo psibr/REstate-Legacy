@@ -45,7 +45,11 @@
       "password": "REstate"
     }
   },
-  "rollingFileLoggerPath":  "C:\\services\\REstate\\logs",
+    "loggerConfigurations": {
+      "rollingFile": {
+        "path": "C:\\services\\REstate\\logs"
+      }
+  },
   "connections": [
     {
       "connectionString": "server=devsql;database=REstate;Application Name=REstate;integrated security=sspi;MultipleActiveResultSets=true",
