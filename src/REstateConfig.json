@@ -45,7 +45,7 @@
       "password": "REstate"
     }
   },
-    "loggerConfigurations": {
+  "loggerConfigurations": {
       "rollingFile": {
         "path": "C:\\services\\REstate\\logs"
       }
