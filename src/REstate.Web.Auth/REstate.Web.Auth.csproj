@@ -103,11 +103,6 @@
     <Compile Include="Requests\CredentialAuthenticationRequest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\login.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
