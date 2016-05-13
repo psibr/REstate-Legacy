@@ -4,6 +4,7 @@ using REstate.Chrono;
 using REstate.Repositories.Chrono.Susanoo;
 using REstate.Web.Chrono;
 using AutofacSerilogIntegration;
+using Nancy.Bootstrapper;
 using Newtonsoft.Json;
 using Psibr.Platform;
 using Psibr.Platform.Logging.Serilog;
@@ -26,7 +27,6 @@ namespace REstate.Services.Chrono
             var config = JsonConvert.DeserializeObject<REstatePlatformConfiguration>(configString);
 
             var kernel = BuildAndConfigureContainer(config).Build();
-            PlatformNancyBootstrapper.KernelLocator = () => kernel;
 
             HostFactory.Run(host =>
             {
@@ -58,6 +58,9 @@ namespace REstate.Services.Chrono
 
             container.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
                 configuration, configuration.ChronoHttpService));
+
+            container.RegisterType<PlatformNancyBootstrapper>()
+                .As<INancyBootstrapper>();
 
             container.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
 

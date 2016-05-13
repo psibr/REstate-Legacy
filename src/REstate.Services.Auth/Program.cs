@@ -2,6 +2,7 @@
 using Autofac;
 using REstate.Repositories.Auth.Susanoo;
 using AutofacSerilogIntegration;
+using Nancy.Bootstrapper;
 using Newtonsoft.Json;
 using Psibr.Platform;
 using Psibr.Platform.Logging.Serilog;
@@ -26,7 +27,6 @@ namespace REstate.Services.Auth
             var config = JsonConvert.DeserializeObject<REstatePlatformConfiguration>(configString);
 
             var kernel = BuildAndConfigureContainer(config).Build();
-            PlatformNancyBootstrapper.KernelLocator = () => kernel;
 
             HostFactory.Run(host =>
             {
@@ -59,6 +59,9 @@ namespace REstate.Services.Auth
 
             container.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
                 configuration, configuration.AuthHttpService));
+
+            container.RegisterType<PlatformNancyBootstrapper>()
+                .As<INancyBootstrapper>();
 
             container.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
 

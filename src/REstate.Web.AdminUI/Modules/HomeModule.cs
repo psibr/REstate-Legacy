@@ -18,8 +18,6 @@ namespace REstate.Web.AdminUI.Modules
         public HomeModule(REstatePlatformConfiguration configuration)
         {
             Get["/"] = _ => BuildPageOrRedirect(configuration);
-            Get[@"/(.*)"] = _ => BuildPageOrRedirect(configuration);
-            Get[@"/(.*)/(.*)"] = _ => BuildPageOrRedirect(configuration);
         }
 
         private dynamic BuildPageOrRedirect(REstatePlatformConfiguration configuration)

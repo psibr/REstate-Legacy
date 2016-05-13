@@ -2,6 +2,7 @@
 using Autofac;
 using AutofacSerilogIntegration;
 using Nancy.Bootstrapper;
+using Nancy.Bootstrappers.Autofac;
 using Newtonsoft.Json;
 using Psibr.Platform;
 using Psibr.Platform.Logging.Serilog;
@@ -24,7 +25,7 @@ namespace REstate.Services.AdminUI
             var config = JsonConvert.DeserializeObject<REstatePlatformConfiguration>(configString);
 
             var kernel = BuildAndConfigureContainer(config).Build();
-            PlatformNancyBootstrapper.KernelLocator = () => kernel;
+            
 
             HostFactory.Run(host =>
             {
@@ -54,15 +55,16 @@ namespace REstate.Services.AdminUI
             container.Register(ctx => configuration)
                 .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
 
+            container.RegisterType<PlatformNancyBootstrapper>()
+                .As<INancyBootstrapper>();
+
             container.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
                 configuration, configuration.AdminHttpService));
 
             container.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
 
             container.RegisterModule<SerilogPlatformLoggingModule>();
-
-            container.Register(context => new PlatformNancyBootstrapper())
-                .As<INancyBootstrapper>();
+            
 
             container.RegisterLogger(
                 new LoggerConfiguration().MinimumLevel.Verbose()

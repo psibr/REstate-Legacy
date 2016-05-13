@@ -4,6 +4,7 @@ interface JSONEditor {
     defaults: any,
     plugins: any,
     setValue(value:Object),
+    getValue():Object,
     on(event:string, callback:Function)
 }
 

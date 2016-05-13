@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Autofac;
 using AutofacSerilogIntegration;
+using Nancy.Bootstrapper;
 using Newtonsoft.Json;
 using Psibr.Platform;
 using Psibr.Platform.Logging;
@@ -32,7 +33,6 @@ namespace REstate.Services.Core
             var config = JsonConvert.DeserializeObject<REstatePlatformConfiguration>(configString);
 
             var kernel = BuildAndConfigureContainer(config).Build();
-            PlatformNancyBootstrapper.KernelLocator = () => kernel;
 
             HostFactory.Run(host =>
             {
@@ -65,6 +65,9 @@ namespace REstate.Services.Core
             container.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
                 configuration, configuration.CoreHttpService));
 
+            container.RegisterType<PlatformNancyBootstrapper>()
+                .As<INancyBootstrapper>();
+
             container.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
 
             container.RegisterModule<SerilogPlatformLoggingModule>();
@@ -73,7 +76,7 @@ namespace REstate.Services.Core
                 new LoggerConfiguration().MinimumLevel.Verbose()
                     .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
-                    .If((loggerConfig) => configuration.LoggerConfigurations.ContainsKey("rollingFile") 
+                    .If(_ => configuration.LoggerConfigurations.ContainsKey("rollingFile") 
                         && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"),  (loggerConfig) =>
                             loggerConfig.WriteTo
                                 .RollingFile($"{configuration.LoggerConfigurations["rollingFile"]["path"]}\\{ServiceName}\\{{Date}}.log"))
