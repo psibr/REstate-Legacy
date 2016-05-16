@@ -15,9 +15,11 @@ namespace REstate.Web.AdminUI.Modules
         /// <summary>
         /// Registers the UI routes for the application.
         /// </summary>
+        /// <param name="configuration">The configuration.</param>
         public HomeModule(REstatePlatformConfiguration configuration)
         {
             Get["/"] = _ => BuildPageOrRedirect(configuration);
+            Get["/{uri*}"] = _ => BuildPageOrRedirect(configuration);
         }
 
         private dynamic BuildPageOrRedirect(REstatePlatformConfiguration configuration)
@@ -37,9 +39,6 @@ namespace REstate.Web.AdminUI.Modules
             using (var streamReader = new StreamReader(fread))
             {
                 var indexHtml = streamReader.ReadToEnd();
-
-                //not sure if this is needed now
-                //indexHtml = indexHtml.Replace(@"<base href=""/"">", @"<base href=""/restate/admin/"">");
 
                 return Response.AsText(indexHtml, "text/html");
             }

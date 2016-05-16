@@ -1,5 +1,5 @@
 /// <reference path="../typings/json-editor.d.ts" />
-import {Component, OnInit} from 'angular2/core';
+import {Component, OnInit} from '@angular/core';
 import {GraphVizComponent} from './graph-viz.component';
 import {REstateService} from './restate.service';
 import {MachineDefinition} from './machine-definition';

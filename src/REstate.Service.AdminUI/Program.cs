@@ -55,7 +55,7 @@ namespace REstate.Services.AdminUI
             container.Register(ctx => configuration)
                 .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
 
-            container.RegisterType<PlatformNancyBootstrapper>()
+            container.RegisterType<Bootstrapper>()
                 .As<INancyBootstrapper>();
 
             container.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(

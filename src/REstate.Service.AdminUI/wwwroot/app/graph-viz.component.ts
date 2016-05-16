@@ -1,4 +1,4 @@
-import {Component, OnInit, Input} from 'angular2/core';
+import {Component, OnInit, Input, OnChanges} from '@angular/core';
 
 export interface Viz {
     (data: string, type: string): string
@@ -10,14 +10,22 @@ declare var Viz: Viz;
     template: `<div id="svg-viz" [innerHTML] = "svgText"></div>`,
     selector: 'graph-viz'
 })
-export class GraphVizComponent implements OnInit {
+export class GraphVizComponent implements OnInit, OnChanges {
     @Input()
     graphVizText: string;
     
-    svgText: string;
+    svgText: string = '';
+    
+    ngOnChanges() {
+        if(this.graphVizText && this.graphVizText != '') {
+            this.svgText = Viz(this.graphVizText, "svg");
+        }
+    }
     
     ngOnInit() {
         
-        this.svgText = Viz(this.graphVizText, "svg");
+        if(this.graphVizText && this.graphVizText != '') {
+            this.svgText = Viz(this.graphVizText, "svg");
+        }
     }
 }

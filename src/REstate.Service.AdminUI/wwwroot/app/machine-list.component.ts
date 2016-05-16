@@ -1,6 +1,6 @@
 /// <reference path="../typings/json-editor.d.ts" />
-import {Component, OnInit} from 'angular2/core';
-import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Router} from 'angular2/router';
+import {Component, OnInit} from '@angular/core';
+import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, Router} from '@angular/router-deprecated';
 import {REstateService} from './restate.service';
 import {MachineDefinition} from './machine-definition';
 
@@ -16,7 +16,7 @@ import {MachineDefinition} from './machine-definition';
                 </tr>    
             </thead>
             <tbody>
-                <tr *ngFor="#definition of definitions" (click)="onSelect(definition)">
+                <tr *ngFor="let definition of definitions" (click)="onSelect(definition)">
                     <td>{{definition.machineName}}</td>
                     <td>{{definition.initialState}}</td>
                     <td>{{definition.autoIgnoreTriggers}}</td>
