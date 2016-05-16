@@ -216,12 +216,9 @@ namespace REstate.Web.Core.Modules
                     currentState = new State(instanceRecord.MachineName, instanceRecord.StateName);
                 }
 
-
-
                 return Negotiate
                     .WithModel(currentState)
                     .WithAllowedMediaRange(new MediaRange("application/json"));
             };
-
     }
 }

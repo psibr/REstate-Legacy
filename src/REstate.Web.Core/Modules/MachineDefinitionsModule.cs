@@ -102,26 +102,17 @@ namespace REstate.Web.Core.Modules
         {
             Post["PreviewDiagram", "/preview", true] = async (parameters, ct) =>
             {
-                try
-                {
-                    var stateMachineConfiguration = this.Bind<Machine>();
 
-                    var machine = stateMachineFactory.ConstructFromConfiguration(Context.CurrentUser.GetApiKey(),
-                        stateMachineConfiguration);
+                var stateMachineConfiguration = this.Bind<Machine>();
 
-                    if(machine == null)
-                        throw new Exception("Unable to construct machine.");
+                var machine = stateMachineFactory.ConstructFromConfiguration(Context.CurrentUser.GetApiKey(),
+                    stateMachineConfiguration);
 
-                    return await Task.FromResult<dynamic>(Response.AsText(machine.ToString(), "text/plain"));
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex, "Request exception encountered. Message: {message}",
-                        ex.Message.Replace("/r", "").Replace("/n", " "));
+                if (machine == null)
+                    throw new Exception("Unable to construct machine.");
 
-                    return Negotiate.WithStatusCode(400)
-                        .WithReasonPhrase(ex.Message.Replace("\r", "").Replace("\n", " "));
-                }
+                return await Task.FromResult<dynamic>(Response.AsText(machine.ToString(), "text/plain"));
+
 
             };
         }
