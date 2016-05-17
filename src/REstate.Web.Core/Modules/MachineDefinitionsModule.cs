@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Responses.Negotiation;
-using Nancy.Security;
 using Psibr.Platform.Logging;
 using Psibr.Platform.Nancy;
 using Psibr.Platform.Nancy.Modules;
@@ -31,7 +30,7 @@ namespace REstate.Web.Core.Modules
             IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
             IStateMachineFactory stateMachineFactory,
             IPlatformLogger logger)
-            : base("/machines", "machineBuilder")
+            : base("/machines", claim => claim.Type == "claim" && claim.Value == "machineBuilder")
         {
             Logger = logger;
 
@@ -51,12 +50,13 @@ namespace REstate.Web.Core.Modules
 
         private void InstantiateMachine(
             IConfigurationRepositoryContextFactory configurationRepositoryContextFactory) =>
-            Post["InstantiateMachine", "{MachineDefinitionId}/instantiate/", true] = async (parameters, ct) =>
+            Post["InstantiateMachine", "{MachineDefinitionId}/instantiate/"] = async (parameters, ct) =>
             {
                 string machineDefinitionId = parameters.MachineDefinitionId;
                 string machineInstanceId = Guid.NewGuid().ToString();
 
-                using (var configruationRepository = configurationRepositoryContextFactory.OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var configruationRepository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
                     await configruationRepository.MachineInstances.EnsureInstanceExists(machineDefinitionId, machineInstanceId, ct);
                 }
@@ -68,7 +68,7 @@ namespace REstate.Web.Core.Modules
 
         private void ListMachines(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
-            Get["ListDefinitions", "/", true] = async (parameters, ct) =>
+            Get["ListDefinitions", "/"] = async (parameters, ct) =>
             {
                 using (var repository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
@@ -82,7 +82,7 @@ namespace REstate.Web.Core.Modules
 
         private void DefineStateMachine(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
-            Post["DefineStateMachine", "/", true] = async (parameters, ct) =>
+            Post["DefineStateMachine", "/"] = async (parameters, ct) =>
             {
                 var stateMachineConfiguration = this.Bind<Machine>();
                 Machine newMachineConfiguration;
@@ -100,7 +100,7 @@ namespace REstate.Web.Core.Modules
 
         private void PreviewDiagram(IStateMachineFactory stateMachineFactory)
         {
-            Post["PreviewDiagram", "/preview", true] = async (parameters, ct) =>
+            Post["PreviewDiagram", "/preview"] = async (parameters, ct) =>
             {
 
                 var stateMachineConfiguration = this.Bind<Machine>();
@@ -118,7 +118,7 @@ namespace REstate.Web.Core.Modules
         }
 
         private void GetMachine(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory) =>
-            Get["GetMachine", "/{MachineDefinitionId}", true] = async (parameters, ct) =>
+            Get["GetMachine", "/{MachineDefinitionId}"] = async (parameters, ct) =>
             {
                 string machineDefinitionId = parameters.MachineDefinitionId;
                 Machine configuration;
@@ -146,7 +146,7 @@ namespace REstate.Web.Core.Modules
 
         private void GetDiagramForDefinition(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
             IStateMachineFactory stateMachineFactory) =>
-            Get["GetDiagramForDefinition", "/{MachineDefinitionId}/diagram", true] = async (parameters, ct) =>
+            Get["GetDiagramForDefinition", "/{MachineDefinitionId}/diagram"] = async (parameters, ct) =>
             {
                 string machineDefinitionId = parameters.MachineDefinitionId;
                 Machine configuration;

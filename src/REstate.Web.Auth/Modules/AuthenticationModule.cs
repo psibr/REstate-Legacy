@@ -23,11 +23,11 @@ namespace REstate.Web.Auth.Modules
             : base(prefix)
         {
 
-            Get["/login", true] = async (parameters, ct) =>
+            Get["/login"] = async (parameters, ct) =>
                 await Task.FromResult(View["login.html"]);
 
 
-            Post["/login", true] = async (parameters, ct) =>
+            Post["/login"] = async (parameters, ct) =>
             {
                 var credentials = this.Bind<CredentialAuthenticationRequest>();
 
@@ -59,7 +59,7 @@ namespace REstate.Web.Auth.Modules
                 return Response.AsRedirect(configuration.AdminHttpService.Address);
             };
 
-            Post["/apikey", true] = async (parameters, ct) =>
+            Post["/apikey"] = async (parameters, ct) =>
             {
                 var apiKey = this.Bind<ApiKeyAuthenticationRequest>().ApiKey;
 

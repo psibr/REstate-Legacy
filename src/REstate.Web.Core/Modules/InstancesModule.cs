@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Responses.Negotiation;
@@ -26,7 +27,7 @@ namespace REstate.Web.Core.Modules
         public InstancesModule(
             IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
             IStateMachineFactory stateMachineFactory)
-            : base("/instances", "operator")
+            : base("/instances", claim => claim.Type == "claim" && claim.Value == "operator")
         {
 
             GetMachineState(configurationRepositoryContextFactory);
@@ -48,7 +49,7 @@ namespace REstate.Web.Core.Modules
 
         private void GetDiagramForInstance(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
             IStateMachineFactory stateMachineFactory) =>
-            Get["GetDiagramForInstance", "/{MachineInstanceId}/diagram", true] = async (parameters, ct) =>
+            Get["GetDiagramForInstance", "/{MachineInstanceId}/diagram"] = async (parameters, ct) =>
             {
                 string machineInstanceId = parameters.machineInstanceId;
                 Machine configuration;
@@ -68,7 +69,7 @@ namespace REstate.Web.Core.Modules
             };
 
         private void DeleteInstance(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory) =>
-            Delete["DeleteInstance", "/{MachineInstanceId}", true] = async (parameters, ct) =>
+            Delete["DeleteInstance", "/{MachineInstanceId}"] = async (parameters, ct) =>
             {
                 string machineInstanceId = parameters.machineInstanceId;
 
@@ -82,7 +83,7 @@ namespace REstate.Web.Core.Modules
 
         private void FireTrigger(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
             IStateMachineFactory stateMachineFactory) =>
-            Post["FireTrigger", "/{MachineInstanceId}/fire/{TriggerName}", true] = async (parameters, ct) =>
+            Post["FireTrigger", "/{MachineInstanceId}/fire/{TriggerName}"] = async (parameters, ct) =>
             {
                 var triggerFireRequest = this.Bind<TriggerFireRequest>();
                 State currentState;
@@ -145,7 +146,7 @@ namespace REstate.Web.Core.Modules
 
         private void GetAvailableTriggers(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
             IStateMachineFactory stateMachineFactory) =>
-            Get["GetAvailableTriggers", "/{MachineInstanceId}/triggers", true] = async (parameters, ct) =>
+            Get["GetAvailableTriggers", "/{MachineInstanceId}/triggers"] = async (parameters, ct) =>
             {
                 string machineInstanceId = parameters.MachineInstanceId;
                 Machine configuration;
@@ -169,7 +170,7 @@ namespace REstate.Web.Core.Modules
 
         private void IsInState(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
             IStateMachineFactory stateMachineFactory) =>
-            Get["IsInState", "/{MachineInstanceId}/isinstate/{StateName}", true] = async (parameters, ct) =>
+            Get["IsInState", "/{MachineInstanceId}/isinstate/{StateName}"] = async (parameters, ct) =>
             {
                 string machineInstanceId = parameters.MachineInstanceId;
                 string isInStateName = parameters.StateName;
@@ -197,7 +198,7 @@ namespace REstate.Web.Core.Modules
             };
 
         private void GetMachineState(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory) =>
-            Get["GetMachineState", "/{MachineInstanceId}/state"] = (parameters) =>
+            Get["GetMachineState", "/{MachineInstanceId}/state"] = (parameters, ct) =>
             {
                 string machineInstanceId = parameters.MachineInstanceId;
                 State currentState;
@@ -208,17 +209,17 @@ namespace REstate.Web.Core.Modules
                     var instanceRecord = repository.MachineInstances.GetInstanceState(machineInstanceId);
 
                     if (instanceRecord == null)
-                        return Negotiate
+                        return Task.FromResult<dynamic>(Negotiate
                             .WithStatusCode(400)
                             .WithReasonPhrase("The machine instance requested does not exist.")
-                            .WithAllowedMediaRange(new MediaRange("application/json"));
+                            .WithAllowedMediaRange(new MediaRange("application/json")));
 
                     currentState = new State(instanceRecord.MachineName, instanceRecord.StateName);
                 }
 
-                return Negotiate
+                return Task.FromResult<dynamic>(Negotiate
                     .WithModel(currentState)
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
+                    .WithAllowedMediaRange(new MediaRange("application/json")));
             };
     }
 }

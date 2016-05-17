@@ -24,7 +24,7 @@ namespace REstate.Web.Chrono.Modules
         {
             _chronoRepository = chronoRepository;
 
-            Post["AddChronoTrigger", "/triggers", true] = async (parameters, ct) =>
+            Post["AddChronoTrigger", "/triggers"] = async (parameters, ct) =>
             {
                 var addChronoTriggerRequest = this.Bind<ChronoTrigger>();
 

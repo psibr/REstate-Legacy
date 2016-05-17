@@ -14,7 +14,8 @@ namespace REstate.Web.Core.Modules
         : NancyModule
     {
 
-        public SchemaModule(REstatePlatformConfiguration configuration, IEnumerable<IConnectorFactory> connectorFactories)
+        public SchemaModule(REstatePlatformConfiguration configuration,
+            IEnumerable<IConnectorFactory> connectorFactories)
         {
             this.After += (ctx, ct) =>
             {
@@ -23,30 +24,30 @@ namespace REstate.Web.Core.Modules
                 return Task.FromResult(ctx.Response);
             };
 
-            Get["TriggerSchema", "/trigger"] = (parameters) =>
-                Response.AsText(Schemas.Trigger
+            Get["TriggerSchema", "/trigger"] = (parameters, ct) =>
+                Task.FromResult<dynamic>(Response.AsText(Schemas.Trigger
                     .Replace("{host}", configuration.CoreHttpService.Address)
-                    .Replace(":/", "://"), "application/schema+json");
+                    .Replace(":/", "://"), "application/schema+json"));
 
-            Get["StateSchema", "/state"] = (parameters) =>
-                Response.AsText(Schemas.State
+            Get["StateSchema", "/state"] = (parameters, ct) =>
+                Task.FromResult<dynamic>(Response.AsText(Schemas.State
                     .Replace("{host}", configuration.CoreHttpService.Address)
                     .Replace("//", "/")
-                    .Replace(":/", "://"), "application/schema+json");
+                    .Replace(":/", "://"), "application/schema+json"));
 
-            Get["CodeSchema", "/code"] = (parameters) =>
-                Response.AsText(Schemas.Code
+            Get["CodeSchema", "/code"] = (parameters, ct) =>
+                Task.FromResult<dynamic>(Response.AsText(Schemas.Code
                     .Replace("{body}", Schemas.Body) //Default body schema
                     .Replace("{connectorKey}", "null")
                     .Replace("{host}", configuration.CoreHttpService.Address)
                     .Replace("//", "/")
-                    .Replace(":/", "://"), "application/schema+json");
+                    .Replace(":/", "://"), "application/schema+json"));
 
-            Get["OnEntryFromSchema", "/on-entry-from"] = (parameters) =>
-                Response.AsText(Schemas.OnEntryFrom
+            Get["OnEntryFromSchema", "/on-entry-from"] = (parameters, ct) =>
+                Task.FromResult<dynamic>(Response.AsText(Schemas.OnEntryFrom
                     .Replace("{host}", configuration.CoreHttpService.Address)
                     .Replace("//", "/")
-                    .Replace(":/", "://"), "application/schema+json");
+                    .Replace(":/", "://"), "application/schema+json"));
 
 
             const string connectorDefintion =
@@ -58,14 +59,15 @@ namespace REstate.Web.Core.Modules
             {
                 var connectorName = connectorFactory.ConnectorKey.Replace("REstate.Connectors.", "");
 
-                Get["CodeSchema", "/connectors/" + connectorName] = (parameters) =>
-                    Response.AsText(Schemas.Code
-                        .Replace("{body}", connectorName == "Chrono" ? Schemas.ChronoConnector : Schemas.Body) //Default body schema
+                Get["CodeSchema", "/connectors/" + connectorName] = (parameters, ct) =>
+                    Task.FromResult<dynamic>(Response.AsText(Schemas.Code
+                        .Replace("{body}", connectorName == "Chrono" ? Schemas.ChronoConnector : Schemas.Body)
+                        //Default body schema
                         .Replace("{connectorKey}", $"\"{connectorFactory.ConnectorKey}\"")
                         .Replace("{connectorName}", connectorName)
                         .Replace("{host}", configuration.CoreHttpService.Address)
                         .Replace("//", "/")
-                        .Replace(":/", "://"), "application/schema+json");
+                        .Replace(":/", "://"), "application/schema+json"));
 
                 connectorDefinitions.Add(
                     connectorDefintion
@@ -73,15 +75,16 @@ namespace REstate.Web.Core.Modules
                         .Replace("{connectorName}", connectorName));
             }
 
-            var flattened = connectorDefinitions.Aggregate((prev, curr) => (prev ?? "") + (prev != null ? ", " : "") + curr);
+            var flattened =
+                connectorDefinitions.Aggregate((prev, curr) => (prev ?? "") + (prev != null ? ", " : "") + curr);
 
-            Get["MachineSchema", "/machine"] = (parameters) =>
-                Response.AsText(Schemas.Machine
+            Get["MachineSchema", "/machine"] = (parameters, ct) =>
+                Task.FromResult<dynamic>(Response.AsText(Schemas.Machine
                     .Replace("{connectors}", flattened)
                     .Replace("{host}", configuration.CoreHttpService.Address)
                     .Replace("//", "/")
-                    .Replace(":/", "://"), "application/schema+json");
+                    .Replace(":/", "://"), "application/schema+json"));
         }
-        
+
     }
 }
