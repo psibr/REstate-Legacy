@@ -114,6 +114,10 @@
       <HintPath>..\packages\Psibr.Platform.Serialization.NewtonsoftJson.1.0.0.0\lib\net461\Psibr.Platform.Serialization.NewtonsoftJson.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="REstate.Domain.Core, Version=5.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Domain.Core.5.0.1.0\lib\net45\REstate.Domain.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
       <Private>True</Private>
@@ -174,10 +178,6 @@
     <ProjectReference Include="..\REstate.Connectors.RoslynScripting\REstate.Connectors.RoslynScripting.csproj">
       <Project>{310a26d6-518b-41a6-b5db-0b4a1b4a84c9}</Project>
       <Name>REstate.Connectors.RoslynScripting</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\REstate.Domain.Core\src\REstate.Domain.Core\REstate.Domain.Core.csproj">
-      <Project>{9c873c5d-015b-436c-8473-fa93da90757d}</Project>
-      <Name>REstate.Domain.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
       <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>

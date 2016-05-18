@@ -76,6 +76,10 @@
       <HintPath>..\packages\REstateClient.Chrono.1.1.0\lib\net461\REstate.Client.Chrono.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="REstate.Domain.Chrono, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Domain.Chrono.1.0.1.0\lib\net45\REstate.Domain.Chrono.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="REstate.Domain.Core, Version=5.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\REstate.Domain.Core.5.0.1.0\lib\net45\REstate.Domain.Core.dll</HintPath>
       <Private>True</Private>
