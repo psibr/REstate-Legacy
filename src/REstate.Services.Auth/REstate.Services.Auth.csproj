@@ -38,7 +38,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="AutofacSerilogIntegration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutofacSerilogIntegration.1.0.10\lib\portable-net45+dnxcore50+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\AutofacSerilogIntegration.dll</HintPath>
+      <HintPath>..\packages\AutofacSerilogIntegration.1.0.12\lib\portable45-net45+win8+wp8+wpa81\AutofacSerilogIntegration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="JWT, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -49,20 +49,12 @@
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.FileSystems, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.FileSystems.3.0.1\lib\net45\Microsoft.Owin.FileSystems.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Owin.Host.HttpListener, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Host.HttpListener.3.0.1\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Owin.Hosting, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Hosting.3.0.1\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Owin.StaticFiles, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.StaticFiles.3.0.1\lib\net45\Microsoft.Owin.StaticFiles.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Nancy, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -107,6 +99,14 @@
     </Reference>
     <Reference Include="Psibr.Platform.Nancy.Service, Version=5.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Psibr.Platform.Nancy.Service.5.0.1-alpha\lib\net45\Psibr.Platform.Nancy.Service.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="REstate.Domain.Core, Version=5.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Domain.Core.5.0.1.0\lib\net45\REstate.Domain.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="REstate.Platform, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Platform.1.0.1\lib\net461\REstate.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
@@ -154,17 +154,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
-      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
-      <Name>REstate.Platform</Name>
-    </ProjectReference>
     <ProjectReference Include="..\REstate.Repositories.Chrono.Susanoo\REstate.Repositories.Chrono.Susanoo.csproj">
       <Project>{43c30519-a517-44e5-9767-79b90b0ce3eb}</Project>
       <Name>REstate.Repositories.Chrono.Susanoo</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\REstate.Connectors.RoslynScripting\REstate.Connectors.RoslynScripting.csproj">
-      <Project>{310a26d6-518b-41a6-b5db-0b4a1b4a84c9}</Project>
-      <Name>REstate.Connectors.RoslynScripting</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate.Stateless\REstate.Stateless.csproj">
       <Project>{7ae96174-718f-45a2-8389-0a1e982dce82}</Project>
@@ -173,10 +165,6 @@
     <ProjectReference Include="..\REstate.Repositories.Auth.Susanoo\REstate.Repositories.Auth.Susanoo.csproj">
       <Project>{b1a411e0-e8bf-4d8c-b327-2c171e2e60bc}</Project>
       <Name>REstate.Repositories.Auth.Susanoo</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\REstate.Connectors.Susanoo\REstate.Connectors.Susanoo.csproj">
-      <Project>{95d7fb41-1d52-467a-873e-c2c31926b209}</Project>
-      <Name>REstate.Connectors.Susanoo</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate.Web.Auth\REstate.Web.Auth.csproj">
       <Project>{c4c12bdf-551f-441f-8f02-4d706ab61127}</Project>

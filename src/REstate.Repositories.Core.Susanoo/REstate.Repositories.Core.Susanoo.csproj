@@ -38,6 +38,10 @@
       <HintPath>..\packages\REstate.Domain.Core.5.0.1.0\lib\net45\REstate.Domain.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Susanoo.ConnectionPooling, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Susanoo.ConnectionPooling.1.0.1\lib\net45\Susanoo.ConnectionPooling.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Susanoo.Core, Version=1.2.4.2, Culture=neutral, PublicKeyToken=0a505ce04f8a59d5, processorArchitecture=MSIL">
       <HintPath>..\packages\Susanoo.Core.1.2.4.2\lib\net45\Susanoo.Core.dll</HintPath>
       <Private>True</Private>
@@ -63,16 +67,6 @@
     <Compile Include="MachineConfigurationRepository.cs" />
     <Compile Include="MachineInstancesRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
-      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
-      <Name>REstate.Platform</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Susanoo.ConnectionPooling\Susanoo.ConnectionPooling.csproj">
-      <Project>{4f2bfbb1-9b5b-4626-84a0-195a863a7c21}</Project>
-      <Name>Susanoo.ConnectionPooling</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

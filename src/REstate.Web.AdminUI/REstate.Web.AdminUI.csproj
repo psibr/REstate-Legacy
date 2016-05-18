@@ -38,10 +38,6 @@
       <HintPath>..\packages\Nancy.2.0.0-alpha\lib\net45\Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Nancy.Authentication.Stateless, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nancy.Authentication.Stateless.1.4.1\lib\net40\Nancy.Authentication.Stateless.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Nancy.Bootstrappers.Autofac, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nancy.Bootstrappers.Autofac.2.0.0-alpha\lib\net45\Nancy.Bootstrappers.Autofac.dll</HintPath>
       <Private>True</Private>
@@ -58,6 +54,14 @@
       <HintPath>..\packages\Psibr.Platform.3.1.0\lib\net45\Psibr.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="REstate.Domain.Core, Version=5.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Domain.Core.5.0.1.0\lib\net45\REstate.Domain.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="REstate.Platform, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Platform.1.0.1\lib\net461\REstate.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
@@ -72,12 +76,6 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
-      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
-      <Name>REstate.Platform</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

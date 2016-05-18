@@ -84,6 +84,10 @@
       <HintPath>..\packages\REstate.Domain.Core.5.0.1.0\lib\net45\REstate.Domain.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="REstate.Platform, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Platform.1.0.1\lib\net461\REstate.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
@@ -94,12 +98,6 @@
     <Compile Include="ChronoTriggerConnectorFactory.cs" />
     <Compile Include="ChronoTriggerConnectorModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
-      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
-      <Name>REstate.Platform</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

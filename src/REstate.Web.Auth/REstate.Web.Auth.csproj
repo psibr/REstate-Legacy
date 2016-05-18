@@ -42,16 +42,8 @@
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.FileSystems, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.FileSystems.3.0.1\lib\net45\Microsoft.Owin.FileSystems.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Owin.Hosting, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Hosting.3.0.1\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Owin.StaticFiles, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.StaticFiles.3.0.1\lib\net45\Microsoft.Owin.StaticFiles.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Nancy, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -86,6 +78,14 @@
       <HintPath>..\packages\Psibr.Platform.Nancy.5.0.4-alpha\lib\net45\Psibr.Platform.Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="REstate.Domain.Core, Version=5.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Domain.Core.5.0.1.0\lib\net45\REstate.Domain.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="REstate.Platform, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Platform.1.0.1\lib\net461\REstate.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -107,10 +107,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
-      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
-      <Name>REstate.Platform</Name>
-    </ProjectReference>
     <ProjectReference Include="..\REstate.Repositories.Auth.Susanoo\REstate.Repositories.Auth.Susanoo.csproj">
       <Project>{b1a411e0-e8bf-4d8c-b327-2c171e2e60bc}</Project>
       <Name>REstate.Repositories.Auth.Susanoo</Name>

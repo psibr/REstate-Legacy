@@ -24,7 +24,7 @@
   },
   "processingServices": {
     "chronoConsumer": {
-      "apiKey": "5ED9E73E-B9C1-40BA-80FC-FFFB140E6922"
+      "apiKey": "E9475CD8-B4AE-4D41-BDC9-7C9DA1C4423F"
     }
   },
   "authenticationSettings": {
@@ -46,9 +46,13 @@
     }
   },
   "loggerConfigurations": {
-      "rollingFile": {
-        "path": "C:\\services\\REstate\\logs"
-      }
+    "rollingFile": {
+      "path": "C:\\services\\REstate\\logs"
+    },
+    "seq": {
+      "serverUrl": "http://localhost:5341",
+      "apiKey": "Ujn0te18RJtRmhFmw"
+    }
   },
   "connections": [
     {
