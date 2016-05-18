@@ -110,6 +110,9 @@
       <HintPath>..\packages\REstate.Domain.Core.5.0.1.0\lib\net45\REstate.Domain.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="REstate.Platform">
+      <HintPath>..\packages\REstate.Platform.1.0.1\lib\net461\REstate.Platform.dll</HintPath>
+    </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
       <Private>True</Private>
@@ -155,10 +158,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\REstate.Platform\src\REstate.Platform\REstate.Platform.csproj">
-      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
-      <Name>REstate.Platform</Name>
-    </ProjectReference>
     <ProjectReference Include="..\REstate.Connectors.Chrono\REstate.Connectors.Chrono.csproj">
       <Project>{3b215cfc-1cf6-47d8-96f0-053adbf2d9ba}</Project>
       <Name>REstate.Connectors.Chrono</Name>
