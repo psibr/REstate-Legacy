@@ -6,7 +6,6 @@ using Nancy.Responses.Negotiation;
 using REstate.Web.Auth.Requests;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Psibr.Platform;
 using Psibr.Platform.Repositories;
 using REstate.Platform;
@@ -14,7 +13,7 @@ using SignInDelegate = System.Func<System.Func<System.Guid, System.Collections.G
 
 namespace REstate.Web.Auth.Modules
 {
-    public class AuthenticationModule
+    public sealed class AuthenticationModule
         : NancyModule
     {
 
@@ -23,11 +22,10 @@ namespace REstate.Web.Auth.Modules
             : base(prefix)
         {
 
-            Get["/login"] = async (parameters, ct) =>
-                await Task.FromResult(View["login.html"]);
+            Get("/login", (parameters) => View["login.html"]);
 
 
-            Post["/login"] = async (parameters, ct) =>
+            Post("/login", async (parameters, ct) =>
             {
                 var credentials = this.Bind<CredentialAuthenticationRequest>();
 
@@ -49,7 +47,7 @@ namespace REstate.Web.Auth.Modules
 
                 if (principal == null) return Response.AsRedirect(configuration.AuthHttpService.Address + "login");
 
-                var jwt = signInDelegate((jti) => new Dictionary<string, object>
+                signInDelegate((jti) => new Dictionary<string, object>
                 {
                     { "sub", principal.UserOrApplicationName},
                     { "apikey", crypto.EncryptionProvider.Encrypt(jti + principal.ApiKey)},
@@ -57,9 +55,9 @@ namespace REstate.Web.Auth.Modules
                 }, true);
 
                 return Response.AsRedirect(configuration.AdminHttpService.Address);
-            };
+            });
 
-            Post["/apikey"] = async (parameters, ct) =>
+            Post("/apikey", async (parameters, ct) =>
             {
                 var apiKey = this.Bind<ApiKeyAuthenticationRequest>().ApiKey;
 
@@ -82,9 +80,9 @@ namespace REstate.Web.Auth.Modules
                 }, false);
 
                 return Negotiate
-                    .WithModel(await Task.FromResult(new { jwt }))
+                    .WithModel(new { jwt })
                     .WithAllowedMediaRange(new MediaRange("application/json"));
-            };
+            });
         }
     }
 }

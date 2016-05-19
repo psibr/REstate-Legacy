@@ -50,7 +50,7 @@ namespace REstate.Web.Core.Modules
 
         private void InstantiateMachine(
             IConfigurationRepositoryContextFactory configurationRepositoryContextFactory) =>
-            Post["InstantiateMachine", "{MachineDefinitionId}/instantiate/"] = async (parameters, ct) =>
+            Post("{MachineDefinitionId}/instantiate/", async (parameters, ct) =>
             {
                 string machineDefinitionId = parameters.MachineDefinitionId;
                 string machineInstanceId = Guid.NewGuid().ToString();
@@ -64,11 +64,11 @@ namespace REstate.Web.Core.Modules
                 return Negotiate
                     .WithModel(new { machineInstanceId })
                     .WithAllowedMediaRange(new MediaRange("application/json"));
-            };
+            });
 
         private void ListMachines(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
-            Get["ListDefinitions", "/"] = async (parameters, ct) =>
+            Get("/", async (parameters, ct) =>
             {
                 using (var repository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
@@ -77,12 +77,12 @@ namespace REstate.Web.Core.Modules
                         .WithModel(await repository.Machines.ListMachines(ct))
                         .WithAllowedMediaRange(new MediaRange("application/json"));
                 }
-            };
+            });
         }
 
         private void DefineStateMachine(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
-            Post["DefineStateMachine", "/"] = async (parameters, ct) =>
+            Post("/", async (parameters, ct) =>
             {
                 var stateMachineConfiguration = this.Bind<Machine>();
                 Machine newMachineConfiguration;
@@ -95,12 +95,12 @@ namespace REstate.Web.Core.Modules
                 return Negotiate
                     .WithModel(newMachineConfiguration)
                     .WithAllowedMediaRange(new MediaRange("application/json"));
-            };
+            });
         }
 
         private void PreviewDiagram(IStateMachineFactory stateMachineFactory)
         {
-            Post["PreviewDiagram", "/preview"] = async (parameters, ct) =>
+            Post("/preview", (parameters) =>
             {
 
                 var stateMachineConfiguration = this.Bind<Machine>();
@@ -111,14 +111,14 @@ namespace REstate.Web.Core.Modules
                 if (machine == null)
                     throw new Exception("Unable to construct machine.");
 
-                return await Task.FromResult<dynamic>(Response.AsText(machine.ToString(), "text/plain"));
+                return Response.AsText(machine.ToString(), "text/plain");
 
 
-            };
+            });
         }
 
         private void GetMachine(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory) =>
-            Get["GetMachine", "/{MachineDefinitionId}"] = async (parameters, ct) =>
+            Get("/{MachineDefinitionId}", async (parameters, ct) =>
             {
                 string machineDefinitionId = parameters.MachineDefinitionId;
                 Machine configuration;
@@ -142,11 +142,11 @@ namespace REstate.Web.Core.Modules
                 return Negotiate
                     .WithModel(configuration)
                     .WithAllowedMediaRange(new MediaRange("application/json"));
-            };
+            });
 
         private void GetDiagramForDefinition(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
             IStateMachineFactory stateMachineFactory) =>
-            Get["GetDiagramForDefinition", "/{MachineDefinitionId}/diagram"] = async (parameters, ct) =>
+            Get("/{MachineDefinitionId}/diagram", async (parameters, ct) =>
             {
                 string machineDefinitionId = parameters.MachineDefinitionId;
                 Machine configuration;
@@ -162,7 +162,7 @@ namespace REstate.Web.Core.Modules
                     .ConstructFromConfiguration(Context.CurrentUser.GetApiKey(), configuration);
 
                 return Response.AsText(machine.ToString(), "text/plain");
-            };
+            });
 
     }
 }

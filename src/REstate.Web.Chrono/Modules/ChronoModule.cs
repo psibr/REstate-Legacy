@@ -8,7 +8,7 @@ namespace REstate.Web.Chrono.Modules
     /// <summary>
     /// Chrono module.
     /// </summary>
-    public class ChronoModule
+    public sealed class ChronoModule
         : SecuredModule
     {
         private readonly IChronoRepository _chronoRepository;
@@ -24,14 +24,14 @@ namespace REstate.Web.Chrono.Modules
         {
             _chronoRepository = chronoRepository;
 
-            Post["AddChronoTrigger", "/triggers"] = async (parameters, ct) =>
+            Post("/triggers", async (parameters, ct) =>
             {
                 var addChronoTriggerRequest = this.Bind<ChronoTrigger>();
 
                 await _chronoRepository.AddChronoTrigger(addChronoTriggerRequest, ct);
 
                 return 200;
-            };
+            });
 
         }
 

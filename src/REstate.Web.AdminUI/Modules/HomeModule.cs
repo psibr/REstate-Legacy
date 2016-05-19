@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Nancy;
 using Nancy.Responses;
 using REstate.Platform;
@@ -9,7 +11,7 @@ namespace REstate.Web.AdminUI.Modules
     /// <summary>
     /// UI application module.
     /// </summary>
-    public class HomeModule
+    public sealed class HomeModule
         : NancyModule
     {
         /// <summary>
@@ -18,29 +20,29 @@ namespace REstate.Web.AdminUI.Modules
         /// <param name="configuration">The configuration.</param>
         public HomeModule(REstatePlatformConfiguration configuration)
         {
-            Get["/"] = (_, ct) => BuildPageOrRedirect(configuration);
-            Get["/{uri*}"] = (_, ct) => BuildPageOrRedirect(configuration);
+            Get("/", (_, ct) => BuildPageOrRedirect(configuration, ct));
+            Get("/{uri*}", (_, ct) => BuildPageOrRedirect(configuration, ct));
         }
 
-        private dynamic BuildPageOrRedirect(REstatePlatformConfiguration configuration)
+        private async Task<dynamic> BuildPageOrRedirect(REstatePlatformConfiguration configuration, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(Context.GetOwinEnvironment()["owin.RequestPath"] as string))
             {
-                return Response.AsRedirect(configuration.AdminHttpService.Address,
+                return await Response.AsRedirect(configuration.AdminHttpService.Address,
                     RedirectResponse.RedirectType.Permanent);
             }
 
             if (Context.CurrentUser == null)
-                return Response.AsRedirect($"{configuration.AuthHttpService.Address}login");
+                return await Response.AsRedirect($"{configuration.AuthHttpService.Address}login");
 
             using (var fread = new FileStream(
                 $"{configuration.AdminHttpService.StaticContentRootRoutePath}\\index.html",
                 FileMode.Open))
             using (var streamReader = new StreamReader(fread))
             {
-                var indexHtml = streamReader.ReadToEnd();
+                var indexHtml = await streamReader.ReadToEndAsync();
 
-                return Response.AsText(indexHtml, "text/html");
+                return await Response.AsText(indexHtml, "text/html");
             }
         }
     }
