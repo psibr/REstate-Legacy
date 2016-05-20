@@ -27,10 +27,10 @@ namespace REstate.Repositories.Core.Susanoo
 
             return new ConfigurationRepository(
                 new DatabaseManagerPool(
-                    CommandManager.ResolveDatabaseManagerFactory(),
-                    factory => factory.CreateFromConnectionString(
-                        connectionConfig.ConnectionString,
-                        connectionConfig.ProviderName)),
+                CommandManager.ResolveDatabaseManagerFactory(),
+                factory => factory.CreateFromConnectionString(
+                    connectionConfig.ConnectionString,
+                    connectionConfig.ProviderName)),
                 StringSerializer, apiKey);
         }
 

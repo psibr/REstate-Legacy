@@ -34,20 +34,16 @@
       <HintPath>..\packages\Psibr.Platform.3.1.0\lib\net45\Psibr.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="REstate.Domain.Core, Version=5.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\REstate.Domain.Core.5.0.1.0\lib\net45\REstate.Domain.Core.dll</HintPath>
+    <Reference Include="REstate.Domain.Core, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Domain.Core.6.0.0\lib\net45\REstate.Domain.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Susanoo.ConnectionPooling, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Susanoo.ConnectionPooling, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Susanoo.ConnectionPooling.1.0.1\lib\net45\Susanoo.ConnectionPooling.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Susanoo.Core, Version=1.2.4.2, Culture=neutral, PublicKeyToken=0a505ce04f8a59d5, processorArchitecture=MSIL">
       <HintPath>..\packages\Susanoo.Core.1.2.4.2\lib\net45\Susanoo.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Susanoo.SqlServer, Version=1.2.4.2, Culture=neutral, PublicKeyToken=fd869d2c03fd7e96, processorArchitecture=MSIL">
-      <HintPath>..\packages\Susanoo.SqlServer.1.2.4.2\lib\net45\Susanoo.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

@@ -181,7 +181,7 @@ namespace REstate.Stateless
 
             State Accessor();
 
-            void Mutator(State state);
+            void Mutator(Trigger trigger, State state);
         }
 
         protected class PersistentStateAccessorMutator : IStateAccessorMutator
@@ -206,9 +206,10 @@ namespace REstate.Stateless
                 return new  State(_lastState.MachineName, _lastState.StateName);
             }
 
-            public void Mutator(State state)
+            public void Mutator(Trigger trigger, State state)
             {
-                _context.MachineInstances.SetInstanceState(MachineInstanceId, state.StateName, _lastState.CommitTag);
+                _context.MachineInstances.SetInstanceState(MachineInstanceId,
+                    state.StateName, trigger.TriggerName, _lastState.CommitTag);
             }
 
             ~PersistentStateAccessorMutator()
@@ -232,7 +233,7 @@ namespace REstate.Stateless
             return _state;
         }
 
-        public void Mutator(State state)
+        public void Mutator(Trigger trigger, State state)
         {
             _state = state;
         }

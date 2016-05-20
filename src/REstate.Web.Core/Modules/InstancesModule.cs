@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Nancy;
 using Nancy.ModelBinding;
@@ -154,7 +155,8 @@ namespace REstate.Web.Core.Modules
                 using (var repository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    configuration = await repository.Machines.RetrieveMachineConfigurationForInstance(machineInstanceId, ct);
+                    configuration = await repository.Machines
+                        .RetrieveMachineConfigurationForInstance(machineInstanceId, ct);
                 }
 
                 var machine = stateMachineFactory

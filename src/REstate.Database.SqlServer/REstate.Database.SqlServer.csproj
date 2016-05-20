@@ -49,6 +49,7 @@
     <Compile Include="CreateChronoConsumerServiceAccount.cs" />
     <Compile Include="CreateDefaultAdminUsers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AddTriggerToInstances.cs" />
     <Compile Include="UpgradeToVersion5.cs" />
   </ItemGroup>
   <ItemGroup>

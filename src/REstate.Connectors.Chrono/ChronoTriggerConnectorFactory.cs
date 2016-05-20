@@ -19,6 +19,9 @@ namespace REstate.Connectors.Chrono
         }
 
         public string ConnectorKey { get; } = "REstate.Connectors.Chrono";
+        public bool IsActionConnector { get; } = true;
+        public bool IsGuardConnector { get; } = false;
+        public string ConnectorSchema { get; set; } = "{ }";
 
         public async Task<IConnector> BuildConnector(string apiKey) => 
             new ChronoTriggerConnector(await _client.GetSession(apiKey));

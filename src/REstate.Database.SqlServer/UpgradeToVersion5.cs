@@ -9,7 +9,7 @@ namespace REstate.Database.SqlServer
 {
     [Tags("Core")]
     [Tags("Full")]
-    [Migration(20160430)]
+    [Migration(2016043001)]
     public class UpgradeToVersion5
         : Migration
     {

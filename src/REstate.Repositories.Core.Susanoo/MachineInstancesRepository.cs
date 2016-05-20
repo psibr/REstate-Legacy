@@ -20,17 +20,17 @@ namespace REstate.Repositories.Core.Susanoo
         {
             await CommandManager.Instance
                 .DefineCommand(
-@"
-IF NOT EXISTS (SELECT TOP 1 InstanceId FROM Instances WHERE InstanceId = @InstanceId)
-BEGIN
+                    @"
+                    IF NOT EXISTS (SELECT TOP 1 InstanceId FROM Instances WHERE InstanceId = @InstanceId)
+                    BEGIN
 
-    DECLARE @InitialState varchar(250);
+                        DECLARE @InitialState varchar(250);
 
-    SELECT TOP 1 @InitialState = InitialState FROM Machines WHERE MachineName = @MachineName;
+                        SELECT TOP 1 @InitialState = InitialState FROM Machines WHERE MachineName = @MachineName;
 
-    INSERT INTO Instances (InstanceId, MachineName, StateName)
-    VALUES (@InstanceId, @MachineName, @InitialState);
-END", CommandType.Text)
+                        INSERT INTO Instances (InstanceId, MachineName, StateName)
+                        VALUES (@InstanceId, @MachineName, @InitialState);
+                    END", CommandType.Text)
                 .Realize()
                 .ExecuteNonQueryAsync(DatabaseManagerPool.DatabaseManager, new
                 {
@@ -62,40 +62,41 @@ END", CommandType.Text)
                 .Single();
         }
 
-        public void SetInstanceState(string instanceId, string stateName, string lastCommitTag)
+        public void SetInstanceState(string instanceId, string stateName, string triggerName, string lastCommitTag)
         {
 
             var result = CommandManager.Instance
                 .DefineCommand(
-@"
-BEGIN TRANSACTION
+                    @"
+                    BEGIN TRANSACTION
 
-EXEC sp_getapplock @Resource = @InstanceId, @LockMode = 'Update'
+                    EXEC sp_getapplock @Resource = @InstanceId, @LockMode = 'Update'
 
-DECLARE @MachineName varchar(250);
-DECLARE @CommitTag varchar(250);
+                    DECLARE @MachineName varchar(250);
+                    DECLARE @CommitTag varchar(250);
 
-SELECT TOP 1 @MachineName = MachineName, @CommitTag = CommitTag
-FROM Instances
-WHERE InstanceId = @InstanceId
-ORDER BY StateChangedDateTime DESC
+                    SELECT TOP 1 @MachineName = MachineName, @CommitTag = CommitTag
+                    FROM Instances
+                    WHERE InstanceId = @InstanceId
+                    ORDER BY StateChangedDateTime DESC
 
-IF(@CommitTag = @LastCommitTag)
-BEGIN
-    INSERT INTO Instances (InstanceId, MachineName, StateName)
-    VALUES (@InstanceId, @MachineName, @StateName);
+                    IF(@CommitTag = @LastCommitTag)
+                    BEGIN
+                        INSERT INTO Instances (InstanceId, MachineName, StateName, TriggerName)
+                        VALUES (@InstanceId, @MachineName, @StateName, @TriggerName);
 
-    SELECT Success = 1;
-END
-ELSE
-    SELECT Success = 0;
+                        SELECT Success = 1;
+                    END
+                    ELSE
+                        SELECT Success = 0;
 
-COMMIT
-", CommandType.Text)
+                    COMMIT
+                    ", CommandType.Text)
+                .SendNullValues()
                 .Realize()
                 .ExecuteScalarAsync<int>(DatabaseManagerPool.DatabaseManager, new
                 {
-                    InstanceId = instanceId, StateName = stateName, LastCommitTag = lastCommitTag
+                    InstanceId = instanceId, StateName = stateName, TriggerName = triggerName, LastCommitTag = lastCommitTag
                 }, null, CancellationToken.None).Result;
 
             if(result <= 0)
