@@ -1,31 +1,44 @@
 ﻿using System;
+using System.Collections.Generic;
 using Autofac;
 using AutofacSerilogIntegration;
 using Nancy.Bootstrapper;
 using Nancy.Bootstrappers.Autofac;
-using Newtonsoft.Json;
 using Psibr.Platform;
 using Psibr.Platform.Logging.Serilog;
 using Psibr.Platform.Nancy;
 using Psibr.Platform.Nancy.Service;
+using Psibr.Platform.Serialization;
+using Psibr.Platform.Serialization.NewtonsoftJson;
 using REstate.Platform;
 using Serilog;
+using Serilog.Sinks.RollingFile;
 using Topshelf;
 
 namespace REstate.Services.AdminUI
 {
-    class Program
+    internal class Program
     {
-        const string ServiceName = "REstate.Services.AdminUI";
+        private const string ServiceName = "REstate.Services.AdminUI";
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            var configString = PlatformConfiguration.LoadConfigurationFile("REstateConfig.json");
+            var kernel = BuildContainer();
 
-            var config = JsonConvert.DeserializeObject<REstatePlatformConfiguration>(configString);
+            var configLoader = kernel.Resolve<IConfigurationLoader<REstatePlatformConfiguration>>();
 
-            var kernel = BuildAndConfigureContainer(config).Build();
-            
+            //var config = configLoader.Load(new Dictionary<string, string>
+            //{
+            //    { "serverAddress", "http://devubuntu2:8500" },
+            //    { "path", "Applications/Services/REstate/REstateConfig.json" }
+            //}).Result;
+
+            var config = configLoader.Load(new Dictionary<string, string>
+            {
+                { "path", "..\\..\\..\\..\\REstateConfig.json" }
+            }).Result;
+
+            kernel = ConfigureContainer(kernel, config);
 
             HostFactory.Run(host =>
             {
@@ -48,36 +61,52 @@ namespace REstate.Services.AdminUI
             });
         }
 
-        private static ContainerBuilder BuildAndConfigureContainer(REstatePlatformConfiguration configuration)
+        private static IContainer BuildContainer()
         {
-            var container = new ContainerBuilder();
+            var builder = new ContainerBuilder();
 
-            container.Register(ctx => configuration)
-                .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
+            builder.Register(context => new NewtonsoftJsonSerializer())
+                .As<IStringSerializer, IByteSerializer>();
 
-            container.RegisterType<Bootstrapper>()
-                .As<INancyBootstrapper>();
+            builder.RegisterType<FileConfigurationLoader<REstatePlatformConfiguration>>()
+                .As<IConfigurationLoader<REstatePlatformConfiguration>>();
 
-            container.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
-                configuration, configuration.AdminHttpService));
+            return builder.Build();
+        }
 
-            container.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
+        private static IContainer ConfigureContainer(IContainer container, REstatePlatformConfiguration configuration)
+        {
+            container.Update(builder =>
+            {
+                builder.Register(ctx => configuration)
+                    .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
 
-            container.RegisterModule<SerilogPlatformLoggingModule>();
-            
+                builder.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
+                    configuration, configuration.CoreHttpService));
 
-            container.RegisterLogger(
-                new LoggerConfiguration().MinimumLevel.Verbose()
-                    .Enrich.WithProperty("source", ServiceName)
-                    .WriteTo.LiterateConsole()
-                    .If((loggerConfig) => configuration.LoggerConfigurations.ContainsKey("rollingFile")
-                        && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"), (loggerConfig) =>
-                           loggerConfig.WriteTo
-                               .RollingFile($"{configuration.LoggerConfigurations["rollingFile"]["path"]}\\{ServiceName}\\{{Date}}.log"))
-                    .If(_ => configuration.LoggerConfigurations.ContainsKey("seq"), loggerConfig =>
-                        loggerConfig.WriteTo.Seq(configuration.LoggerConfigurations["seq"]["serverUrl"],
-                            apiKey: configuration.LoggerConfigurations["seq"]["apiKey"]))
-                    .CreateLogger());
+                builder.RegisterType<PlatformNancyBootstrapper>()
+                    .As<INancyBootstrapper>();
+
+                builder.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
+
+                builder.RegisterModule<SerilogPlatformLoggingModule>();
+
+                builder.RegisterLogger(
+                    new LoggerConfiguration().MinimumLevel.Verbose()
+                        .Enrich.WithProperty("source", ServiceName)
+                        .WriteTo.LiterateConsole()
+                        .If(_ => configuration.LoggerConfigurations.ContainsKey("rollingFile")
+                                 && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"),
+                            (loggerConfig) =>
+                                loggerConfig.WriteTo
+                                    .RollingFile(
+                                        $"{configuration.LoggerConfigurations["rollingFile"]["path"]}" +
+                                        $"\\{ServiceName}\\{{Date}}.log"))
+                        .If(_ => configuration.LoggerConfigurations.ContainsKey("seq"), loggerConfig =>
+                            loggerConfig.WriteTo.Seq(configuration.LoggerConfigurations["seq"]["serverUrl"],
+                                apiKey: configuration.LoggerConfigurations["seq"]["apiKey"]))
+                        .CreateLogger());
+            });
 
             return container;
         }

@@ -20,11 +20,11 @@ namespace REstate.Web.AdminUI.Modules
         /// <param name="configuration">The configuration.</param>
         public HomeModule(REstatePlatformConfiguration configuration)
         {
-            Get("/", (_, ct) => BuildPageOrRedirect(configuration, ct));
-            Get("/{uri*}", (_, ct) => BuildPageOrRedirect(configuration, ct));
+            Get("/", (_, ct) => BuildPageOrRedirect(Context, configuration, ct));
+            Get("/{uri*}", (_, ct) => BuildPageOrRedirect(Context, configuration, ct));
         }
 
-        private async Task<dynamic> BuildPageOrRedirect(REstatePlatformConfiguration configuration, CancellationToken cancellationToken)
+        private async Task<dynamic> BuildPageOrRedirect(NancyContext ctx, REstatePlatformConfiguration configuration, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(Context.GetOwinEnvironment()["owin.RequestPath"] as string))
             {
@@ -37,7 +37,7 @@ namespace REstate.Web.AdminUI.Modules
 
             using (var fread = new FileStream(
                 $"{configuration.AdminHttpService.StaticContentRootRoutePath}\\index.html",
-                FileMode.Open))
+                FileMode.Open, FileAccess.Read))
             using (var streamReader = new StreamReader(fread))
             {
                 var indexHtml = await streamReader.ReadToEndAsync();

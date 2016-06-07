@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Psibr.Platform.Serialization;
 using REstate.Configuration;
 using REstate.Repositories.Configuration;
 using Susanoo;
@@ -11,13 +13,24 @@ namespace REstate.Repositories.Core.Susanoo
     public class MachineInstancesRepository
         : ConfigurationContextualRepository, IMachineInstancesRepository
     {
-        public MachineInstancesRepository(ConfigurationRepository root)
+        private readonly IStringSerializer _stringSerializer;
+
+        public MachineInstancesRepository(ConfigurationRepository root, IStringSerializer stringSerializer)
             : base(root)
         {
+            _stringSerializer = stringSerializer;
         }
 
-        public async Task EnsureInstanceExists(string machineName, string instanceId, CancellationToken cancellationToken)
+        public async Task CreateInstance(string machineName, string instanceId, CancellationToken cancellationToken)
         {
+            await CreateInstance(machineName, instanceId, null, cancellationToken);
+        }
+
+        public async Task CreateInstance(string machineName, string instanceId,
+            IDictionary<string, string> metadata, CancellationToken cancellationToken)
+        {
+            var serializedMetadata = metadata == null ? null : _stringSerializer.SerializeToString(metadata);
+
             await CommandManager.Instance
                 .DefineCommand(
                     @"
@@ -28,14 +41,16 @@ namespace REstate.Repositories.Core.Susanoo
 
                         SELECT TOP 1 @InitialState = InitialState FROM Machines WHERE MachineName = @MachineName;
 
-                        INSERT INTO Instances (InstanceId, MachineName, StateName)
-                        VALUES (@InstanceId, @MachineName, @InitialState);
+                        INSERT INTO Instances (InstanceId, MachineName, StateName, Metadata)
+                        VALUES (@InstanceId, @MachineName, @InitialState, @Metadata);
                     END", CommandType.Text)
+                .SendNullValues()
                 .Realize()
                 .ExecuteNonQueryAsync(DatabaseManagerPool.DatabaseManager, new
                 {
                     InstanceId = instanceId,
-                    MachineName = machineName
+                    MachineName = machineName,
+                    Metadata = serializedMetadata
                 }, null, cancellationToken);
         }
 
@@ -96,11 +111,30 @@ namespace REstate.Repositories.Core.Susanoo
                 .Realize()
                 .ExecuteScalarAsync<int>(DatabaseManagerPool.DatabaseManager, new
                 {
-                    InstanceId = instanceId, StateName = stateName, TriggerName = triggerName, LastCommitTag = lastCommitTag
+                    InstanceId = instanceId,
+                    StateName = stateName,
+                    TriggerName = triggerName,
+                    LastCommitTag = lastCommitTag
                 }, null, CancellationToken.None).Result;
 
-            if(result <= 0)
+            if (result <= 0)
                 throw new StateConflictException("State did not reflect original state when attempting to transition.");
+        }
+
+        public async Task<string> GetInstanceMetadata(string instanceId, CancellationToken cancellationToken)
+        {
+            var result = await CommandManager.Instance
+                .DefineCommand("SELECT Metadata " +
+                               "FROM Instances " +
+                               "WHERE InstanceId = @InstanceId;", CommandType.Text)
+                .Realize()
+                .ExecuteScalarAsync<string>(DatabaseManagerPool.DatabaseManager,
+                new
+                {
+                    InstanceId = instanceId
+                }, cancellationToken);
+
+            return result;
         }
     }
 }

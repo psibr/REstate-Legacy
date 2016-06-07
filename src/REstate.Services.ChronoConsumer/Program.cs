@@ -11,15 +11,16 @@ using Psibr.Platform;
 using Psibr.Platform.Logging.Serilog;
 using REstate.Platform;
 using Serilog;
+using Serilog.Sinks.RollingFile;
 using Topshelf;
 
 namespace REstate.Services.ChronoConsumer
 {
-    class Program
+    internal class Program
     {
-        const string ServiceName = "REstate.Services.ChronoConsumer";
+        private const string ServiceName = "REstate.Services.ChronoConsumer";
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var configString = PlatformConfiguration.LoadConfigurationFile("REstateConfig.json");
 

@@ -3,37 +3,47 @@ using System.Collections.Generic;
 using Autofac;
 using AutofacSerilogIntegration;
 using Nancy.Bootstrapper;
-using Newtonsoft.Json;
+using Nancy.Bootstrappers.Autofac;
+using Nancy.ModelBinding;
 using Psibr.Platform;
-using Psibr.Platform.Logging;
 using Psibr.Platform.Logging.Serilog;
 using Psibr.Platform.Nancy;
 using Psibr.Platform.Nancy.Service;
 using Psibr.Platform.Serialization;
 using Psibr.Platform.Serialization.NewtonsoftJson;
-using REstate.Connectors.Decorators.Task;
 using REstate.Platform;
 using REstate.Repositories.Configuration;
 using REstate.Repositories.Core.Susanoo;
 using REstate.Stateless;
-using REstate.Web.Core;
 using Serilog;
+using Serilog.Sinks.RollingFile;
 using Topshelf;
 
 namespace REstate.Services.Core
 {
-    class Program
+    internal class Program
     {
-        const string ServiceName = "REstate.Services.Core";
+        private const string ServiceName = "REstate.Services.Core";
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            var configString = PlatformConfiguration.LoadConfigurationFile("REstateConfig.json");
+            var kernel = BuildContainer();
 
-            var config = JsonConvert.DeserializeObject<REstatePlatformConfiguration>(configString);
+            var configLoader = kernel.Resolve<IConfigurationLoader<REstatePlatformConfiguration>>();
 
-            var kernel = BuildAndConfigureContainer(config).Build();
-            var x = kernel.Resolve<IEnumerable<IConnectorFactory>>();
+            //var config = configLoader.Load(new Dictionary<string, string>
+            //{
+            //    { "serverAddress", "http://devubuntu2:8500" },
+            //    { "path", "Applications/Services/REstate/REstateConfig.json" }
+            //}).Result;
+
+            var config = configLoader.Load(new Dictionary<string, string>
+            {
+                { "path", "..\\..\\..\\..\\REstateConfig.json" }
+            }).Result;
+
+            kernel = ConfigureContainer(kernel, config);
+
             HostFactory.Run(host =>
             {
                 host.UseSerilog(kernel.Resolve<ILogger>());
@@ -55,66 +65,64 @@ namespace REstate.Services.Core
             });
         }
 
-        private static ContainerBuilder BuildAndConfigureContainer(REstatePlatformConfiguration configuration)
+        private static IContainer BuildContainer()
         {
-            var container = new ContainerBuilder();
+            var builder = new ContainerBuilder();
 
-            container.Register(ctx => configuration)
-                .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
-
-            container.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
-                configuration, configuration.CoreHttpService));
-
-            container.RegisterType<PlatformNancyBootstrapper>()
-                .As<INancyBootstrapper>();
-
-            container.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
-
-            container.RegisterModule<SerilogPlatformLoggingModule>();
-
-            container.RegisterLogger(
-                new LoggerConfiguration().MinimumLevel.Verbose()
-                    .Enrich.WithProperty("source", ServiceName)
-                    .WriteTo.LiterateConsole()
-                    .If(_ => configuration.LoggerConfigurations.ContainsKey("rollingFile") 
-                        && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"),  (loggerConfig) =>
-                            loggerConfig.WriteTo
-                                .RollingFile($"{configuration.LoggerConfigurations["rollingFile"]["path"]}\\{ServiceName}\\{{Date}}.log"))
-                    .If(_ => configuration.LoggerConfigurations.ContainsKey("seq"), loggerConfig =>
-                        loggerConfig.WriteTo.Seq(configuration.LoggerConfigurations["seq"]["serverUrl"],
-                            apiKey: configuration.LoggerConfigurations["seq"]["apiKey"]))
-                    .CreateLogger());
-
-            container.RegisterType<NewtonsoftJsonSerializer>()
+            builder.Register(context => new NewtonsoftJsonSerializer())
                 .As<IStringSerializer, IByteSerializer>();
 
-            container.RegisterType<ConfigurationRepositoryContextFactory>()
-                .As<IConfigurationRepositoryContextFactory>();
+            builder.RegisterType<FileConfigurationLoader<REstatePlatformConfiguration>>()
+                .As<IConfigurationLoader<REstatePlatformConfiguration>>();
 
-            container.RegisterConnectors(configuration);
+            return builder.Build();
+        }
 
-            container.RegisterType<StatelessStateMachineFactory>()
-                .As<IStateMachineFactory>();
-
-            container.RegisterType<DecoratingConnectorFactoryResolver>()
-                .UsingConstructor(() => new DecoratingConnectorFactoryResolver(
-                    null, (ConnectorDecoratorAssociations)null))
-                .As<IConnectorFactoryResolver>();
-
-            container.Register(ctx => new TaskConnectorDecorator(ctx.Resolve<IPlatformLogger>()))
-                .AsSelf()
-                .Named<IConnectorDecorator>("REstate.Connectors.Decorators.Task")
-                .As<IConnectorDecorator>();
-
-            container.Register(ctx => new ConnectorDecoratorAssociations
+        private static IContainer ConfigureContainer(IContainer container, REstatePlatformConfiguration configuration)
+        {
+            container.Update(builder =>
             {
-                Associations = new Dictionary<string, IEnumerable<IConnectorDecorator>>
-                {
-                    { "REstate.Connectors.RabbitMq", new []
-                    {
-                        ctx.ResolveNamed<IConnectorDecorator>("REstate.Connectors.Decorators.Task")
-                    }}
-                }
+                builder.Register(ctx => configuration)
+                    .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
+
+                builder.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
+                    configuration, configuration.CoreHttpService));
+
+                builder.RegisterType<PlatformNancyBootstrapper>()
+                    .As<INancyBootstrapper>();
+
+                builder.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
+
+                builder.RegisterModule<SerilogPlatformLoggingModule>();
+
+                builder.RegisterLogger(
+                    new LoggerConfiguration().MinimumLevel.Verbose()
+                        .Enrich.WithProperty("source", ServiceName)
+                        .WriteTo.LiterateConsole()
+                        .If(_ => configuration.LoggerConfigurations.ContainsKey("rollingFile")
+                                 && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"),
+                            (loggerConfig) =>
+                                loggerConfig.WriteTo
+                                    .RollingFile(
+                                        $"{configuration.LoggerConfigurations["rollingFile"]["path"]}" +
+                                        $"\\{ServiceName}\\{{Date}}.log"))
+                        .If(_ => configuration.LoggerConfigurations.ContainsKey("seq"), loggerConfig =>
+                            loggerConfig.WriteTo.Seq(configuration.LoggerConfigurations["seq"]["serverUrl"],
+                                apiKey: configuration.LoggerConfigurations["seq"]["apiKey"]))
+                        .CreateLogger());
+
+                builder.RegisterType<ConfigurationRepositoryContextFactory>()
+                    .As<IConfigurationRepositoryContextFactory>()
+                    .SingleInstance();
+
+                builder.RegisterType<JsonOnlyStringDictionaryBinder>()
+                    .As<IModelBinder>();
+
+                builder.RegisterType<StatelessStateMachineFactory>()
+                    .As<IStateMachineFactory>()
+                    .SingleInstance();
+
+                builder.RegisterDecoratorsAndConnectors(configuration);
             });
 
             return container;

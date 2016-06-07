@@ -1,13 +1,13 @@
 {
   "configurationLocation": [
     {
-      "type": "file",
-      "path": "src/REstateConfig.json"
+      "type": "consul-json",
+      "serverAddress": "http://devubuntu2:8500",
+      "path": "Applications/Services/REstate/REstateConfig.json"
     },
     {
-      "type": "consul-json",
-      "assemblyName": "Psibr.Platform.Configuration.ConsulJson",
-      "serverAddress": "http://devubuntu2:8500"
+      "type": "file",
+      "path": "REstateConfig.json"
     }
   ]
 }

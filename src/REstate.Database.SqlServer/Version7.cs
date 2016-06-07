@@ -4,14 +4,14 @@ namespace REstate.Database.SqlServer
 {
     [Tags("Core")]
     [Tags("Full")]
-    [Migration(2016052000)]
-    public class AddTriggerToInstances
+    [Migration(2016052401)]
+    public class Version7
         : ForwardOnlyMigration
     {
         public override void Up()
         {
             Alter.Table("Instances")
-                .AddColumn("TriggerName").AsAnsiString(250).Nullable();
+                .AddColumn("Metadata").AsAnsiString(4000).Nullable();
         }
     }
 }

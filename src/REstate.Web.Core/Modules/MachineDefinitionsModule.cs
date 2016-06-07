@@ -1,6 +1,6 @@
 using System;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Responses.Negotiation;
@@ -53,13 +53,15 @@ namespace REstate.Web.Core.Modules
             IConfigurationRepositoryContextFactory configurationRepositoryContextFactory) =>
             Post("{MachineDefinitionId}/instantiate/", async (parameters, ct) =>
             {
+                var metadata = this.Bind<IDictionary<string, string>>();
+
                 string machineDefinitionId = parameters.MachineDefinitionId;
-                string machineInstanceId = Guid.NewGuid().ToString();
+                var machineInstanceId = Guid.NewGuid().ToString();
 
                 using (var configruationRepository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    await configruationRepository.MachineInstances.EnsureInstanceExists(machineDefinitionId, machineInstanceId, ct);
+                    await configruationRepository.MachineInstances.CreateInstance(machineDefinitionId, machineInstanceId, metadata, ct);
                 }
 
                 return Negotiate

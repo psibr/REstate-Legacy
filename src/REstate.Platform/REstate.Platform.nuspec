@@ -1,0 +1,17 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>REstate.Platform</id>
+    <version>$version$</version>
+    <authors>Ovan Crone</authors>
+    <owners>Ovan Crone</owners>
+    <licenseUrl>https://github.com/psibr/REstate/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/psibr/REstate</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Core shared classes for REstate.</description>
+    <copyright>Copyright 2016</copyright>
+    <tags>REstate</tags>
+    <dependencies>
+    </dependencies>
+  </metadata>
+</package>

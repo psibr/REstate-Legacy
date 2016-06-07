@@ -26,5 +26,9 @@ namespace REstate.Platform
         }
 
         public string ConnectorKey => _factory.ConnectorKey;
+
+        public bool IsActionConnector { get; } = true;
+        public bool IsGuardConnector { get; } = false;
+        public string ConnectorSchema { get; set; } = null;
     }
 }

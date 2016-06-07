@@ -11,7 +11,7 @@ var configuration = Argument("configuration", "Debug");
 
 // Define directories.
 var buildDirs = GetDirectories("./src/REstate.Services.*/bin/" + configuration);
-var binDirs = GetDirectories("./src/REstate.Services.*/bin");
+var binDirs = GetDirectories("./src/REstate.Services.*/bin/" + configuration);
 var rootDir = Directory("./src");
 
 //////////////////////////////////////////////////////////////////////
@@ -19,21 +19,21 @@ var rootDir = Directory("./src");
 //////////////////////////////////////////////////////////////////////
 
 Task("Clean")
-    .Does(() =>
+	.Does(() =>
 	{
 		CleanDirectories(binDirs);
 	});
 
 Task("Restore-NuGet-Packages")
-    .IsDependentOn("Clean")
-    .Does(() =>
+	.IsDependentOn("Clean")
+	.Does(() =>
 	{
 		NuGetRestore("./src/REstate.sln");
 	});
 
 Task("Build")
-    .IsDependentOn("Restore-NuGet-Packages")
-    .Does(() =>
+	.IsDependentOn("Restore-NuGet-Packages")
+	.Does(() =>
 	{
 		if(IsRunningOnWindows())
 		{
@@ -74,7 +74,7 @@ Task("AppVeyor")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Build");
+	.IsDependentOn("Build");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION

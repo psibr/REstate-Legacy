@@ -11,32 +11,25 @@ namespace REstate.Database.SqlServer
     [Tags("Full")]
     [Migration(2016043001)]
     public class UpgradeToVersion5
-        : Migration
+        : ForwardOnlyMigration
     {
         public override void Up()
         {
 
             Create.Table("Machines")
-                .WithColumn("MachineName").AsString(250).NotNullable().PrimaryKey()
-                .WithColumn("ForkedFrom").AsString(250).Nullable().ForeignKey("Machines", "MachineName")
-                .WithColumn("InitialState").AsString(250).NotNullable()
+                .WithColumn("MachineName").AsAnsiString(250).NotNullable().PrimaryKey()
+                .WithColumn("ForkedFrom").AsAnsiString(250).Nullable().ForeignKey("Machines", "MachineName")
+                .WithColumn("InitialState").AsAnsiString(250).NotNullable()
                 .WithColumn("AutoIgnoreTriggers").AsBoolean().NotNullable().WithDefaultValue(false)
-                .WithColumn("Definition").AsString(4000).NotNullable()
+                .WithColumn("Definition").AsAnsiString(4000).NotNullable()
                 .WithColumn("CreatedDateTime").AsDateTime().NotNullable().WithDefault(SystemMethods.CurrentUTCDateTime);
 
             Create.Table("Instances")
-                .WithColumn("InstanceId").AsString(250).NotNullable().PrimaryKey()
-                .WithColumn("MachineName").AsString(250).NotNullable()
-                .WithColumn("StateName").AsString(250).NotNullable().PrimaryKey()
-                .WithColumn("CommitTag").AsString(250).NotNullable().WithDefault(SystemMethods.NewGuid)
+                .WithColumn("InstanceId").AsAnsiString(250).NotNullable().PrimaryKey()
+                .WithColumn("MachineName").AsAnsiString(250).NotNullable()
+                .WithColumn("StateName").AsAnsiString(250).NotNullable().PrimaryKey()
+                .WithColumn("CommitTag").AsAnsiString(250).NotNullable().WithDefault(SystemMethods.NewGuid)
                 .WithColumn("StateChangedDateTime").AsDateTime().NotNullable().WithDefault(SystemMethods.CurrentUTCDateTime);   
-        }
-
-        public override void Down()
-        {
-            Delete.Table("Machines");
-
-            Delete.Table("Instances");
         }
     }
 }

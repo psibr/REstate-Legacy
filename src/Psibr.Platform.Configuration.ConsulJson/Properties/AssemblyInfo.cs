@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("REstate.Client.Tester")]
+[assembly: AssemblyTitle("Psibr.Platform.Configuration.ConsulJson")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("REstate.Client.Tester")]
+[assembly: AssemblyProduct("Psibr.Platform.Configuration.ConsulJson")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("83a18bec-569b-4d23-adae-2a8e61aa5aeb")]
+[assembly: Guid("d074aaa5-fc33-439b-8071-bebd68a186d7")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -23,14 +23,15 @@ namespace REstate.Platform
             if (pluginFolder.Exists)
             {
                 pluginAssemblies = pluginAssemblies
-                    .Union(pluginFolder.GetFiles("REstate.Connectors.*.dll", SearchOption.AllDirectories));
+                    .Union(pluginFolder.GetDirectories()
+                        .SelectMany(di => di.GetFiles("lib/restate-plugin/REstate.Connectors.*.dll", SearchOption.TopDirectoryOnly)));
             }
-            
+
             foreach (var module in pluginAssemblies
                 .Select(pluginAssemblyFile => Assembly.LoadFrom(pluginAssemblyFile.FullName))
                 .Select(asm => asm.GetExportedTypes()
                     .Where(t => t.GetInterfaces().Contains(typeof(IREstateConnectorModule))))
-                .SelectMany(connectorModules => connectorModules.Select(connectorModule => 
+                .SelectMany(connectorModules => connectorModules.Select(connectorModule =>
                     (IREstateConnectorModule)Activator.CreateInstance(connectorModule))))
             {
                 module.Configuration = configuration;

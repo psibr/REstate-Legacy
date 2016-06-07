@@ -16,7 +16,7 @@ namespace REstate.Platform
         {
             if (decorators == null) throw new ArgumentNullException(nameof(decorators));
 
-            _decorators = decorators.Associations;
+            _decorators = decorators;
         }
 
         public DecoratingConnectorFactoryResolver(IEnumerable<IConnectorFactory> connectorFactories,

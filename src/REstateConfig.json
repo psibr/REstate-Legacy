@@ -27,19 +27,9 @@
       "apiKey": "E9475CD8-B4AE-4D41-BDC9-7C9DA1C4423F"
     }
   },
-  "authenticationSettings": {
-    "encryptionPassphrase": "ThisIsMySharedKeyAndPassPhrase",
-    "hmacPassphrase": "ThisIsMySharedKeyAndPassPhrase",
-    "hmacSaltBase64": "AQJ80f7/MC89",
-    "claimsPrincipalResourceName": "REstate.Principal",
-    "encryptionSaltBase64": "AQJ80f7/MC89",
-    "cookieName": "REstate",
-    "cookiePath": "/",
-    "tokenLifeSpan": 30
-  },
   "connectorConfigurations": {
     "RabbitMq": {
-      "hostName": "devsql",
+      "hostName": "DEVTEST01",
       "virtualHost": "/",
       "userName": "REstate",
       "password": "REstate"
@@ -54,11 +44,30 @@
       "apiKey": "Ujn0te18RJtRmhFmw"
     }
   },
+  "authenticationSettings": {
+    "cookieName": "REstate",
+    "cookiePath": "/",
+    "encryptionPassphrase": "ThisIsMySharedKeyAndPassPhrase",
+    "encryptionSaltBase64": "U2FsdHlTYWx0eQ==",
+    "hmacPassphrase": "ThisIsMySharedKeyAndPassPhrase",
+    "hmacSaltBase64": "U2FsdHlTYWx0eQ==", 
+    "tokenLifeSpan": 180,
+    "claimsPrincipalResourceName": "server.User"
+  },
+  "connectorDecoratorAssociations": {
+    "REstate.Connectors.RabbitMq": [
+      "REstate.Connectors.Decorators.Task"
+    ]
+  },
   "connections": [
     {
       "connectionString": "server=devsql;database=REstate;Application Name=REstate;integrated security=sspi;MultipleActiveResultSets=true",
       "providerName": "System.Data.SqlClient",
-      "tags": [ "chrono", "core", "auth" ]
+      "tags": [
+        "chrono",
+        "core",
+        "auth"
+      ]
     }
   ]
 }

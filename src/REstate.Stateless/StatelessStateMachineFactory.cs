@@ -2,7 +2,6 @@
 using REstate.Services;
 using Stateless;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Psibr.Platform.Logging;
@@ -14,8 +13,8 @@ namespace REstate.Stateless
         : IStateMachineFactory
     {
         private readonly IConnectorFactoryResolver _connectorFactoryResolver;
-        public IPlatformLogger Logger { get; }
 
+        public IPlatformLogger Logger { get; }
         public StatelessStateMachineFactory(
             IConnectorFactoryResolver connectorFactoryResolver, IPlatformLogger logger)
         {
@@ -63,25 +62,25 @@ namespace REstate.Stateless
                 var stateSettings = machine.Configure(new State(configuration.MachineName, stateConfiguration.StateName));
 
 
-                    if (stateConfiguration.OnEntry != null)
+                if (stateConfiguration.OnEntry != null)
+                {
+                    ConfigureOnEntryAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
+                }
+
+                if (stateConfiguration.OnEntryFrom != null)
+                {
+                    foreach (var onEntryFromAction in stateConfiguration.OnEntryFrom)
                     {
-                        ConfigureOnEntryAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
+                        ConfigureOnEntryFromAction(apiKey, stateMachine, configuration, onEntryFromAction,
+                            stateSettings);
                     }
 
-                    if (stateConfiguration.OnEntryFrom != null)
-                    {
-                        foreach (var onEntryFromAction in stateConfiguration.OnEntryFrom)
-                        {
-                            ConfigureOnEntryFromAction(apiKey, stateMachine, configuration, onEntryFromAction,
-                                stateSettings);
-                        }
-                        
-                    }
+                }
 
-                    if (stateConfiguration.OnExit != null)
-                    {
-                        ConfigureOnExitAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
-                    }
+                if (stateConfiguration.OnExit != null)
+                {
+                    ConfigureOnExitAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
+                }
 
 
                 //Configure as substate if needed
@@ -203,7 +202,7 @@ namespace REstate.Stateless
             {
                 _lastState = _context.MachineInstances.GetInstanceState(MachineInstanceId);
 
-                return new  State(_lastState.MachineName, _lastState.StateName);
+                return new State(_lastState.MachineName, _lastState.StateName);
             }
 
             public void Mutator(Trigger trigger, State state)
@@ -216,27 +215,25 @@ namespace REstate.Stateless
             {
                 _context.Dispose();
             }
-
-        
-    }
-
-    protected class InMemoryStateAccessorMutator
-        : IStateAccessorMutator
-    {
-        private State _state;
-
-        public string MachineInstanceId
-            => Guid.NewGuid().ToString();
-
-        public State Accessor()
-        {
-            return _state;
         }
 
-        public void Mutator(Trigger trigger, State state)
+        protected class InMemoryStateAccessorMutator
+            : IStateAccessorMutator
         {
-            _state = state;
+            private State _state;
+
+            public string MachineInstanceId
+                => Guid.NewGuid().ToString();
+
+            public State Accessor()
+            {
+                return _state;
+            }
+
+            public void Mutator(Trigger trigger, State state)
+            {
+                _state = state;
+            }
         }
     }
-}
 }

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Responses.Negotiation;
+using Psibr.Platform.Logging;
 using Psibr.Platform.Nancy;
 using Psibr.Platform.Nancy.Modules;
 using REstate.Configuration;
@@ -20,16 +19,21 @@ namespace REstate.Web.Core.Modules
     public class InstancesModule
         : SecuredModule
     {
+        protected IPlatformLogger Logger { get; set; }
+
         /// <summary>
         /// Registers routes for interacting with machines.
         /// </summary>
         /// <param name="configurationRepositoryContextFactory">The repository context factory.</param>
         /// <param name="stateMachineFactory">The state machine factory.</param>
+        /// <param name="logger"></param>
         public InstancesModule(
             IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
-            IStateMachineFactory stateMachineFactory)
+            IStateMachineFactory stateMachineFactory,
+            IPlatformLogger logger)
             : base("/instances", claim => claim.Type == "claim" && claim.Value == "operator")
         {
+            Logger = logger;
 
             GetMachineState(configurationRepositoryContextFactory);
 
@@ -45,8 +49,25 @@ namespace REstate.Web.Core.Modules
             GetDiagramForInstance(configurationRepositoryContextFactory,
                 stateMachineFactory);
 
+            GetInstanceInfo(configurationRepositoryContextFactory);
+
             DeleteInstance(configurationRepositoryContextFactory);
         }
+
+        private void GetInstanceInfo(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory) =>
+            Get("/{MachineInstanceId}", async (parameters, ct) =>
+            {
+                string machineInstanceId = parameters.machineInstanceId;
+                string metadata;
+
+
+                using (var repository = configurationRepositoryContextFactory.OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
+                {
+                    metadata = await repository.MachineInstances.GetInstanceMetadata(machineInstanceId, ct);
+                }
+
+                return Response.AsText(metadata ?? "{ }", "application/json");
+            });
 
         private void GetDiagramForInstance(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
             IStateMachineFactory stateMachineFactory) =>
