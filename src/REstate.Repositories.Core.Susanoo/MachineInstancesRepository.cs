@@ -79,6 +79,12 @@ namespace REstate.Repositories.Core.Susanoo
 
         public void SetInstanceState(string instanceId, string stateName, string triggerName, string lastCommitTag)
         {
+            SetInstanceState(instanceId, stateName, triggerName, null, lastCommitTag);
+        }
+
+        public void SetInstanceState(string instanceId, string stateName, string triggerName, string parameterData,
+            string lastCommitTag)
+        {
 
             var result = CommandManager.Instance
                 .DefineCommand(
@@ -97,8 +103,8 @@ namespace REstate.Repositories.Core.Susanoo
 
                     IF(@CommitTag = @LastCommitTag)
                     BEGIN
-                        INSERT INTO Instances (InstanceId, MachineName, StateName, TriggerName)
-                        VALUES (@InstanceId, @MachineName, @StateName, @TriggerName);
+                        INSERT INTO Instances (InstanceId, MachineName, StateName, TriggerName, ParameterData)
+                        VALUES (@InstanceId, @MachineName, @StateName, @TriggerName, @ParameterData);
 
                         SELECT Success = 1;
                     END
@@ -114,6 +120,7 @@ namespace REstate.Repositories.Core.Susanoo
                     InstanceId = instanceId,
                     StateName = stateName,
                     TriggerName = triggerName,
+                    ParameterData = parameterData,
                     LastCommitTag = lastCommitTag
                 }, null, CancellationToken.None).Result;
 
@@ -126,7 +133,7 @@ namespace REstate.Repositories.Core.Susanoo
             var result = await CommandManager.Instance
                 .DefineCommand("SELECT Metadata " +
                                "FROM Instances " +
-                               "WHERE InstanceId = @InstanceId;", CommandType.Text)
+                               "WHERE InstanceId = @InstanceId AND Metadata IS NOT NULL;", CommandType.Text)
                 .Realize()
                 .ExecuteScalarAsync<string>(DatabaseManagerPool.DatabaseManager,
                 new

@@ -122,8 +122,12 @@
       <HintPath>..\packages\Psibr.Platform.Service.Nancy.Jwt.4.0.0-pre8\lib\net461\Psibr.Platform.Service.Nancy.Jwt.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="REstate.Domain.Core, Version=7.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\REstate.Domain.Core.7.1.1\lib\net45\REstate.Domain.Core.dll</HintPath>
+    <Reference Include="REstate.Domain.Core, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Domain.Core.8.0.0\lib\net45\REstate.Domain.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="REstate.Platform, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Platform.2.0.0-pre2\lib\net461\REstate.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
@@ -179,10 +183,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Psibr.Platform.Configuration.ConsulJson\Psibr.Platform.Configuration.ConsulJson.csproj">
-      <Project>{d074aaa5-fc33-439b-8071-bebd68a186d7}</Project>
-      <Name>Psibr.Platform.Configuration.ConsulJson</Name>
-    </ProjectReference>
     <ProjectReference Include="..\REstate.Connectors.Chrono\REstate.Connectors.Chrono.csproj">
       <Project>{3b215cfc-1cf6-47d8-96f0-053adbf2d9ba}</Project>
       <Name>REstate.Connectors.Chrono</Name>
@@ -190,10 +190,6 @@
     <ProjectReference Include="..\REstate.Connectors.Decorators.Task\REstate.Connectors.Decorators.Task.csproj">
       <Project>{71a57dea-fc17-4b35-8928-6a2396fdb8b2}</Project>
       <Name>REstate.Connectors.Decorators.Task</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\REstate.Platform\REstate.Platform.csproj">
-      <Project>{6905fc7a-53de-4454-a37b-5d53e4702785}</Project>
-      <Name>REstate.Platform</Name>
     </ProjectReference>
     <ProjectReference Include="..\REstate.Repositories.Core.Susanoo\REstate.Repositories.Core.Susanoo.csproj">
       <Project>{692dca0e-3b2c-4919-8c2d-1af9e665d521}</Project>

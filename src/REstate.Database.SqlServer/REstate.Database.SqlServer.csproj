@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddParameterDataToInstances.cs" />
     <Compile Include="ChangePkOnChronoTables.cs" />
     <Compile Include="CreateBaselineAuthTables.cs" />
     <Compile Include="CreateBaselineChronoTables.cs" />

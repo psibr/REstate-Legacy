@@ -50,7 +50,7 @@ namespace REstate.Services.Auth
                 host.Service<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>(svc =>
                 {
                     svc.ConstructUsing(() => kernel.Resolve<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>());
-                    svc.WhenStarted(service => 
+                    svc.WhenStarted(service =>
                         service.Start());
                     svc.WhenStopped(service => service.Stop());
                 });
@@ -83,44 +83,44 @@ namespace REstate.Services.Auth
 
         private static IContainer ConfigureContainer(IContainer container, REstatePlatformConfiguration configuration)
         {
-            container.Update(builder =>
-            {
+            var builder = new ContainerBuilder();
 
-                builder.Register(ctx => configuration)
-                    .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
+            builder.Register(ctx => configuration)
+                .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
 
-                builder.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
-                    configuration, configuration.AuthHttpService));
+            builder.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
+                configuration, configuration.AuthHttpService));
 
-                builder.RegisterType<PlatformNancyBootstrapper>()
-                    .As<INancyBootstrapper>();
+            builder.RegisterType<PlatformNancyBootstrapper>()
+                .As<INancyBootstrapper>();
 
-                builder.RegisterType<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>();
+            builder.RegisterType<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>();
 
-                builder.RegisterModule<SerilogPlatformLoggingModule>();
+            builder.RegisterModule<SerilogPlatformLoggingModule>();
 
-                builder.RegisterLogger(
-                    new LoggerConfiguration().MinimumLevel.Verbose()
-                        .Enrich.WithProperty("source", ServiceName)
-                        .WriteTo.LiterateConsole()
-                        .If((loggerConfig) => configuration.LoggerConfigurations.ContainsKey("rollingFile")
-                                              && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"),
-                            (loggerConfig) =>
-                                loggerConfig.WriteTo
-                                    .RollingFile(
-                                        $"{configuration.LoggerConfigurations["rollingFile"]["path"]}" +
-                                        $"\\{ServiceName}\\{{Date}}.log"))
-                        .If(_ => configuration.LoggerConfigurations.ContainsKey("seq"), loggerConfig =>
-                            loggerConfig.WriteTo.Seq(configuration.LoggerConfigurations["seq"]["serverUrl"],
-                                apiKey: configuration.LoggerConfigurations["seq"]["apiKey"]))
-                        .CreateLogger());
+            builder.RegisterLogger(
+                new LoggerConfiguration().MinimumLevel.Verbose()
+                    .Enrich.WithProperty("source", ServiceName)
+                    .WriteTo.LiterateConsole()
+                    .If((loggerConfig) => configuration.LoggerConfigurations.ContainsKey("rollingFile")
+                                          && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"),
+                        (loggerConfig) =>
+                            loggerConfig.WriteTo
+                                .RollingFile(
+                                    $"{configuration.LoggerConfigurations["rollingFile"]["path"]}" +
+                                    $"\\{ServiceName}\\{{Date}}.log"))
+                    .If(_ => configuration.LoggerConfigurations.ContainsKey("seq"), loggerConfig =>
+                        loggerConfig.WriteTo.Seq(configuration.LoggerConfigurations["seq"]["serverUrl"],
+                            apiKey: configuration.LoggerConfigurations["seq"]["apiKey"]))
+                    .CreateLogger());
 
-                builder.Register(context => new AuthRoutePrefix(string.Empty));
+            builder.Register(context => new AuthRoutePrefix(string.Empty));
 
-                builder.RegisterType<AuthRepositoryContextFactory>()
-                    .As<IAuthRepositoryContextFactory>()
-                    .SingleInstance();
-            });
+            builder.RegisterType<AuthRepositoryContextFactory>()
+                .As<IAuthRepositoryContextFactory>()
+                .SingleInstance();
+
+            builder.Update(container);
 
             return container;
         }

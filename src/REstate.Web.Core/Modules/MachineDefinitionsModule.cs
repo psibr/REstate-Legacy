@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using Nancy;
 using Nancy.ModelBinding;
-using Nancy.Responses.Negotiation;
 using Psibr.Platform;
 using Psibr.Platform.Logging;
 using Psibr.Platform.Nancy.Modules;
 using REstate.Configuration;
 using REstate.Repositories.Configuration;
 using REstate.Services;
+using REstate.Web.Core.Responses;
 
 namespace REstate.Web.Core.Modules
 {
@@ -63,9 +63,7 @@ namespace REstate.Web.Core.Modules
                     await configruationRepository.MachineInstances.CreateInstance(machineDefinitionId, machineInstanceId, metadata, ct);
                 }
 
-                return Negotiate
-                    .WithModel(new { machineInstanceId })
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
+                return new MachineInstanceResponse { MachineInstanceId = machineInstanceId };
             });
 
         private void ListMachines(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
@@ -75,9 +73,7 @@ namespace REstate.Web.Core.Modules
                 using (var repository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    return Negotiate
-                        .WithModel(await repository.Machines.ListMachines(ct))
-                        .WithAllowedMediaRange(new MediaRange("application/json"));
+                    return await repository.Machines.ListMachines(ct);
                 }
             });
         }
@@ -95,9 +91,7 @@ namespace REstate.Web.Core.Modules
                         .DefineStateMachine(stateMachineConfiguration, ct);
                 }
 
-                return Negotiate
-                    .WithModel(newMachineConfiguration)
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
+                return newMachineConfiguration;
             });
         }
 
@@ -134,17 +128,13 @@ namespace REstate.Web.Core.Modules
                 }
 
                 if (configuration == null)
-                    return new NotFoundResponse
+                    return new Response
                     {
                         StatusCode = HttpStatusCode.NotFound,
-                        ReasonPhrase = "The definition was not found.",
-                        ContentType = "application/json",
-                        Contents = stream => stream.Close()
+                        ReasonPhrase = "The definition was not found."
                     };
 
-                return Negotiate
-                    .WithModel(configuration)
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
+                return configuration;
             });
 
         private void GetDiagramForDefinition(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,

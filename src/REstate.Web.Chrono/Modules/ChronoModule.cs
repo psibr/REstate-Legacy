@@ -1,6 +1,7 @@
 ﻿using Nancy.ModelBinding;
 using REstate.Chrono;
 using System;
+using Nancy;
 using Psibr.Platform.Nancy.Modules;
 
 namespace REstate.Web.Chrono.Modules
@@ -30,7 +31,7 @@ namespace REstate.Web.Chrono.Modules
 
                 await _chronoRepository.AddChronoTrigger(addChronoTriggerRequest, ct);
 
-                return 200;
+                return HttpStatusCode.OK;
             });
 
         }

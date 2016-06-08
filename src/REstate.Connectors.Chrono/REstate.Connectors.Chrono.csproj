@@ -60,12 +60,12 @@
       <HintPath>..\packages\REstate.Domain.Chrono.1.0.1.0\lib\net45\REstate.Domain.Chrono.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="REstate.Domain.Core, Version=7.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\REstate.Domain.Core.7.1.1\lib\net45\REstate.Domain.Core.dll</HintPath>
+    <Reference Include="REstate.Domain.Core, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Domain.Core.8.0.0\lib\net45\REstate.Domain.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="REstate.Platform, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\REstate.Platform.1.1.0\lib\net461\REstate.Platform.dll</HintPath>
+    <Reference Include="REstate.Platform, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\REstate.Platform.2.0.0-pre2\lib\net461\REstate.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

@@ -2,13 +2,13 @@
 using Nancy.Cryptography;
 using Nancy.ModelBinding;
 using Nancy.Owin;
-using Nancy.Responses.Negotiation;
 using REstate.Web.Auth.Requests;
 using System;
 using System.Collections.Generic;
 using Psibr.Platform;
 using Psibr.Platform.Repositories;
 using REstate.Platform;
+using REstate.Web.Auth.Responses;
 using SignInDelegate = System.Func<System.Func<System.Guid, System.Collections.Generic.IDictionary<string, object>>, bool, string>;
 
 namespace REstate.Web.Auth.Modules
@@ -59,7 +59,16 @@ namespace REstate.Web.Auth.Modules
 
             Post("/apikey", async (parameters, ct) =>
             {
-                var apiKey = this.Bind<ApiKeyAuthenticationRequest>().ApiKey;
+                var apiKeyRequest = this.Bind<ApiKeyAuthenticationRequest>();
+
+                if(string.IsNullOrWhiteSpace(apiKeyRequest?.ApiKey))
+                    return new Response
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        ReasonPhrase = "Unable to detect ApiKey, check content-type headers."
+                    };
+
+                var apiKey = apiKeyRequest.ApiKey;
 
                 var environment = Context.GetOwinEnvironment();
                 var signInDelegate = (SignInDelegate)environment["jwtandcookie.signin"];
@@ -79,9 +88,7 @@ namespace REstate.Web.Auth.Modules
                     { "claims", principal.Claims }
                 }, false);
 
-                return Negotiate
-                    .WithModel(new { jwt })
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
+                return new JwtResponse { Jwt = jwt };
             });
         }
     }

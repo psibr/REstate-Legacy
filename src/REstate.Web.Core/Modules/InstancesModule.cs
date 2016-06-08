@@ -2,7 +2,6 @@
 using System.Linq;
 using Nancy;
 using Nancy.ModelBinding;
-using Nancy.Responses.Negotiation;
 using Psibr.Platform;
 using Psibr.Platform.Logging;
 using Psibr.Platform.Nancy.Modules;
@@ -10,6 +9,7 @@ using REstate.Configuration;
 using REstate.Repositories.Configuration;
 using REstate.Services;
 using REstate.Web.Core.Requests;
+using REstate.Web.Core.Responses;
 
 namespace REstate.Web.Core.Modules
 {
@@ -61,7 +61,8 @@ namespace REstate.Web.Core.Modules
                 string metadata;
 
 
-                using (var repository = configurationRepositoryContextFactory.OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
                     metadata = await repository.MachineInstances.GetInstanceMetadata(machineInstanceId, ct);
                 }
@@ -76,7 +77,8 @@ namespace REstate.Web.Core.Modules
                 string machineInstanceId = parameters.machineInstanceId;
                 Machine configuration;
 
-                using (var repository = configurationRepositoryContextFactory.OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
                     configuration = await repository.Machines.RetrieveMachineConfigurationForInstance(machineInstanceId, ct);
                 }
@@ -95,12 +97,13 @@ namespace REstate.Web.Core.Modules
             {
                 string machineInstanceId = parameters.machineInstanceId;
 
-                using (var repository = configurationRepositoryContextFactory.OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
+                using (var repository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
                     await repository.MachineInstances.DeleteInstance(machineInstanceId, ct);
                 }
 
-                return 200;
+                return HttpStatusCode.Accepted;
             });
 
         private void FireTrigger(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
@@ -108,7 +111,7 @@ namespace REstate.Web.Core.Modules
             Post("/{MachineInstanceId}/fire/{TriggerName}", async (parameters, ct) =>
             {
                 var triggerFireRequest = this.Bind<TriggerFireRequest>();
-                State currentState;
+                InstanceRecord instanceRecord;
 
                 using (var repository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
@@ -134,16 +137,14 @@ namespace REstate.Web.Core.Modules
                         return Negotiate
                             .WithStatusCode(400)
                             .WithReasonPhrase(ex.Message)
-                            .WithModel(new { reasonPhrase = ex.Message })
-                            .WithAllowedMediaRange(new MediaRange("application/json"));
+                            .WithModel(new ReasonPhraseResponse { ReasonPhrase = ex.Message});
                     }
                     catch (StateConflictException ex)
                     {
                         return Negotiate
                             .WithStatusCode(409)
                             .WithReasonPhrase(ex.Message)
-                            .WithModel(new { reasonPhrase = ex.Message })
-                            .WithAllowedMediaRange(new MediaRange("application/json"));
+                            .WithModel(new ReasonPhraseResponse {ReasonPhrase = ex.Message});
                     }
                     catch (AggregateException ex)
                         when (ex.InnerExceptions.First().GetType() == typeof(StateConflictException))
@@ -151,19 +152,14 @@ namespace REstate.Web.Core.Modules
                         return Negotiate
                             .WithStatusCode(409)
                             .WithReasonPhrase(ex.InnerExceptions.First().Message)
-                            .WithModel(new { reasonPhrase = ex.InnerExceptions.First().Message })
-                            .WithAllowedMediaRange(new MediaRange("application/json"));
+                            .WithModel(new ReasonPhraseResponse { ReasonPhrase = ex.InnerExceptions.First().Message });
                     }
 
 
-                    var instanceRecord = repository.MachineInstances.GetInstanceState(triggerFireRequest.MachineInstanceId);
-
-                    currentState = new State(instanceRecord.MachineName, instanceRecord.StateName);
+                    instanceRecord = repository.MachineInstances.GetInstanceState(triggerFireRequest.MachineInstanceId);
                 }
 
-                return Negotiate
-                    .WithModel(currentState)
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
+                return instanceRecord;
             });
 
         private void GetAvailableTriggers(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
@@ -186,9 +182,12 @@ namespace REstate.Web.Core.Modules
                         configuration,
                         configurationRepositoryContextFactory);
 
-                return Negotiate
-                    .WithModel(machine.PermittedTriggers)
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
+                return machine.PermittedTriggers.Select(trigger =>
+                    new Responses.Trigger
+                    {
+                        MachineName = trigger.MachineDefinitionId,
+                        TriggerName = trigger.TriggerName
+                    }).ToList();
             });
 
         private void IsInState(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
@@ -215,34 +214,29 @@ namespace REstate.Web.Core.Modules
                         new State(configuration.MachineName, isInStateName));
                 }
 
-                return Negotiate
-                    .WithModel(new { queriedState = isInStateName, isInState })
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
+                return new IsInStateResponse { QueriedStateName = isInStateName, IsInState = isInState };
             });
 
         private void GetMachineState(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory) =>
             Get("/{MachineInstanceId}/state", (parameters) =>
             {
                 string machineInstanceId = parameters.MachineInstanceId;
-                State currentState;
+                InstanceRecord instanceRecord;
 
                 using (var repository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    var instanceRecord = repository.MachineInstances.GetInstanceState(machineInstanceId);
+                    instanceRecord = repository.MachineInstances.GetInstanceState(machineInstanceId);
 
                     if (instanceRecord == null)
-                        return Negotiate
-                            .WithStatusCode(400)
-                            .WithReasonPhrase("The machine instance requested does not exist.")
-                            .WithAllowedMediaRange(new MediaRange("application/json"));
-
-                    currentState = new State(instanceRecord.MachineName, instanceRecord.StateName);
+                        return new Response
+                        {
+                            StatusCode = HttpStatusCode.BadRequest,
+                            ReasonPhrase = "The machine instance requested does not exist."
+                        };
                 }
 
-                return Negotiate
-                    .WithModel(currentState)
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
+                return instanceRecord;
             });
     }
 }

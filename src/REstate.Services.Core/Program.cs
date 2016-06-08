@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Autofac;
 using AutofacSerilogIntegration;
 using Nancy.Bootstrapper;
-using Nancy.Bootstrappers.Autofac;
 using Nancy.ModelBinding;
 using Psibr.Platform;
 using Psibr.Platform.Logging.Serilog;
@@ -82,50 +81,51 @@ namespace REstate.Services.Core
 
         private static IContainer ConfigureContainer(IContainer container, REstatePlatformConfiguration configuration)
         {
-            container.Update(builder =>
-            {
-                builder.Register(ctx => configuration)
-                    .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
+            var builder = new ContainerBuilder();
 
-                builder.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
-                    configuration, configuration.CoreHttpService));
+            builder.Register(ctx => configuration)
+                .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
 
-                builder.RegisterType<PlatformJwtNancyBootstrapper>()
-                    .As<INancyBootstrapper>();
+            builder.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
+                configuration, configuration.CoreHttpService));
 
-                builder.RegisterType<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>();
+            builder.RegisterType<PlatformJwtNancyBootstrapper>()
+                .As<INancyBootstrapper>();
 
-                builder.RegisterModule<SerilogPlatformLoggingModule>();
+            builder.RegisterType<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>();
 
-                builder.RegisterLogger(
-                    new LoggerConfiguration().MinimumLevel.Verbose()
-                        .Enrich.WithProperty("source", ServiceName)
-                        .WriteTo.LiterateConsole()
-                        .If(_ => configuration.LoggerConfigurations.ContainsKey("rollingFile")
-                                 && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"),
-                            (loggerConfig) =>
-                                loggerConfig.WriteTo
-                                    .RollingFile(
-                                        $"{configuration.LoggerConfigurations["rollingFile"]["path"]}" +
-                                        $"\\{ServiceName}\\{{Date}}.log"))
-                        .If(_ => configuration.LoggerConfigurations.ContainsKey("seq"), loggerConfig =>
-                            loggerConfig.WriteTo.Seq(configuration.LoggerConfigurations["seq"]["serverUrl"],
-                                apiKey: configuration.LoggerConfigurations["seq"]["apiKey"]))
-                        .CreateLogger());
+            builder.RegisterModule<SerilogPlatformLoggingModule>();
 
-                builder.RegisterType<ConfigurationRepositoryContextFactory>()
-                    .As<IConfigurationRepositoryContextFactory>()
-                    .SingleInstance();
+            builder.RegisterLogger(
+                new LoggerConfiguration().MinimumLevel.Verbose()
+                    .Enrich.WithProperty("source", ServiceName)
+                    .WriteTo.LiterateConsole()
+                    .If(_ => configuration.LoggerConfigurations.ContainsKey("rollingFile")
+                             && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"),
+                        (loggerConfig) =>
+                            loggerConfig.WriteTo
+                                .RollingFile(
+                                    $"{configuration.LoggerConfigurations["rollingFile"]["path"]}" +
+                                    $"\\{ServiceName}\\{{Date}}.log"))
+                    .If(_ => configuration.LoggerConfigurations.ContainsKey("seq"), loggerConfig =>
+                        loggerConfig.WriteTo.Seq(configuration.LoggerConfigurations["seq"]["serverUrl"],
+                            apiKey: configuration.LoggerConfigurations["seq"]["apiKey"]))
+                    .CreateLogger());
 
-                builder.RegisterType<JsonOnlyStringDictionaryBinder>()
-                    .As<IModelBinder>();
+            builder.RegisterType<ConfigurationRepositoryContextFactory>()
+                .As<IConfigurationRepositoryContextFactory>()
+                .SingleInstance();
 
-                builder.RegisterType<StatelessStateMachineFactory>()
-                    .As<IStateMachineFactory>()
-                    .SingleInstance();
+            builder.RegisterType<JsonOnlyStringDictionaryBinder>()
+                .As<IModelBinder>();
 
-                builder.RegisterDecoratorsAndConnectors(configuration);
-            });
+            builder.RegisterType<StatelessStateMachineFactory>()
+                .As<IStateMachineFactory>()
+                .SingleInstance();
+
+            builder.RegisterDecoratorsAndConnectors(configuration);
+
+            builder.Update(container);
 
             return container;
         }

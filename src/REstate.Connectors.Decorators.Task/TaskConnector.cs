@@ -1,13 +1,13 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using Psibr.Platform.Logging;
 using REstate.Configuration;
-using REstate.Platform;
 using REstate.Services;
 
 namespace REstate.Connectors.Decorators.Task
 {
+    using System.Threading.Tasks;
+
     public class TaskConnector
         : IConnector
     {
@@ -24,12 +24,12 @@ namespace REstate.Connectors.Decorators.Task
 
         protected IPlatformLogger Logger { get; }
 
-        public Func<CancellationToken, System.Threading.Tasks.Task> ConstructAction(IStateMachine machineInstance, Code code)
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, Code code)
         {
-            return (cancellationToken) =>
+            return cancellationToken =>
             {
 
-                return System.Threading.Tasks.Task.Run(() => _connector.ConstructAction(machineInstance, code)(cancellationToken))
+                return Task.Run(() => _connector.ConstructAction(machineInstance, code)(cancellationToken))
                     .ContinueWith(task =>
                     {
                         if (task.Exception == null)
@@ -41,12 +41,12 @@ namespace REstate.Connectors.Decorators.Task
             };
         }
 
-        public Func<CancellationToken, System.Threading.Tasks.Task> ConstructAction(IStateMachine machineInstance, string payload, Code code)
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, string payload, Code code)
         {
-            return (cancellationToken) =>
+            return cancellationToken =>
             {
 
-                return System.Threading.Tasks.Task.Run(() => _connector.ConstructAction(machineInstance, payload, code)(cancellationToken))
+                return Task.Run(() => _connector.ConstructAction(machineInstance, payload, code)(cancellationToken))
                     .ContinueWith(task =>
                     {
                         if (task.Exception == null)
