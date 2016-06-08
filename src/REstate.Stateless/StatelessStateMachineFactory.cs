@@ -2,10 +2,10 @@
 using REstate.Services;
 using Stateless;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Psibr.Platform.Logging;
+using Psibr.Platform.Serialization;
 using REstate.Repositories.Configuration;
 
 namespace REstate.Stateless
@@ -13,13 +13,13 @@ namespace REstate.Stateless
     public class StatelessStateMachineFactory
         : IStateMachineFactory
     {
-        private readonly IConnectorFactoryResolver _connectorFactoryResolver;
-        public IPlatformLogger Logger { get; }
+        protected IConnectorFactoryResolver ConnectorFactoryResolver { get; }
+        protected IPlatformLogger Logger { get; }
 
         public StatelessStateMachineFactory(
             IConnectorFactoryResolver connectorFactoryResolver, IPlatformLogger logger)
         {
-            _connectorFactoryResolver = connectorFactoryResolver;
+            ConnectorFactoryResolver = connectorFactoryResolver;
             Logger = logger;
         }
 
@@ -63,25 +63,25 @@ namespace REstate.Stateless
                 var stateSettings = machine.Configure(new State(configuration.MachineName, stateConfiguration.StateName));
 
 
-                    if (stateConfiguration.OnEntry != null)
+                if (stateConfiguration.OnEntry != null)
+                {
+                    ConfigureOnEntryAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
+                }
+
+                if (stateConfiguration.OnEntryFrom != null)
+                {
+                    foreach (var onEntryFromAction in stateConfiguration.OnEntryFrom)
                     {
-                        ConfigureOnEntryAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
+                        ConfigureOnEntryFromAction(apiKey, stateMachine, configuration, onEntryFromAction,
+                            stateSettings);
                     }
 
-                    if (stateConfiguration.OnEntryFrom != null)
-                    {
-                        foreach (var onEntryFromAction in stateConfiguration.OnEntryFrom)
-                        {
-                            ConfigureOnEntryFromAction(apiKey, stateMachine, configuration, onEntryFromAction,
-                                stateSettings);
-                        }
-                        
-                    }
+                }
 
-                    if (stateConfiguration.OnExit != null)
-                    {
-                        ConfigureOnExitAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
-                    }
+                if (stateConfiguration.OnExit != null)
+                {
+                    ConfigureOnExitAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
+                }
 
 
                 //Configure as substate if needed
@@ -124,7 +124,7 @@ namespace REstate.Stateless
 
         protected Func<bool> CreateGuardClause(string apiKey, IStateMachine stateMachine, Machine configuration, Code guardDefinition)
         {
-            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(guardDefinition.ConnectorKey);
+            var hostFactory = ConnectorFactoryResolver.ResolveConnectorFactory(guardDefinition.ConnectorKey);
             Func<bool> guard = () =>
                 hostFactory.BuildConnector(apiKey).Result
                     .ConstructPredicate(stateMachine, guardDefinition)
@@ -138,7 +138,7 @@ namespace REstate.Stateless
             StateConfiguration stateConfiguration,
             StateMachine<State, Trigger>.StateConfiguration stateSettings)
         {
-            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(stateConfiguration.OnExit.ConnectorKey);
+            var hostFactory = ConnectorFactoryResolver.ResolveConnectorFactory(stateConfiguration.OnExit.ConnectorKey);
             stateSettings.OnExit(() =>
                 hostFactory.BuildConnector(apiKey).Result
                     .ConstructAction(stateMachine, stateConfiguration.OnExit)
@@ -151,7 +151,7 @@ namespace REstate.Stateless
             OnEntryFrom onEntryFrom,
             StateMachine<State, Trigger>.StateConfiguration stateSettings)
         {
-            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(onEntryFrom.ConnectorKey);
+            var hostFactory = ConnectorFactoryResolver.ResolveConnectorFactory(onEntryFrom.ConnectorKey);
             stateSettings.OnEntryFrom(
                 new StateMachine<State, Trigger>.TriggerWithParameters<string>(
                     new Trigger(configuration.MachineName, onEntryFrom.FromTrigger)), payload =>
@@ -167,7 +167,7 @@ namespace REstate.Stateless
             StateConfiguration stateConfiguration,
             StateMachine<State, Trigger>.StateConfiguration stateSettings)
         {
-            var hostFactory = _connectorFactoryResolver.ResolveConnectorFactory(stateConfiguration.OnEntry.ConnectorKey);
+            var hostFactory = ConnectorFactoryResolver.ResolveConnectorFactory(stateConfiguration.OnEntry.ConnectorKey);
             stateSettings.OnEntry(() =>
                 hostFactory.BuildConnector(apiKey).Result
                     .ConstructAction(stateMachine, stateConfiguration.OnEntry)
@@ -179,9 +179,9 @@ namespace REstate.Stateless
         {
             string MachineInstanceId { get; }
 
-            State Accessor();
+            Tuple<State, string> Accessor();
 
-            void Mutator(State state);
+            void Mutator(Trigger trigger, State state, object[] args);
         }
 
         protected class PersistentStateAccessorMutator : IStateAccessorMutator
@@ -199,43 +199,57 @@ namespace REstate.Stateless
 
             public string MachineInstanceId { get; }
 
-            public State Accessor()
+            public Tuple<State, string> Accessor()
             {
                 _lastState = _context.MachineInstances.GetInstanceState(MachineInstanceId);
 
-                return new  State(_lastState.MachineName, _lastState.StateName);
+                return new Tuple<State, string>(new State(_lastState.MachineName, _lastState.StateName), _lastState.ParameterData);
             }
 
-            public void Mutator(State state)
+            public void Mutator(Trigger trigger, State state, object[] args)
             {
-                _context.MachineInstances.SetInstanceState(MachineInstanceId, state.StateName, _lastState.CommitTag);
+                string parameterData = null;
+
+                //We only care about index 0 in REstate and we have restricted it to string only.
+
+                if (args != null && args.Length > 0)
+                {
+                    var arg = args[0];
+                    var stringArg = arg as string;
+                    if (stringArg != null)
+                    {
+                        parameterData = stringArg;
+                    }
+                }
+
+
+                _context.MachineInstances.SetInstanceState(MachineInstanceId,
+                    state.StateName, trigger.TriggerName, parameterData, _lastState.CommitTag);
             }
 
             ~PersistentStateAccessorMutator()
             {
                 _context.Dispose();
             }
-
-        
-    }
-
-    protected class InMemoryStateAccessorMutator
-        : IStateAccessorMutator
-    {
-        private State _state;
-
-        public string MachineInstanceId
-            => Guid.NewGuid().ToString();
-
-        public State Accessor()
-        {
-            return _state;
         }
 
-        public void Mutator(State state)
+        protected class InMemoryStateAccessorMutator
+            : IStateAccessorMutator
         {
-            _state = state;
+            private State _state;
+
+            public string MachineInstanceId
+                => Guid.NewGuid().ToString();
+
+            public Tuple<State, string> Accessor()
+            {
+                return new Tuple<State, string>(_state, null);
+            }
+
+            public void Mutator(Trigger trigger, State state, object[] args)
+            {
+                _state = state;
+            }
         }
     }
-}
 }

@@ -1,0 +1,13 @@
+{
+  "configurationLocation": [
+    {
+      "type": "consul-json",
+      "serverAddress": "http://devubuntu2:8500",
+      "path": "Applications/Services/REstate/REstateConfig.json"
+    },
+    {
+      "type": "file",
+      "path": "REstateConfig.json"
+    }
+  ]
+}

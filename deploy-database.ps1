@@ -18,7 +18,7 @@ Param(
 
 $TARGET = "src\REstate.Database.SqlServer\bin\" + $configuration + "\REstate.Database.SqlServer.dll"
 
-Invoke-Expression "src\packages\FluentMigrator.Tools.1.6.1\tools\AnyCPU\40\Migrate --connectionString `"$connectionString`" --provider `"$provider`" --target `"$TARGET`" --tag `"$tag`" --task `"$task`" --configPath=`"deploy-database.config`""
+Invoke-Expression "src\packages\FluentMigrator.Tools.1.6.2\tools\AnyCPU\40\Migrate --connectionString `"$connectionString`" --provider `"$provider`" --target `"$TARGET`" --tag `"$tag`" --task `"$task`" --configPath=`"deploy-database.config`""
 Write-Host
 
 exit $LASTEXITCODE

@@ -7,7 +7,7 @@ namespace REstate.Database.SqlServer
     [Tags("Full")]
     [Migration(2016031701)]
     public class CreateChronoConsumerServiceAccount
-        : Migration
+        : ForwardOnlyMigration
     {
         public override void Up()
         {
@@ -23,10 +23,6 @@ namespace REstate.Database.SqlServer
 
             Insert.IntoTable("PrincipalClaims")
                 .Row(new { ApiKey = apiKey, ClaimName = "operator" });
-        }
-
-        public override void Down()
-        {
         }
     }
 }

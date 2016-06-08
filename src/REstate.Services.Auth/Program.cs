@@ -1,40 +1,56 @@
 ﻿using System;
+using System.Collections.Generic;
 using Autofac;
 using REstate.Repositories.Auth.Susanoo;
 using AutofacSerilogIntegration;
 using Nancy.Bootstrapper;
-using Newtonsoft.Json;
+using Nancy.Bootstrappers.Autofac;
 using Psibr.Platform;
 using Psibr.Platform.Logging.Serilog;
 using Psibr.Platform.Repositories;
 using Psibr.Platform.Nancy;
-using Psibr.Platform.Nancy.Service;
+using Psibr.Platform.Serialization;
+using Psibr.Platform.Serialization.NewtonsoftJson;
+using Psibr.Platform.Service.Nancy;
+using Psibr.Platform.Service.Nancy.Jwt;
 using REstate.Platform;
 using REstate.Web.Auth;
 using Serilog;
+using Serilog.Sinks.RollingFile;
 using Topshelf;
 
 namespace REstate.Services.Auth
 {
-    class Program
+    internal class Program
     {
-        const string ServiceName = "REstate.Services.Auth";
+        private const string ServiceName = "REstate.Services.Auth";
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            var configString = PlatformConfiguration.LoadConfigurationFile("REstateConfig.json");
+            var kernel = BuildContainer();
 
-            var config = JsonConvert.DeserializeObject<REstatePlatformConfiguration>(configString);
+            var configLoader = kernel.Resolve<IConfigurationLoader<REstatePlatformConfiguration>>();
 
-            var kernel = BuildAndConfigureContainer(config).Build();
+            //var config = configLoader.Load(new Dictionary<string, string>
+            //{
+            //    { "serverAddress", "http://devubuntu2:8500" },
+            //    { "path", "Applications/Services/REstate/REstateConfig.json" }
+            //}).Result;
+
+            var config = configLoader.Load(new Dictionary<string, string>
+            {
+                { "path", "..\\..\\..\\..\\REstateConfig.json" }
+            }).Result;
+
+            kernel = ConfigureContainer(kernel, config);
 
             HostFactory.Run(host =>
             {
                 host.UseSerilog(kernel.Resolve<ILogger>());
-                host.Service<PlatformApiService<REstatePlatformConfiguration>>(svc =>
+                host.Service<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>(svc =>
                 {
-                    svc.ConstructUsing(() => kernel.Resolve<PlatformApiService<REstatePlatformConfiguration>>());
-                    svc.WhenStarted(service => 
+                    svc.ConstructUsing(() => kernel.Resolve<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>());
+                    svc.WhenStarted(service =>
                         service.Start());
                     svc.WhenStopped(service => service.Stop());
                 });
@@ -48,42 +64,63 @@ namespace REstate.Services.Auth
 
                 host.SetServiceName(ServiceName);
             });
+
+            Console.ReadLine();
         }
 
-        private static ContainerBuilder BuildAndConfigureContainer(REstatePlatformConfiguration configuration)
+        private static IContainer BuildContainer()
         {
-            var container = new ContainerBuilder();
+            var builder = new ContainerBuilder();
 
-            container.Register(ctx => configuration)
+            builder.Register(context => new NewtonsoftJsonSerializer(prettify: true))
+                .As<IStringSerializer, IByteSerializer>();
+
+            builder.RegisterType<FileConfigurationLoader<REstatePlatformConfiguration>>()
+                .As<IConfigurationLoader<REstatePlatformConfiguration>>();
+
+            return builder.Build();
+        }
+
+        private static IContainer ConfigureContainer(IContainer container, REstatePlatformConfiguration configuration)
+        {
+            var builder = new ContainerBuilder();
+
+            builder.Register(ctx => configuration)
                 .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
 
-            container.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
+            builder.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
                 configuration, configuration.AuthHttpService));
 
-            container.RegisterType<PlatformNancyBootstrapper>()
+            builder.RegisterType<PlatformNancyBootstrapper>()
                 .As<INancyBootstrapper>();
 
-            container.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
+            builder.RegisterType<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>();
 
-            container.RegisterModule<SerilogPlatformLoggingModule>();
+            builder.RegisterModule<SerilogPlatformLoggingModule>();
 
-            container.RegisterLogger(
+            builder.RegisterLogger(
                 new LoggerConfiguration().MinimumLevel.Verbose()
                     .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
                     .If((loggerConfig) => configuration.LoggerConfigurations.ContainsKey("rollingFile")
-                        && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"), (loggerConfig) =>
-                           loggerConfig.WriteTo
-                               .RollingFile($"{configuration.LoggerConfigurations["rollingFile"]["path"]}\\{ServiceName}\\{{Date}}.log"))
+                                          && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"),
+                        (loggerConfig) =>
+                            loggerConfig.WriteTo
+                                .RollingFile(
+                                    $"{configuration.LoggerConfigurations["rollingFile"]["path"]}" +
+                                    $"\\{ServiceName}\\{{Date}}.log"))
                     .If(_ => configuration.LoggerConfigurations.ContainsKey("seq"), loggerConfig =>
                         loggerConfig.WriteTo.Seq(configuration.LoggerConfigurations["seq"]["serverUrl"],
                             apiKey: configuration.LoggerConfigurations["seq"]["apiKey"]))
                     .CreateLogger());
 
-            container.Register(context => new AuthRoutePrefix(string.Empty));
+            builder.Register(context => new AuthRoutePrefix(string.Empty));
 
-            container.RegisterType<AuthRepositoryContextFactory>()
-                .As<IAuthRepositoryContextFactory>().SingleInstance();
+            builder.RegisterType<AuthRepositoryContextFactory>()
+                .As<IAuthRepositoryContextFactory>()
+                .SingleInstance();
+
+            builder.Update(container);
 
             return container;
         }

@@ -1,15 +1,14 @@
 using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using Nancy;
 using Nancy.ModelBinding;
-using Nancy.Responses.Negotiation;
-using Nancy.Security;
+using Psibr.Platform;
 using Psibr.Platform.Logging;
-using Psibr.Platform.Nancy;
 using Psibr.Platform.Nancy.Modules;
 using REstate.Configuration;
 using REstate.Repositories.Configuration;
 using REstate.Services;
+using REstate.Web.Core.Responses;
 
 namespace REstate.Web.Core.Modules
 {
@@ -31,7 +30,7 @@ namespace REstate.Web.Core.Modules
             IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
             IStateMachineFactory stateMachineFactory,
             IPlatformLogger logger)
-            : base("/machines", "machineBuilder")
+            : base("/machines", claim => claim.Type == "claim" && claim.Value == "machineBuilder")
         {
             Logger = logger;
 
@@ -51,56 +50,54 @@ namespace REstate.Web.Core.Modules
 
         private void InstantiateMachine(
             IConfigurationRepositoryContextFactory configurationRepositoryContextFactory) =>
-            Post["InstantiateMachine", "{MachineDefinitionId}/instantiate/", true] = async (parameters, ct) =>
+            Post("{MachineDefinitionId}/instantiate/", async (parameters, ct) =>
             {
-                string machineDefinitionId = parameters.MachineDefinitionId;
-                string machineInstanceId = Guid.NewGuid().ToString();
+                var metadata = this.Bind<IDictionary<string, string>>();
 
-                using (var configruationRepository = configurationRepositoryContextFactory.OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
+                string machineDefinitionId = parameters.MachineDefinitionId;
+                var machineInstanceId = Guid.NewGuid().ToString();
+
+                using (var configruationRepository = configurationRepositoryContextFactory
+                    .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    await configruationRepository.MachineInstances.EnsureInstanceExists(machineDefinitionId, machineInstanceId, ct);
+                    await configruationRepository.MachineInstances.CreateInstance(machineDefinitionId, machineInstanceId, metadata, ct);
                 }
 
-                return Negotiate
-                    .WithModel(new { machineInstanceId })
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
-            };
+                return new MachineInstanceResponse { MachineInstanceId = machineInstanceId };
+            });
 
         private void ListMachines(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
-            Get["ListDefinitions", "/", true] = async (parameters, ct) =>
+            Get("/", async (parameters, ct) =>
             {
                 using (var repository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    return Negotiate
-                        .WithModel(await repository.Machines.ListMachines(ct))
-                        .WithAllowedMediaRange(new MediaRange("application/json"));
+                    return await repository.Machines.ListMachines(ct);
                 }
-            };
+            });
         }
 
         private void DefineStateMachine(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory)
         {
-            Post["DefineStateMachine", "/", true] = async (parameters, ct) =>
+            Post("/", async (parameters, ct) =>
             {
                 var stateMachineConfiguration = this.Bind<Machine>();
                 Machine newMachineConfiguration;
                 using (var repository = configurationRepositoryContextFactory
                     .OpenConfigurationRepositoryContext(Context.CurrentUser.GetApiKey()))
                 {
-                    newMachineConfiguration = await repository.Machines.DefineStateMachine(stateMachineConfiguration, ct);
+                    newMachineConfiguration = await repository.Machines
+                        .DefineStateMachine(stateMachineConfiguration, ct);
                 }
 
-                return Negotiate
-                    .WithModel(newMachineConfiguration)
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
-            };
+                return newMachineConfiguration;
+            });
         }
 
         private void PreviewDiagram(IStateMachineFactory stateMachineFactory)
         {
-            Post["PreviewDiagram", "/preview", true] = async (parameters, ct) =>
+            Post("/preview", (parameters) =>
             {
 
                 var stateMachineConfiguration = this.Bind<Machine>();
@@ -111,14 +108,14 @@ namespace REstate.Web.Core.Modules
                 if (machine == null)
                     throw new Exception("Unable to construct machine.");
 
-                return await Task.FromResult<dynamic>(Response.AsText(machine.ToString(), "text/plain"));
+                return Response.AsText(machine.ToString(), "text/plain");
 
 
-            };
+            });
         }
 
         private void GetMachine(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory) =>
-            Get["GetMachine", "/{MachineDefinitionId}", true] = async (parameters, ct) =>
+            Get("/{MachineDefinitionId}", async (parameters, ct) =>
             {
                 string machineDefinitionId = parameters.MachineDefinitionId;
                 Machine configuration;
@@ -131,22 +128,18 @@ namespace REstate.Web.Core.Modules
                 }
 
                 if (configuration == null)
-                    return new NotFoundResponse
+                    return new Response
                     {
                         StatusCode = HttpStatusCode.NotFound,
-                        ReasonPhrase = "The definition was not found.",
-                        ContentType = "application/json",
-                        Contents = stream => stream.Close()
+                        ReasonPhrase = "The definition was not found."
                     };
 
-                return Negotiate
-                    .WithModel(configuration)
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
-            };
+                return configuration;
+            });
 
         private void GetDiagramForDefinition(IConfigurationRepositoryContextFactory configurationRepositoryContextFactory,
             IStateMachineFactory stateMachineFactory) =>
-            Get["GetDiagramForDefinition", "/{MachineDefinitionId}/diagram", true] = async (parameters, ct) =>
+            Get("/{MachineDefinitionId}/diagram", async (parameters, ct) =>
             {
                 string machineDefinitionId = parameters.MachineDefinitionId;
                 Machine configuration;
@@ -162,7 +155,7 @@ namespace REstate.Web.Core.Modules
                     .ConstructFromConfiguration(Context.CurrentUser.GetApiKey(), configuration);
 
                 return Response.AsText(machine.ToString(), "text/plain");
-            };
+            });
 
     }
 }

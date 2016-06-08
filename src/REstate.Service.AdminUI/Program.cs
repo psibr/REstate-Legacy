@@ -1,38 +1,51 @@
 ﻿using System;
+using System.Collections.Generic;
 using Autofac;
 using AutofacSerilogIntegration;
 using Nancy.Bootstrapper;
-using Nancy.Bootstrappers.Autofac;
-using Newtonsoft.Json;
 using Psibr.Platform;
 using Psibr.Platform.Logging.Serilog;
 using Psibr.Platform.Nancy;
-using Psibr.Platform.Nancy.Service;
+using Psibr.Platform.Serialization;
+using Psibr.Platform.Serialization.NewtonsoftJson;
+using Psibr.Platform.Service.Nancy;
+using Psibr.Platform.Service.Nancy.Jwt;
 using REstate.Platform;
 using Serilog;
+using Serilog.Sinks.RollingFile;
 using Topshelf;
 
 namespace REstate.Services.AdminUI
 {
-    class Program
+    internal class Program
     {
-        const string ServiceName = "REstate.Services.AdminUI";
+        private const string ServiceName = "REstate.Services.AdminUI";
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            var configString = PlatformConfiguration.LoadConfigurationFile("REstateConfig.json");
+            var kernel = BuildContainer();
 
-            var config = JsonConvert.DeserializeObject<REstatePlatformConfiguration>(configString);
+            var configLoader = kernel.Resolve<IConfigurationLoader<REstatePlatformConfiguration>>();
 
-            var kernel = BuildAndConfigureContainer(config).Build();
-            
+            //var config = configLoader.Load(new Dictionary<string, string>
+            //{
+            //    { "serverAddress", "http://devubuntu2:8500" },
+            //    { "path", "Applications/Services/REstate/REstateConfig.json" }
+            //}).Result;
+
+            var config = configLoader.Load(new Dictionary<string, string>
+            {
+                { "path", "..\\..\\..\\..\\REstateConfig.json" }
+            }).Result;
+
+            kernel = ConfigureContainer(kernel, config);
 
             HostFactory.Run(host =>
             {
                 host.UseSerilog(kernel.Resolve<ILogger>());
-                host.Service<PlatformApiService<REstatePlatformConfiguration>>(svc =>
+                host.Service<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>(svc =>
                 {
-                    svc.ConstructUsing(() => kernel.Resolve<PlatformApiService<REstatePlatformConfiguration>>());
+                    svc.ConstructUsing(() => kernel.Resolve<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>());
                     svc.WhenStarted(service => service.Start());
                     svc.WhenStopped(service => service.Stop());
                 });
@@ -48,36 +61,53 @@ namespace REstate.Services.AdminUI
             });
         }
 
-        private static ContainerBuilder BuildAndConfigureContainer(REstatePlatformConfiguration configuration)
+        private static IContainer BuildContainer()
         {
-            var container = new ContainerBuilder();
+            var builder = new ContainerBuilder();
 
-            container.Register(ctx => configuration)
+            builder.Register(context => new NewtonsoftJsonSerializer())
+                .As<IStringSerializer, IByteSerializer>();
+
+            builder.RegisterType<FileConfigurationLoader<REstatePlatformConfiguration>>()
+                .As<IConfigurationLoader<REstatePlatformConfiguration>>();
+
+            return builder.Build();
+        }
+
+        private static IContainer ConfigureContainer(IContainer container, REstatePlatformConfiguration configuration)
+        {
+            var builder = new ContainerBuilder();
+
+            builder.Register(ctx => configuration)
                 .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
 
-            container.RegisterType<Bootstrapper>()
-                .As<INancyBootstrapper>();
-
-            container.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
+            builder.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
                 configuration, configuration.AdminHttpService));
 
-            container.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
+            builder.RegisterType<PlatformNancyBootstrapper>()
+                .As<INancyBootstrapper>();
 
-            container.RegisterModule<SerilogPlatformLoggingModule>();
-            
+            builder.RegisterType<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>();
 
-            container.RegisterLogger(
+            builder.RegisterModule<SerilogPlatformLoggingModule>();
+
+            builder.RegisterLogger(
                 new LoggerConfiguration().MinimumLevel.Verbose()
                     .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
-                    .If((loggerConfig) => configuration.LoggerConfigurations.ContainsKey("rollingFile")
-                        && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"), (loggerConfig) =>
-                           loggerConfig.WriteTo
-                               .RollingFile($"{configuration.LoggerConfigurations["rollingFile"]["path"]}\\{ServiceName}\\{{Date}}.log"))
+                    .If(_ => configuration.LoggerConfigurations.ContainsKey("rollingFile")
+                             && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"),
+                        (loggerConfig) =>
+                            loggerConfig.WriteTo
+                                .RollingFile(
+                                    $"{configuration.LoggerConfigurations["rollingFile"]["path"]}" +
+                                    $"\\{ServiceName}\\{{Date}}.log"))
                     .If(_ => configuration.LoggerConfigurations.ContainsKey("seq"), loggerConfig =>
                         loggerConfig.WriteTo.Seq(configuration.LoggerConfigurations["seq"]["serverUrl"],
                             apiKey: configuration.LoggerConfigurations["seq"]["apiKey"]))
                     .CreateLogger());
+
+            builder.Update(container);
 
             return container;
         }

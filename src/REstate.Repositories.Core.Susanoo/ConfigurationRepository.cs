@@ -10,10 +10,9 @@ namespace REstate.Repositories.Core.Susanoo
         public ConfigurationRepository(IDatabaseManagerPool databaseManagerPool, IStringSerializer stringSerializer, string apiKey)
         {
             DatabaseManagerPool = databaseManagerPool;
-            StringSerializer = stringSerializer;
             ApiKey = apiKey;
-            Machines = new MachineConfigurationRepository(this, StringSerializer);
-            MachineInstances = new MachineInstancesRepository(this);
+            Machines = new MachineConfigurationRepository(this, stringSerializer);
+            MachineInstances = new MachineInstancesRepository(this, stringSerializer);
         }
 
         public IConfigurationRepository Root => this;
@@ -29,8 +28,6 @@ namespace REstate.Repositories.Core.Susanoo
         /// </summary>
         /// <value>The database manager.</value>
         public IDatabaseManagerPool DatabaseManagerPool { get; }
-
-        public IStringSerializer StringSerializer { get; set; }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

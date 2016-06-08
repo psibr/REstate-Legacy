@@ -2,19 +2,18 @@
 using Nancy.Cryptography;
 using Nancy.ModelBinding;
 using Nancy.Owin;
-using Nancy.Responses.Negotiation;
 using REstate.Web.Auth.Requests;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Psibr.Platform;
 using Psibr.Platform.Repositories;
 using REstate.Platform;
+using REstate.Web.Auth.Responses;
 using SignInDelegate = System.Func<System.Func<System.Guid, System.Collections.Generic.IDictionary<string, object>>, bool, string>;
 
 namespace REstate.Web.Auth.Modules
 {
-    public class AuthenticationModule
+    public sealed class AuthenticationModule
         : NancyModule
     {
 
@@ -23,11 +22,10 @@ namespace REstate.Web.Auth.Modules
             : base(prefix)
         {
 
-            Get["/login", true] = async (parameters, ct) =>
-                await Task.FromResult(View["login.html"]);
+            Get("/login", (parameters) => View["login.html"]);
 
 
-            Post["/login", true] = async (parameters, ct) =>
+            Post("/login", async (parameters, ct) =>
             {
                 var credentials = this.Bind<CredentialAuthenticationRequest>();
 
@@ -49,7 +47,7 @@ namespace REstate.Web.Auth.Modules
 
                 if (principal == null) return Response.AsRedirect(configuration.AuthHttpService.Address + "login");
 
-                var jwt = signInDelegate((jti) => new Dictionary<string, object>
+                signInDelegate((jti) => new Dictionary<string, object>
                 {
                     { "sub", principal.UserOrApplicationName},
                     { "apikey", crypto.EncryptionProvider.Encrypt(jti + principal.ApiKey)},
@@ -57,11 +55,20 @@ namespace REstate.Web.Auth.Modules
                 }, true);
 
                 return Response.AsRedirect(configuration.AdminHttpService.Address);
-            };
+            });
 
-            Post["/apikey", true] = async (parameters, ct) =>
+            Post("/apikey", async (parameters, ct) =>
             {
-                var apiKey = this.Bind<ApiKeyAuthenticationRequest>().ApiKey;
+                var apiKeyRequest = this.Bind<ApiKeyAuthenticationRequest>();
+
+                if(string.IsNullOrWhiteSpace(apiKeyRequest?.ApiKey))
+                    return new Response
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        ReasonPhrase = "Unable to detect ApiKey, check content-type headers."
+                    };
+
+                var apiKey = apiKeyRequest.ApiKey;
 
                 var environment = Context.GetOwinEnvironment();
                 var signInDelegate = (SignInDelegate)environment["jwtandcookie.signin"];
@@ -81,10 +88,8 @@ namespace REstate.Web.Auth.Modules
                     { "claims", principal.Claims }
                 }, false);
 
-                return Negotiate
-                    .WithModel(await Task.FromResult(new { jwt }))
-                    .WithAllowedMediaRange(new MediaRange("application/json"));
-            };
+                return new JwtResponse { Jwt = jwt };
+            });
         }
     }
 }
