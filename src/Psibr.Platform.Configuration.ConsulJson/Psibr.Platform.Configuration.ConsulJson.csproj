@@ -34,6 +34,10 @@
       <HintPath>..\packages\Consul.0.6.4.6\lib\net45\Consul.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Psibr.Platform, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.4.0.0-pre8\lib\net45\Psibr.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,12 +50,6 @@
   <ItemGroup>
     <Compile Include="ConsulJsonConfigurationLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Platform\src\Psibr.Platform\Psibr.Platform.csproj">
-      <Project>{6cbaf713-404b-4497-81e4-d3d0829886d4}</Project>
-      <Name>Psibr.Platform</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,14 +1,14 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
+using System.Collections.Generic;
 using Autofac;
 using REstate.Chrono;
 using REstate.Client;
 using REstate.Repositories.Chrono.Susanoo;
 using AutofacSerilogIntegration;
-using Newtonsoft.Json;
 using Psibr.Platform;
 using Psibr.Platform.Logging.Serilog;
+using Psibr.Platform.Serialization;
+using Psibr.Platform.Serialization.NewtonsoftJson;
 using REstate.Platform;
 using Serilog;
 using Serilog.Sinks.RollingFile;
@@ -22,11 +22,22 @@ namespace REstate.Services.ChronoConsumer
 
         private static void Main(string[] args)
         {
-            var configString = PlatformConfiguration.LoadConfigurationFile("REstateConfig.json");
+            var kernel = BuildContainer();
 
-            var config = JsonConvert.DeserializeObject<REstatePlatformConfiguration>(configString);
-            
-            var kernel = BuildAndConfigureContainer(config).Build();
+            var configLoader = kernel.Resolve<IConfigurationLoader<REstatePlatformConfiguration>>();
+
+            //var config = configLoader.Load(new Dictionary<string, string>
+            //{
+            //    { "serverAddress", "http://devubuntu2:8500" },
+            //    { "path", "Applications/Services/REstate/REstateConfig.json" }
+            //}).Result;
+
+            var config = configLoader.Load(new Dictionary<string, string>
+            {
+                { "path", "..\\..\\..\\..\\REstateConfig.json" }
+            }).Result;
+
+            kernel = ConfigureContainer(kernel, config);
 
             HostFactory.Run(host =>
             {
@@ -49,46 +60,62 @@ namespace REstate.Services.ChronoConsumer
             });
         }
 
-        private static ContainerBuilder BuildAndConfigureContainer(REstatePlatformConfiguration configuration)
+        private static IContainer BuildContainer()
         {
-            var container = new ContainerBuilder();
+            var builder = new ContainerBuilder();
 
-            container.Register(ctx => configuration)
-                .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
+            builder.Register(context => new NewtonsoftJsonSerializer())
+                .As<IStringSerializer, IByteSerializer>();
 
-            container.RegisterInstance(new ConsumerServiceConfiguration
+            builder.RegisterType<FileConfigurationLoader<REstatePlatformConfiguration>>()
+                .As<IConfigurationLoader<REstatePlatformConfiguration>>();
+
+            return builder.Build();
+        }
+
+        private static IContainer ConfigureContainer(IContainer container, REstatePlatformConfiguration configuration)
+        {
+            var builder = new ContainerBuilder();
+
+            builder.Register(ctx => configuration)
+                    .As<IPlatformConfiguration, PlatformConfiguration, REstatePlatformConfiguration>();
+
+            builder.RegisterInstance(new ConsumerServiceConfiguration
             {
                 ApiKey = configuration.ChronoConsumerConfig.ApiKey
             });
 
-            container.RegisterType<ChronoConsumerService>();
+            builder.RegisterType<ChronoConsumerService>();
 
-            container.RegisterModule<SerilogPlatformLoggingModule>();
+            builder.RegisterModule<SerilogPlatformLoggingModule>();
 
-            container.RegisterLogger(
+            builder.RegisterLogger(
                 new LoggerConfiguration().MinimumLevel.Verbose()
                     .Enrich.WithProperty("source", ServiceName)
                     .WriteTo.LiterateConsole()
                     .If((loggerConfig) => configuration.LoggerConfigurations.ContainsKey("rollingFile")
                         && configuration.LoggerConfigurations["rollingFile"].ContainsKey("path"), (loggerConfig) =>
                            loggerConfig.WriteTo
-                               .RollingFile($"{configuration.LoggerConfigurations["rollingFile"]["path"]}\\{ServiceName}\\{{Date}}.log"))
+                               .RollingFile($"{configuration.LoggerConfigurations["rollingFile"]["path"]}" +
+                                            $"\\{ServiceName}\\{{Date}}.log"))
                     .If(_ => configuration.LoggerConfigurations.ContainsKey("seq"), loggerConfig =>
                         loggerConfig.WriteTo.Seq(configuration.LoggerConfigurations["seq"]["serverUrl"],
                             apiKey: configuration.LoggerConfigurations["seq"]["apiKey"]))
                     .CreateLogger());
 
-            container.RegisterType<ChronoRepositoryFactory>()
+            builder.RegisterType<ChronoRepositoryFactory>()
                 .As<IChronoRepositoryFactory>();
 
-            container.Register(context => context.Resolve<IChronoRepositoryFactory>().OpenRepository());
+            builder.Register(context => context.Resolve<IChronoRepositoryFactory>().OpenRepository());
 
-            container.Register(context => new REstateClientFactory(configuration.AuthHttpService.Address + "apikey"))
+            builder.Register(context => new REstateClientFactory(configuration.AuthHttpService.Address + "apikey"))
                 .As<IREstateClientFactory>();
 
-            container.Register(context => context.Resolve<IREstateClientFactory>()
+            builder.Register(context => context.Resolve<IREstateClientFactory>()
                 .GetConfigurationClient(configuration.CoreHttpService.Address))
                 .As<REstateConfigurationClient>();
+
+            builder.Update(container);
 
             return container;
         }

@@ -10,9 +10,10 @@ using Nancy.Bootstrappers.Autofac;
 using Psibr.Platform;
 using Psibr.Platform.Logging.Serilog;
 using Psibr.Platform.Nancy;
-using Psibr.Platform.Nancy.Service;
 using Psibr.Platform.Serialization;
 using Psibr.Platform.Serialization.NewtonsoftJson;
+using Psibr.Platform.Service.Nancy;
+using Psibr.Platform.Service.Nancy.Jwt;
 using REstate.Platform;
 using Serilog;
 using Serilog.Sinks.RollingFile;
@@ -46,9 +47,9 @@ namespace REstate.Services.Chrono
             HostFactory.Run(host =>
             {
                 host.UseSerilog(kernel.Resolve<ILogger>());
-                host.Service<PlatformApiService<REstatePlatformConfiguration>>(svc =>
+                host.Service<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>(svc =>
                 {
-                    svc.ConstructUsing(() => kernel.Resolve<PlatformApiService<REstatePlatformConfiguration>>());
+                    svc.ConstructUsing(() => kernel.Resolve<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>());
                     svc.WhenStarted(service => service.Start());
                     svc.WhenStopped(service => service.Stop());
                 });
@@ -90,7 +91,7 @@ namespace REstate.Services.Chrono
                 builder.RegisterType<PlatformNancyBootstrapper>()
                     .As<INancyBootstrapper>();
 
-                builder.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
+                builder.RegisterType<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>();
 
                 builder.RegisterModule<SerilogPlatformLoggingModule>();
 

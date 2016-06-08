@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Responses.Negotiation;
+using Psibr.Platform;
 using Psibr.Platform.Logging;
-using Psibr.Platform.Nancy;
 using Psibr.Platform.Nancy.Modules;
 using REstate.Configuration;
 using REstate.Repositories.Configuration;

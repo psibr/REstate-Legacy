@@ -85,8 +85,36 @@
       <HintPath>..\packages\OwinJwtAndCookie.1.0.8.0\lib\net45\OwinJwtAndCookie.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Psibr.Platform.Logging.Serilog, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.Logging.Serilog.1.0.1.0\lib\net45\Psibr.Platform.Logging.Serilog.dll</HintPath>
+    <Reference Include="Psibr.Platform, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.4.0.0-pre8\lib\net45\Psibr.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform.Logging.Serilog, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Logging.Serilog.4.0.0-pre8\lib\net461\Psibr.Platform.Logging.Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform.Nancy, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Nancy.4.0.0-pre8\lib\net45\Psibr.Platform.Nancy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform.Nancy.Jwt, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Nancy.Jwt.4.0.0-pre8\lib\net461\Psibr.Platform.Nancy.Jwt.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform.Serialization.NewtonsoftJson, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Serialization.NewtonsoftJson.4.0.0-pre8\lib\net461\Psibr.Platform.Serialization.NewtonsoftJson.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform.Service, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Service.4.0.0-pre8\lib\net45\Psibr.Platform.Service.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform.Service.Nancy, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Service.Nancy.4.0.0-pre8\lib\net45\Psibr.Platform.Service.Nancy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Psibr.Platform.Service.Nancy.Jwt, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Service.Nancy.Jwt.4.0.0-pre8\lib\net461\Psibr.Platform.Service.Nancy.Jwt.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="REstate.Domain.Core, Version=7.1.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -102,7 +130,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\packages\Serilog.Sinks.File.2.0.0-rc-704\lib\net45\Serilog.Sinks.File.dll</HintPath>
+      <HintPath>..\packages\Serilog.Sinks.File.2.0.0-rc-706\lib\net45\Serilog.Sinks.File.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog.Sinks.Literate, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
@@ -150,22 +178,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Platform.Nancy.Service\src\Psibr.Platform.Nancy.Service\Psibr.Platform.Nancy.Service.csproj">
-      <Project>{e6f516b4-429a-4f93-932b-2b651e0f8de0}</Project>
-      <Name>Psibr.Platform.Nancy.Service</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Platform.Nancy\src\Psibr.Platform.Nancy\Psibr.Platform.Nancy.csproj">
-      <Project>{18fde78e-8022-43cf-810c-0cc31a4f3233}</Project>
-      <Name>Psibr.Platform.Nancy</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Platform.Serialization.NewtonsoftJson\src\Psibr.Platform.Serialization.NewtonsoftJson\Psibr.Platform.Serialization.NewtonsoftJson.csproj">
-      <Project>{263dee82-f56c-4285-ae2e-6f36e0930070}</Project>
-      <Name>Psibr.Platform.Serialization.NewtonsoftJson</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Platform\src\Psibr.Platform\Psibr.Platform.csproj">
-      <Project>{6cbaf713-404b-4497-81e4-d3d0829886d4}</Project>
-      <Name>Psibr.Platform</Name>
-    </ProjectReference>
     <ProjectReference Include="..\REstate.Web.AdminUI\REstate.Web.AdminUI.csproj">
       <Project>{85f6276a-c3f1-4496-b8d5-b0df9a9aad60}</Project>
       <Name>REstate.Web.AdminUI</Name>

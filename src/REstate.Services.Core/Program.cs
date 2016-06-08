@@ -8,9 +8,11 @@ using Nancy.ModelBinding;
 using Psibr.Platform;
 using Psibr.Platform.Logging.Serilog;
 using Psibr.Platform.Nancy;
-using Psibr.Platform.Nancy.Service;
+using Psibr.Platform.Nancy.Jwt;
+using Psibr.Platform.Service.Nancy;
 using Psibr.Platform.Serialization;
 using Psibr.Platform.Serialization.NewtonsoftJson;
+using Psibr.Platform.Service.Nancy.Jwt;
 using REstate.Platform;
 using REstate.Repositories.Configuration;
 using REstate.Repositories.Core.Susanoo;
@@ -47,9 +49,9 @@ namespace REstate.Services.Core
             HostFactory.Run(host =>
             {
                 host.UseSerilog(kernel.Resolve<ILogger>());
-                host.Service<PlatformApiService<REstatePlatformConfiguration>>(svc =>
+                host.Service<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>(svc =>
                 {
-                    svc.ConstructUsing(() => kernel.Resolve<PlatformApiService<REstatePlatformConfiguration>>());
+                    svc.ConstructUsing(() => kernel.Resolve<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>());
                     svc.WhenStarted(service => service.Start());
                     svc.WhenStopped(service => service.Stop());
                 });
@@ -88,10 +90,10 @@ namespace REstate.Services.Core
                 builder.RegisterInstance(new ApiServiceConfiguration<REstatePlatformConfiguration>(
                     configuration, configuration.CoreHttpService));
 
-                builder.RegisterType<PlatformNancyBootstrapper>()
+                builder.RegisterType<PlatformJwtNancyBootstrapper>()
                     .As<INancyBootstrapper>();
 
-                builder.RegisterType<PlatformApiService<REstatePlatformConfiguration>>();
+                builder.RegisterType<PlatformNancyApiServiceWithJwt<REstatePlatformConfiguration>>();
 
                 builder.RegisterModule<SerilogPlatformLoggingModule>();
 

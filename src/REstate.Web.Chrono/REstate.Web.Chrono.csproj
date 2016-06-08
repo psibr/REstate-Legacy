@@ -70,12 +70,12 @@
       <HintPath>..\packages\OwinJwtAndCookie.1.0.8.0\lib\net45\OwinJwtAndCookie.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Psibr.Platform, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.3.1.0\lib\net45\Psibr.Platform.dll</HintPath>
+    <Reference Include="Psibr.Platform, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.4.0.0-pre8\lib\net45\Psibr.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Psibr.Platform.Nancy, Version=5.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Psibr.Platform.Nancy.5.0.4-alpha\lib\net45\Psibr.Platform.Nancy.dll</HintPath>
+    <Reference Include="Psibr.Platform.Nancy, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Psibr.Platform.Nancy.4.0.0-pre8\lib\net45\Psibr.Platform.Nancy.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="REstate.Domain.Chrono, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">

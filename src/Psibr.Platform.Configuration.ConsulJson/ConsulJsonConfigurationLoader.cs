@@ -9,7 +9,7 @@ namespace Psibr.Platform.Configuration.ConsulJson
 {
     public class ConsulJsonConfigurationLoader<TConfiguration>
         : IConfigurationLoader<TConfiguration>
-        where TConfiguration : IPlatformConfiguration
+        where TConfiguration : class, IPlatformConfiguration
     {
         protected IByteSerializer ByteSerializer { get; }
 
@@ -23,7 +23,7 @@ namespace Psibr.Platform.Configuration.ConsulJson
 
         public async Task<TConfiguration> Load(IDictionary<string, string> loaderConfig)
         {
-            var configuration = default(TConfiguration);
+            TConfiguration configuration = null;
             string serverAddress;
             string path;
             Uri serverAddressUri;
