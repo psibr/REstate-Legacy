@@ -1,0 +1,37 @@
+{
+  "authors": [
+    "Donovan (Ovan) Crone",
+    "Andrea Balfour"
+  ],
+  "dependencies": {
+    "REstate.Auth": "0.1.0-*",
+    "Susanoo.ConnectionPooling": {
+      "version": "0.1.0-*",
+      "target": "project"
+    },
+    "Susanoo.Core": "3.3.2",
+    "System.Collections": "4.0.11",
+    "System.Data.SqlClient": "4.1.0",
+    "System.Linq": "4.1.0",
+    "System.Runtime": "4.1.0",
+    "System.Threading.Tasks": "4.0.11"
+  },
+  "description": "MSSQL repository for auth components of REstate a StateMachine-As-A-Service concept.",
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
+    }
+  },
+  "packOptions": {
+    "requireLicenseAcceptance": false,
+    "licenseUrl": "https://opensource.org/licenses/MIT",
+    "projectUrl": "",
+    "tags": [ "StateMachine", "SMAAS", "SM-AAS" ],
+    "owners": [
+      "Donovan (Ovan) Crone",
+      "Andrea Balfour"
+    ],
+    "summary": "MSSQL repository for auth components of REstate."
+  },
+  "version": "0.1.0-*"
+}

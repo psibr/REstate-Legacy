@@ -1,0 +1,61 @@
+{
+  "version": "0.1.0-*",
+  "authors": [
+    "Donovan (Ovan) Crone",
+    "Andrea Balfour"
+  ],
+  "description": "REstate: a StateMachine-As-A-Service concept.",
+  "packOptions": {
+    "requireLicenseAcceptance": false,
+    "licenseUrl": "https://opensource.org/licenses/MIT",
+    "projectUrl": "",
+    "tags": [ "StateMachine", "SMAAS", "SM-AAS" ],
+    "owners": [
+      "Donovan (Ovan) Crone",
+      "Andrea Balfour"
+    ],
+    "summary": "REstate: a StateMachine-As-A-Service concept."
+  },
+  "buildOptions": {
+    "debugType": "portable",
+    "emitEntryPoint": true,
+    "copyToOutput": { "includeFiles": [ "appconfig.json", "REstate.pfx" ] }
+  },
+
+  "frameworks": {
+    "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.AspNetCore.Hosting": "1.0.0",
+        "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
+        "Microsoft.AspNetCore.Owin": "1.0.0",
+        "Nancy": "2.0.0-barneyrubble",
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.1"
+        },
+        "Serilog": "2.3.0"
+      }
+    }
+  },
+  "dependencies": {
+    "Nancy.Authentication.Stateless": "2.0.0-barneyrubble",
+    "Autofac": "4.1.1",
+    "REstate.Common": "0.1.0-*",
+    "REstate.Engine": "0.1.0-*",
+    "Nancy.Bootstrappers.Autofac": "2.0.0-Pre458",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Configuration.Binder": "1.0.0",
+    "REstate.Scheduler": "0.1.0-*",
+    "REstate.Scheduler.Consumer.Direct": "0.1.0-*",
+    "REstate.Engine.Repositories.MSSQL": "0.1.0-*",
+    "REstate.Scheduler.Repositories.MSSQL": "0.1.0-*",
+    "REstate.Engine.Stateless": "0.1.0-*",
+    "REstate.Connectors.Scheduler.Direct": "0.1.0-*",
+    "REstate.Auth": "0.1.0-*",
+    "REstate.Auth.Repositories.MSSQL": "0.1.0-*",
+    "JwtAndCookie": "2.0.0-*",
+    "Microsoft.AspNetCore.Diagnostics": "1.0.0",
+    "Serilog.Sinks.Literate": "2.0.0"
+  },
+  "userSecretsId": "aspnet-REstate.Web-20161022043028"
+}

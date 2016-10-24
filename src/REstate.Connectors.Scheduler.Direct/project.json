@@ -1,0 +1,37 @@
+﻿{
+  "authors": [
+    "Donovan (Ovan) Crone",
+    "Andrea Balfour"
+  ],
+  "dependencies": {
+    "System.Runtime": "4.1.0",
+    "System.Collections": "4.0.11",
+    "System.Linq": "4.1.0",
+    "System.Threading.Tasks": "4.0.11",
+    "REstate.Common": "0.1.0-*",
+    "REstate.Engine": "0.1.0-*",
+    "REstate.Scheduler": "0.1.0-*",
+    "REstateClient": {
+      "version": "0.1.0-*",
+      "target": "project"
+    }
+  },
+  "description": "Scheduling connector for REstate a StateMachine-As-A-Service concept.",
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
+    }
+  },
+  "packOptions": {
+    "requireLicenseAcceptance": false,
+    "licenseUrl": "https://opensource.org/licenses/MIT",
+    "projectUrl": "",
+    "tags": [ "StateMachine", "SMAAS", "SM-AAS" ],
+    "owners": [
+      "Donovan (Ovan) Crone",
+      "Andrea Balfour"
+    ],
+    "summary": "Scheduling connector for REstate."
+  },
+  "version": "0.1.0-*"
+}

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Transactions;
 
 namespace Susanoo.ConnectionPooling
 {
@@ -9,7 +8,6 @@ namespace Susanoo.ConnectionPooling
         : IDatabaseManagerPool
     {
         private readonly List<ManagerInstance> _databaseManagers = new List<ManagerInstance>();
-        private readonly List<WeakReference<IDatabaseManager>> _weakReferences = new List<WeakReference<IDatabaseManager>>();
         private readonly IDatabaseManagerFactory _databaseManagerFactory;
         private readonly Func<IDatabaseManagerFactory, IDatabaseManager> _builder;
 
@@ -26,9 +24,8 @@ namespace Susanoo.ConnectionPooling
         public DatabaseManagerPool(
             IDatabaseManagerFactory databaseManagerFactory,
             Func<IDatabaseManagerFactory, IDatabaseManager> builder)
-            : this(databaseManagerFactory, builder, ContextDbConnectionMode.AsynchronousAndTransactionSafe)
+            : this(databaseManagerFactory, builder, ContextDbConnectionMode.Each)
         {
-
         }
 
         /// <summary>
@@ -38,25 +35,16 @@ namespace Susanoo.ConnectionPooling
         protected ContextDbConnectionMode ConnectionMode { get; private set; }
 
         /// <summary>
-        /// Retrieves the or add database manager per transaction.
+        /// Adds a new database manager.
         /// </summary>
-        /// <param name="transaction">The transaction.</param>
         /// <returns>DatabaseManager.</returns>
-        private IDatabaseManager RetrieveOrAddDatabaseManagerPerTransaction(Transaction transaction)
+        private IDatabaseManager AddDatabaseManager()
         {
-            string transactionId = null;
-
-            if (transaction != null)
-                transactionId = transaction.TransactionInformation.LocalIdentifier;
-
-            var container = _databaseManagers.FirstOrDefault(manager => manager.TransactionId == transactionId);
-
-            var result = container?.DatabaseManager;
+            IDatabaseManager result = null;
 
             if (result == null)
             {
                 result = _builder(_databaseManagerFactory);
-                _databaseManagers.Add(new ManagerInstance { DatabaseManager = result, TransactionId = transactionId });
             }
 
             return result;
@@ -79,43 +67,15 @@ namespace Susanoo.ConnectionPooling
                             _databaseManagers.Add(new ManagerInstance { DatabaseManager = _builder(_databaseManagerFactory) });
                         result = _databaseManagers[0].DatabaseManager;
                         break;
-                    case ContextDbConnectionMode.PerTransaction:
-                        result = RetrieveOrAddDatabaseManagerPerTransaction(Transaction.Current);
-                        break;
-                    case ContextDbConnectionMode.AsynchronousAndTransactionSafe:
-                        if (Transaction.Current == null)
-                        {
-                            //IDatabaseManager dataReference = null;
 
-                            //foreach (var weakReference in _weakReferences)
-                            //{
-                            //    if (weakReference.TryGetTarget(out dataReference) &&
-                            //        dataReference.State == ConnectionState.Closed)
-                            //        break;
-                            //}
-
-                            //result = dataReference;
-
-                            //if (dataReference == null)
-                            //{
-                            result = _builder(_databaseManagerFactory);
-
-                            _weakReferences.Add(new WeakReference<IDatabaseManager>(result));
-                            //}
-                        }
-                        else
-                        {
-                            result = RetrieveOrAddDatabaseManagerPerTransaction(Transaction.Current);
-                            result.OpenConnection();
-                        }
+                    case ContextDbConnectionMode.Each:
+                        result = AddDatabaseManager();
                         break;
                 }
 
                 return result;
             }
         }
-
-        #region Resource Management
 
         private bool _disposed;
 
@@ -154,8 +114,6 @@ namespace Susanoo.ConnectionPooling
 
             _disposed = true;
         }
-
-        #endregion Resource Management
 
         /// <summary>
         /// Class ManagerInstance.

@@ -1,0 +1,35 @@
+{
+  "version": "0.1.0-*",
+  "authors": [
+    "Donovan (Ovan) Crone",
+    "Andrea Balfour"
+  ],
+  "description": "Client library for REstate a StateMachine-As-A-Service concept.",
+  "packOptions": {
+    "requireLicenseAcceptance": false,
+    "licenseUrl": "https://opensource.org/licenses/MIT",
+    "projectUrl": "",
+    "tags": [ "StateMachine", "SMAAS", "SM-AAS" ],
+    "owners": [
+      "Donovan (Ovan) Crone",
+      "Andrea Balfour"
+    ],
+    "summary": "Client library for REstate."
+  },
+
+  "dependencies": {
+    "System.Collections": "4.0.11",
+    "System.Linq": "4.1.0",
+    "System.Threading.Tasks": "4.0.11",
+    "System.Runtime": "4.1.0",
+    "System.Net.Http": "4.1.0",
+    "Newtonsoft.Json": "9.0.1",
+    "REstate.Common": "0.1.0-*"
+  },
+
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+﻿{
+  "REstateConfiguration": {
+    "ConnectionStrings": {
+      "EngineConnectionString": "server=(localdb)\\MSSQLLocalDB;database=REstate;Application Name=REstate;integrated security=sspi;MultipleActiveResultSets=true"
+    },
+    "AuthenticationSettings": {
+      "ClaimsPrincipalResourceName": "REstate.User",
+      "SchedulerApiKey": "F1752DAA-1A32-41D7-9106-1FF2890B377A"
+    }
+  }
+}

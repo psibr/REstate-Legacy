@@ -1,0 +1,34 @@
+﻿{
+  "version": "0.1.0-*",
+  "authors": [
+    "Donovan (Ovan) Crone",
+    "Andrea Balfour"
+  ],
+  "description": "Core contracts and relationships for the engine of REstate a StateMachine-As-A-Service concept.",
+  "packOptions": {
+    "requireLicenseAcceptance": false,
+    "licenseUrl": "https://opensource.org/licenses/MIT",
+    "projectUrl": "",
+    "tags": [ "StateMachine", "SMAAS", "SM-AAS" ],
+    "owners": [
+      "Donovan (Ovan) Crone",
+      "Andrea Balfour"
+    ],
+    "summary": "Core contracts and relationships for the engine of REstate."
+  },
+
+  "dependencies": {
+    "System.Collections": "4.0.11",
+    "System.Linq": "4.1.0",
+    "System.Threading.Tasks": "4.0.11",
+    "System.Runtime": "4.1.0",
+    "System.Runtime.InteropServices": "4.1.0",
+    "REstate.Common": "0.1.0-*"
+  },
+
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
+    }
+  }
+}
