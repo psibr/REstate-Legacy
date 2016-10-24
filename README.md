@@ -19,11 +19,11 @@ LocalDB 2014 is available for download [here](https://www.microsoft.com/en-us/do
 
 ####Downloading and running
 
-From a command prompt run the following command where you want REstate; and you are done.
+Clone or Fork and Clone.
 
-```batch
-git clone https://github.com/psibernetic/REstate.git & cd REstate & BuildAndRunREstateOnLocalDb.bat
-```
+Use the dbScript.sql to build the database, __replacing the mdf and log file locations in the script__!
+
+A sample authentication request is in /AuthenticationRequest.txt. Fiddler can play the request, or you can make it in Postman by hand. Once you have the jwt, copy the CONTENT of the property, with no quotes. You can then auth against REstate by adding a header (replace {jwt with the token you created.}). Authorization: Bearer {jwt}
 
 ###What practical use is there?
 
