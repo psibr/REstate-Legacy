@@ -26,7 +26,8 @@ namespace REstate.Web
             {
                 var body = context.Request.Body.AsString();
 
-                result = StringSerializer.Deserialize<Dictionary<string, string>>(body);
+                if(!string.IsNullOrWhiteSpace(body))
+                    result = StringSerializer.Deserialize<Dictionary<string, string>>(body);
             }
 
             return result ?? new Dictionary<string, string>();

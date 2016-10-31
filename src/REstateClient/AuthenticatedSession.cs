@@ -13,9 +13,11 @@ namespace REstateClient
         private readonly Uri _authBaseAddress;
         private readonly string _apiKey;
         private readonly HttpClient _httpClient;
+        protected StringSerializer StringSerializer { get; }
 
-        protected AuthenticatedSession(Uri authBaseAddress, Uri baseAddress, string apiKey, string token)
+        protected AuthenticatedSession(StringSerializer stringSerializer, Uri authBaseAddress, Uri baseAddress, string apiKey, string token)
         {
+            StringSerializer = stringSerializer;
             _authBaseAddress = authBaseAddress;
             _apiKey = apiKey;
             _httpClient = new HttpClient { BaseAddress = baseAddress };
@@ -33,7 +35,7 @@ namespace REstateClient
             }
             catch (UnauthorizedException)
             {
-                var client = new REstateClientFactory(_authBaseAddress).GetAuthClient();
+                var client = new REstateClientFactory(StringSerializer, _authBaseAddress).GetAuthClient();
 
                 _httpClient.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", await client.GetAuthenticatedSessionToken(_apiKey));

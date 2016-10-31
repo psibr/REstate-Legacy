@@ -67,21 +67,21 @@ namespace REstate.Engine.Stateless
 
                 if (stateConfiguration.OnEntry != null)
                 {
-                    ConfigureOnEntryAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
+                    ConfigureOnEntryAction(apiKey, stateMachine, configuration, stateConfiguration, accessorMutator, stateSettings);
                 }
 
                 if (stateConfiguration.OnEntryFrom != null)
                 {
                     foreach (var onEntryFromAction in stateConfiguration.OnEntryFrom)
                     {
-                        ConfigureOnEntryFromAction(apiKey, stateMachine, configuration, onEntryFromAction,
+                        ConfigureOnEntryFromAction(apiKey, stateMachine, configuration, stateConfiguration, accessorMutator, onEntryFromAction,
                             stateSettings);
                     }
                 }
 
                 if (stateConfiguration.OnExit != null)
                 {
-                    ConfigureOnExitAction(apiKey, stateMachine, configuration, stateConfiguration, stateSettings);
+                    ConfigureOnExitAction(apiKey, stateMachine, configuration, stateConfiguration, accessorMutator, stateSettings);
                 }
 
                 //Configure as substate if needed
@@ -125,7 +125,7 @@ namespace REstate.Engine.Stateless
             var hostFactory = ConnectorFactoryResolver.ResolveConnectorFactory(guardDefinition.ConnectorKey);
             Func<bool> guard = () =>
                 hostFactory.BuildConnector(apiKey).Result
-                    .ConstructPredicate(stateMachine, guardDefinition)
+                    .ConstructPredicate(stateMachine, guardDefinition.Configuration)
                     .Invoke(CancellationToken.None).Result;
 
             return guard;
@@ -133,19 +133,19 @@ namespace REstate.Engine.Stateless
 
         protected void ConfigureOnExitAction(string apiKey,
             IStateMachine stateMachine, Machine configuration,
-            StateConfiguration stateConfiguration,
+            StateConfiguration stateConfiguration, IStateAccessorMutator accessorMutator,
             StateMachine<State, Trigger>.StateConfiguration stateSettings)
         {
             var hostFactory = ConnectorFactoryResolver.ResolveConnectorFactory(stateConfiguration.OnExit.ConnectorKey);
             stateSettings.OnExit(() =>
                 hostFactory.BuildConnector(apiKey).Result
-                    .ConstructAction(stateMachine, stateConfiguration.OnExit)
-                    .Invoke(CancellationToken.None)
+                    .ConstructAction(stateMachine, accessorMutator.CurrentState, stateConfiguration.OnExit.Configuration)
+                    .Invoke(CancellationToken.None).Wait()
             , stateConfiguration.OnExit.Description);
         }
 
         protected void ConfigureOnEntryFromAction(string apiKey,
-            IStateMachine stateMachine, Machine configuration,
+            IStateMachine stateMachine, Machine configuration, StateConfiguration stateConfiguration, IStateAccessorMutator accessorMutator,
             OnEntryFrom onEntryFrom,
             StateMachine<State, Trigger>.StateConfiguration stateSettings)
         {
@@ -154,21 +154,21 @@ namespace REstate.Engine.Stateless
                 new StateMachine<State, Trigger>.TriggerWithParameters<string>(
                     new Trigger(configuration.MachineName, onEntryFrom.FromTrigger)), payload =>
                         hostFactory.BuildConnector(apiKey).Result
-                            .ConstructAction(stateMachine, payload, onEntryFrom)
-                            .Invoke(CancellationToken.None),
+                            .ConstructAction(stateMachine, accessorMutator.CurrentState, payload, onEntryFrom.Configuration)
+                            .Invoke(CancellationToken.None).Wait(),
                 onEntryFrom.Description);
         }
 
         protected void ConfigureOnEntryAction(string apiKey,
             IStateMachine stateMachine, Machine configuration,
-            StateConfiguration stateConfiguration,
+            StateConfiguration stateConfiguration, IStateAccessorMutator accessorMutator,
             StateMachine<State, Trigger>.StateConfiguration stateSettings)
         {
             var hostFactory = ConnectorFactoryResolver.ResolveConnectorFactory(stateConfiguration.OnEntry.ConnectorKey);
             stateSettings.OnEntry(() =>
                 hostFactory.BuildConnector(apiKey).Result
-                    .ConstructAction(stateMachine, stateConfiguration.OnEntry)
-                    .Invoke(CancellationToken.None),
+                    .ConstructAction(stateMachine, accessorMutator.CurrentState, stateConfiguration.OnEntry.Configuration)
+                    .Invoke(CancellationToken.None).Wait(),
                 stateConfiguration.OnEntry.Description);
         }
 
@@ -179,12 +179,16 @@ namespace REstate.Engine.Stateless
             State Accessor();
 
             void Mutator(State state);
+
+            State CurrentState { get; }
         }
 
         protected class PersistentStateAccessorMutator : IStateAccessorMutator
         {
             private InstanceRecord _lastState;
             private readonly IEngineRepositoryContext _context;
+
+            public State CurrentState { get { return new State(_lastState.MachineName, _lastState.StateName, _lastState.CommitTag); }  }
 
             public PersistentStateAccessorMutator(IRepositoryContextFactory configurationRepositoryContextFactory,
                 string apiKey, string machineInstanceId)
@@ -198,15 +202,16 @@ namespace REstate.Engine.Stateless
 
             public State Accessor()
             {
-                _lastState = _context.MachineInstances.GetInstanceState(MachineInstanceId, CancellationToken.None).Result;
+                var state = _context.MachineInstances.GetInstanceState(MachineInstanceId, CancellationToken.None).Result;
+                _lastState = state;
 
-                return new State(_lastState.MachineName, _lastState.StateName);
+                return new State(state.MachineName, state.StateName, state.CommitTag);
             }
 
             public void Mutator(State state)
             {
-                _context.MachineInstances.SetInstanceState(MachineInstanceId,
-                    state.StateName, null, _lastState.CommitTag, CancellationToken.None).Wait();
+                _lastState = _context.MachineInstances.SetInstanceState(MachineInstanceId,
+                    state.StateName, null, _lastState.CommitTag, CancellationToken.None).Result;
             }
 
             ~PersistentStateAccessorMutator()
@@ -218,6 +223,9 @@ namespace REstate.Engine.Stateless
         protected class InMemoryStateAccessorMutator
             : IStateAccessorMutator
         {
+
+            public State CurrentState { get { return new State(_state.MachineDefinitionId, _state.StateName, _state.CommitTag); } }
+
             private State _state;
 
             public string MachineInstanceId
@@ -230,7 +238,7 @@ namespace REstate.Engine.Stateless
 
             public void Mutator(State state)
             {
-                _state = state;
+                _state = new State(state.MachineDefinitionId, state.StateName, Guid.NewGuid().ToString());
             }
         }
     }

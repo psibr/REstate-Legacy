@@ -10,71 +10,91 @@ namespace REstateScratchPad
     {
         public static void Main(string[] args)
         {
+            var restateClientFactory = new REstateClient.REstateClientFactory("http://localhost:5000/auth/apikey");
+
+            var configClient = restateClientFactory.GetConfigurationClient("http://localhost:5000");
+
+            var session = configClient.GetSession("E17705B5-D0FD-47F5-849F-F0881B954C58").Result;
+
             var act = new Action(() =>
             {
-                var restateClientFactory = new REstateClient.REstateClientFactory("http://localhost:5000/auth/apikey");
 
-                var configClient = restateClientFactory.GetConfigurationClient("http://localhost:5000");
 
-                var session = configClient.GetSession("E17705B5-D0FD-47F5-849F-F0881B954C58").Result;
+                //var machineDefinitnion = session.GetMachine("Load-Test-Machine3").Result;
 
-                var machineDefinitnion = session.GetMachine("Load-Test-Machine").Result;
+                //if (machineDefinitnion == null)
+                //{
+                //    var def = new Machine
+                //    {
+                //        MachineName = "Load-Test-Machine3",
+                //        InitialState = "Idle",
+                //        StateConfigurations = new[]
+                //        {
+                //            new StateConfiguration
+                //            {
+                //                StateName = "Idle",
+                //                Transitions = new []
+                //                {
+                //                    new Transition { TriggerName = "GoPathA", ResultantStateName = "PathA" },
+                //                    new Transition { TriggerName = "GoPathB", ResultantStateName = "PathB" }
+                //                }
+                //            },
+                //            new StateConfiguration
+                //            {
+                //                StateName = "PathA",
+                //                OnEntry = new Code
+                //                {
+                //                    Name = "ScheduleIdle",
+                //                    ConnectorKey = "Delay",
+                //                    //Body = @"{ ""triggerName"": ""GoIdle"", ""delay"": 30 }"
+                //                    Configuration = new Dictionary<string, string>
+                //                    {
+                //                        ["TriggerName"] = "GoIdle",
+                //                        ["Delay"] = "0",
+                //                        ["VerifyCommitTag"] = "True"
+                //                    }
+                //                },
+                //                Transitions = new []
+                //                {
+                //                    new Transition { TriggerName = "GoIdle", ResultantStateName = "Idle" }
+                //                }
+                //            },
+                //            new StateConfiguration
+                //            {
+                //                StateName = "PathB",
+                //                Transitions = new []
+                //                {
+                //                    new Transition { TriggerName = "GoIdle", ResultantStateName = "Idle" }
+                //                }
+                //            }
+                //        }
+                //    };
 
-                if (machineDefinitnion == null)
-                {
-                    machineDefinitnion = session.DefineStateMachine(new Machine
-                    {
-                        MachineName = "Load-Test-Machine",
-                        InitialState = "Idle",
-                        StateConfigurations = new[]
-                        {
-                    new StateConfiguration
-                    {
-                        StateName = "Idle",
-                        Transitions = new []
-                        {
-                            new Transition { TriggerName = "GoPathA", ResultantStateName = "PathA" },
-                            new Transition { TriggerName = "GoPathB", ResultantStateName = "PathB" }
-                        }
-                    },
-                    new StateConfiguration
-                    {
-                        StateName = "PathA",
-                        Transitions = new []
-                        {
-                            new Transition { TriggerName = "GoIdle", ResultantStateName = "Idle" }
-                        }
-                    },
-                    new StateConfiguration
-                    {
-                        StateName = "PathB",
-                        Transitions = new []
-                        {
-                            new Transition { TriggerName = "GoIdle", ResultantStateName = "Idle" }
-                        }
-                    }
-                }
-                    }).Result;
-                }
+                //    machineDefinitnion = session.DefineStateMachine(def).Result;
+                //}
 
-                var instanceId = session.Instantiate("Load-Test-Machine").Result;
+                var instanceId = session.Instantiate("Load-Test-Machine3").Result;
 
-                var triggers = session.GetAvailableTriggers(instanceId).Result;
-                var random = new Random();
+                var resultState = session.FireTrigger(instanceId, "GoPathA").Result;
 
-                while (true)
-                {
-                    var resultingState = session.FireTrigger(instanceId, triggers.ElementAt(random.Next(1, triggers.Count + 1) - 1).TriggerName).Result;
+                //var triggers = session.GetAvailableTriggers(instanceId).Result;
+                //var random = new Random();
 
-                    //Console.WriteLine(resultingState.StateName);
+                //while (true)
+                //{
+                //    var resultingState = session.FireTrigger(instanceId, triggers.ElementAt(random.Next(1, triggers.Count + 1) - 1).TriggerName).Result;
 
-                    var idleState = session.FireTrigger(instanceId, "GoIdle").Result;
+                //    //Console.WriteLine(resultingState.StateName);
 
-                    //Console.WriteLine(idleState.StateName);
-                }
+                //    var idleState = session.FireTrigger(instanceId, "GoIdle").Result;
+
+                //    //Console.WriteLine(idleState.StateName);
+                //}
             });
-            
-            Parallel.Invoke(new ParallelOptions { MaxDegreeOfParallelism = 8 }, act, act, act,act,act,act,act,act);
+
+            //act.Invoke();
+
+            Parallel.Invoke(act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act, act);
 
         }
     }

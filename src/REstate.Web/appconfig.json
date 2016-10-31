@@ -1,7 +1,7 @@
 ﻿{
   "REstateConfiguration": {
     "ConnectionStrings": {
-      "EngineConnectionString": "server=(localdb)\\MSSQLLocalDB;database=REstate;Application Name=REstate;integrated security=sspi;MultipleActiveResultSets=true"
+      "EngineConnectionString": "server=(localdb)\\MSSQLLocalDB;database=REstate;Application Name=REstate;integrated security=sspi;"
     },
     "AuthenticationSettings": {
       "ClaimsPrincipalResourceName": "REstate.User",

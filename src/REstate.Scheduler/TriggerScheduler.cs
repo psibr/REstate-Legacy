@@ -20,7 +20,7 @@ namespace REstate.Scheduler
             _ApiKey = apiKey;
         }
 
-        public async Task ScheduleTrigger(IChronoTrigger trigger, CancellationToken cancellationToken)
+        public async Task ScheduleTrigger(ChronoTrigger trigger, CancellationToken cancellationToken)
         {
             using (var repository = _ChronoRepositoryFactory.OpenRepository(_ApiKey))
             {
@@ -29,7 +29,7 @@ namespace REstate.Scheduler
             }
         }
 
-        public async Task RemoveTrigger(IChronoTrigger trigger, CancellationToken cancellationToken)
+        public async Task RemoveTrigger(ChronoTrigger trigger, CancellationToken cancellationToken)
         {
             using (var repository = _ChronoRepositoryFactory.OpenRepository(_ApiKey))
             {

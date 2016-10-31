@@ -1,4 +1,5 @@
-﻿using REstateClient.Models;
+﻿using REstate;
+using REstateClient.Models;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -11,9 +12,12 @@ namespace REstateClient
     {
         protected readonly Uri ApiKeyAuthAddress;
         private const string Json = "application/json";
+        protected StringSerializer StringSerializer { get; }
 
-        public REstateAuthClient(string apiKeyAuthAddress)
+        public REstateAuthClient(StringSerializer stringSerializer, string apiKeyAuthAddress)
         {
+            StringSerializer = stringSerializer;
+
             if (string.IsNullOrWhiteSpace(apiKeyAuthAddress)) throw new ArgumentNullException(nameof(apiKeyAuthAddress));
 
             Uri baseUri;
@@ -21,8 +25,10 @@ namespace REstateClient
             ApiKeyAuthAddress = baseUri;
         }
 
-        public REstateAuthClient(Uri apiKeyAuthAddress)
+        public REstateAuthClient(StringSerializer stringSerializer, Uri apiKeyAuthAddress)
         {
+            StringSerializer = stringSerializer;
+
             if (apiKeyAuthAddress == null) throw new ArgumentNullException(nameof(apiKeyAuthAddress));
 
             ApiKeyAuthAddress = apiKeyAuthAddress;
@@ -40,7 +46,7 @@ namespace REstateClient
                 if (!response.IsSuccessStatusCode) return null;
 
                 var responseBody = await response.Content.ReadAsStringAsync();
-                var tokenResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<JwtResponse>(responseBody);
+                var tokenResponse = StringSerializer.Deserialize<JwtResponse>(responseBody);
 
                 return tokenResponse.Jwt;
             }

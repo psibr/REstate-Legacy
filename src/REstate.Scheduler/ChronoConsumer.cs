@@ -64,7 +64,7 @@ namespace REstate.Scheduler
 
                             await scheduler.RemoveTrigger(chronoTrigger, Cts.Token);
                         }
-                        else if (chronoTrigger.LastCommitTag != null && currentState.CommitTag != chronoTrigger.LastCommitTag)
+                        else if (chronoTrigger.VerifyCommitTag && currentState.CommitTag != chronoTrigger.LastCommitTag)
                         {
                             Logger.Debug(
                                 "ChronoTrigger {{{chronoTriggerId}}} trigger state ({triggerState}) matched current state ({currentState}), " +
@@ -81,10 +81,10 @@ namespace REstate.Scheduler
 
                             try
                             {
-                                FireTrigger(chronoTrigger.MachineInstanceId,
-                                    chronoTrigger.TriggerName, chronoTrigger.Payload).Wait();
+                                await FireTrigger(chronoTrigger.MachineInstanceId,
+                                    chronoTrigger.TriggerName, chronoTrigger.Payload);
 
-                                scheduler.RemoveTrigger(chronoTrigger, Cts.Token).Wait();
+                                await scheduler.RemoveTrigger(chronoTrigger, Cts.Token);
 
                                 Logger.Information("ChronoTrigger {{{chronoTriggerId}}} fired successfully.",
                                     chronoTrigger.ChronoTriggerId, chronoTrigger);

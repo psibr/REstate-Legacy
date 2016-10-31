@@ -6,7 +6,7 @@ namespace REstate
     public class State
         : IEquatable<State>, IEquatable<KeyValuePair<string, string>>
     {
-        public State(string machineDefinitionId, string stateName)
+        public State(string machineDefinitionId, string stateName, string commitTag = null)
         {
             if (string.IsNullOrWhiteSpace(machineDefinitionId))
                 throw new ArgumentException("Argument is null or whitespace", nameof(stateName));
@@ -15,22 +15,14 @@ namespace REstate
 
             MachineDefinitionId = machineDefinitionId;
             StateName = stateName;
-        }
-
-        public State(KeyValuePair<string, string> statePair)
-        {
-            if (string.IsNullOrWhiteSpace(statePair.Key))
-                throw new ArgumentException("Argument is null or whitespace", nameof(statePair));
-            if (string.IsNullOrWhiteSpace(statePair.Value))
-                throw new ArgumentException("Argument is null or whitespace", nameof(statePair));
-
-            MachineDefinitionId = statePair.Key;
-            StateName = statePair.Value;
+            CommitTag = commitTag;
         }
 
         public string MachineDefinitionId { get; }
 
         public string StateName { get; }
+
+        public string CommitTag { get; }
 
         public override string ToString()
         {

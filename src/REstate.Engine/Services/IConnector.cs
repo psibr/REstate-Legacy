@@ -1,5 +1,6 @@
 ﻿using REstate.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,10 +10,10 @@ namespace REstate.Engine.Services
     {
         string ConnectorKey { get; }
 
-        Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, Code code);
+        Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, State state, IDictionary<string, string> configuration);
 
-        Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, string payload, Code code);
+        Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, State state, string payload, IDictionary<string, string> configuration);
 
-        Func<CancellationToken, Task<bool>> ConstructPredicate(IStateMachine machineInstance, Code code);
+        Func<CancellationToken, Task<bool>> ConstructPredicate(IStateMachine machineInstance, IDictionary<string, string> configuration);
     }
 }

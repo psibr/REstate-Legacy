@@ -17,27 +17,26 @@
     "summary": "REstate: a StateMachine-As-A-Service concept."
   },
   "buildOptions": {
-    "debugType": "portable",
     "emitEntryPoint": true,
     "copyToOutput": { "includeFiles": [ "appconfig.json", "REstate.pfx" ] }
   },
 
   "frameworks": {
+
     "netcoreapp1.0": {
       "dependencies": {
-        "Microsoft.AspNetCore.Hosting": "1.0.0",
-        "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
-        "Microsoft.AspNetCore.Owin": "1.0.0",
-        "Nancy": "2.0.0-barneyrubble",
         "Microsoft.NETCore.App": {
-          "type": "platform",
           "version": "1.0.1"
-        },
-        "Serilog": "2.3.0"
+        }
       }
     }
   },
   "dependencies": {
+    "Serilog": "2.3.0",
+    "Microsoft.AspNetCore.Hosting": "1.0.0",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
+    "Microsoft.AspNetCore.Owin": "1.0.0",
+    "Nancy": "2.0.0-barneyrubble",
     "Nancy.Authentication.Stateless": "2.0.0-barneyrubble",
     "Autofac": "4.1.1",
     "REstate.Common": "0.1.0-*",
@@ -57,5 +56,5 @@
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "Serilog.Sinks.Literate": "2.0.0"
   },
-  "userSecretsId": "aspnet-REstate.Web-20161022043028"
+  "runtimes": { "win10-x64": {} }
 }

@@ -23,8 +23,16 @@
     "System.Threading.Tasks": "4.0.11",
     "System.Runtime": "4.1.0",
     "System.Net.Http": "4.1.0",
-    "Newtonsoft.Json": "9.0.1",
-    "REstate.Common": "0.1.0-*"
+    "REstate.Common": "0.1.0-*",
+    "System.Diagnostics.Tools": "4.0.1",
+    "System.Dynamic.Runtime": "4.0.11",
+    "System.Runtime.Serialization.Primitives": "4.1.1",
+    "System.Reflection.Extensions": "4.0.1",
+    "System.Globalization": "4.0.11",
+    "System.Runtime.Extensions": "4.1.0",
+    "System.Reflection.TypeExtensions": "4.1.0",
+    "System.Threading": "4.0.11",
+    "System.Collections.Concurrent": "4.0.12"
   },
 
   "frameworks": {

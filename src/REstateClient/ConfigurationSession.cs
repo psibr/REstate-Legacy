@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using REstate;
 using REstate.Configuration;
 using REstateClient.Models;
@@ -14,8 +13,8 @@ namespace REstateClient
     public class ConfigurationSession
         : AuthenticatedSession, IConfigurationSession
     {
-        public ConfigurationSession(Uri authBaseAddress, Uri baseAddress, string apiKey, string token)
-            : base(authBaseAddress, baseAddress, apiKey, token)
+        public ConfigurationSession(StringSerializer stringSerializer, Uri authBaseAddress, Uri baseAddress, string apiKey, string token)
+            : base(stringSerializer, authBaseAddress, baseAddress, apiKey, token)
         {
         }
 
@@ -31,7 +30,7 @@ namespace REstateClient
                 return await response.Content.ReadAsStringAsync();
             });
 
-            var instance = JsonConvert.DeserializeObject<MachineInstantiateResponse>(responseBody);
+            var instance = StringSerializer.Deserialize<MachineInstantiateResponse>(responseBody);
 
             return instance.MachineInstanceId;
         }
@@ -47,7 +46,7 @@ namespace REstateClient
                 return await response.Content.ReadAsStringAsync();
             });
 
-            State state = JsonConvert.DeserializeObject<StateModel>(responseBody);
+            State state = StringSerializer.Deserialize<StateModel>(responseBody);
 
             return state;
         }
@@ -63,7 +62,7 @@ namespace REstateClient
                 return await response.Content.ReadAsStringAsync();
             });
 
-            InstanceRecord info = JsonConvert.DeserializeObject<InstanceRecord>(responseBody);
+            InstanceRecord info = StringSerializer.Deserialize<InstanceRecord>(responseBody);
 
             return info;
         }
@@ -79,7 +78,7 @@ namespace REstateClient
                 return await response.Content.ReadAsStringAsync();
             });
 
-            var isInStateResponse = JsonConvert.DeserializeObject<IsInStateResponse>(responseBody);
+            var isInStateResponse = StringSerializer.Deserialize<IsInStateResponse>(responseBody);
 
             return isInStateResponse.IsInState;
         }
@@ -95,7 +94,7 @@ namespace REstateClient
                 return await response.Content.ReadAsStringAsync();
             });
 
-            var triggers = JsonConvert.DeserializeObject<TriggerModel[]>(responseBody);
+            var triggers = StringSerializer.Deserialize<TriggerModel[]>(responseBody);
 
             return triggers.Select(t => (Trigger)t).ToArray();
         }
@@ -104,7 +103,7 @@ namespace REstateClient
         {
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
-                var payloadBody = JsonConvert.SerializeObject(new PayloadContainer { Payload = payload });
+                var payloadBody = StringSerializer.Serialize(new PayloadContainer { Payload = payload });
 
                 var response = await client.PostAsync($"instances/{instanceId}/fire/{triggerName}",
                     payload == null
@@ -116,7 +115,7 @@ namespace REstateClient
                 return await response.Content.ReadAsStringAsync();
             });
 
-            StateModel state = JsonConvert.DeserializeObject<StateModel>(responseBody);
+            StateModel state = StringSerializer.Deserialize<StateModel>(responseBody);
 
             return state;
         }
@@ -169,14 +168,14 @@ namespace REstateClient
                 return await response.Content.ReadAsStringAsync();
             });
 
-            var configuration = responseBody != null ? JsonConvert.DeserializeObject<Machine>(responseBody) : null;
+            var configuration = responseBody != null ? StringSerializer.Deserialize<Machine>(responseBody) : null;
 
             return configuration;
         }
 
         public async Task<Machine> DefineStateMachine(Machine configuration)
         {
-            var payload = JsonConvert.SerializeObject(configuration);
+            var payload = StringSerializer.Serialize(configuration);
 
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
@@ -189,7 +188,7 @@ namespace REstateClient
                 return await response.Content.ReadAsStringAsync();
             });
 
-            var configurationResponse = JsonConvert.DeserializeObject<Machine>(responseBody);
+            var configurationResponse = StringSerializer.Deserialize<Machine>(responseBody);
 
             return configurationResponse;
         }

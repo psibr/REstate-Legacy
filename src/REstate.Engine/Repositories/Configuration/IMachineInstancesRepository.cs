@@ -15,9 +15,9 @@ namespace REstate.Engine.Repositories
 
         Task<InstanceRecord> GetInstanceState(string instanceId, CancellationToken cancellationToken);
 
-        Task SetInstanceState(string instanceId, string stateName, string triggerName, string lastCommitTag, CancellationToken cancellationToken);
+        Task<InstanceRecord> SetInstanceState(string instanceId, string stateName, string triggerName, string lastCommitTag, CancellationToken cancellationToken);
 
-        Task SetInstanceState(string instanceId, string stateName, string triggerName, string parameterData, string lastCommitTag, CancellationToken cancellationToken);
+        Task<InstanceRecord> SetInstanceState(string instanceId, string stateName, string triggerName, string parameterData, string lastCommitTag, CancellationToken cancellationToken);
 
         Task<string> GetInstanceMetadata(string instanceId, CancellationToken cancellationToken);
     }

@@ -1,4 +1,5 @@
 ﻿using REstate.Engine.Repositories;
+using REstate.Logging;
 using Susanoo.ConnectionPooling;
 
 namespace REstate.Repositories.Core.Susanoo
@@ -6,12 +7,12 @@ namespace REstate.Repositories.Core.Susanoo
     public class EngineRepositoryContext
         : IEngineRepositoryContext
     {
-        public EngineRepositoryContext(IDatabaseManagerPool databaseManagerPool, StringSerializer stringSerializer, string apiKey)
+        public EngineRepositoryContext(IDatabaseManagerPool databaseManagerPool, StringSerializer stringSerializer, IPlatformLogger logger,  string apiKey)
         {
             DatabaseManagerPool = databaseManagerPool;
             ApiKey = apiKey;
             Machines = new MachineConfigurationRepository(this, stringSerializer);
-            MachineInstances = new MachineInstancesRepository(this, stringSerializer);
+            MachineInstances = new MachineInstancesRepository(this, stringSerializer, logger);
         }
 
         public IEngineRepositoryContext Root => this;

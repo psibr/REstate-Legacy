@@ -93,7 +93,7 @@ namespace REstate.Web
             ConfigurationBinder.Bind(configuration, config);
 
             var logger = new LoggerConfiguration()
-                .MinimumLevel.Is(Serilog.Events.LogEventLevel.Warning)
+                .MinimumLevel.Verbose()
                 .WriteTo.LiterateConsole()
                 .CreateLogger();
 
@@ -102,7 +102,7 @@ namespace REstate.Web
             containerBuilder.RegisterInstance(config.REstateConfiguration);
             containerBuilder.RegisterInstance(logger).As<ILogger>();
             containerBuilder.RegisterAdapter<ILogger, IPlatformLogger>((serilogLogger) => new SerilogLoggingAdapter(serilogLogger));
-            containerBuilder.RegisterType<NewtonsoftJsonSerializer>().As<StringSerializer>();
+            containerBuilder.RegisterType<SimpleJsonSerializer>().As<StringSerializer>();
             containerBuilder.Register((ctx)
                     => new ChronoRepositoryFactory(ctx.Resolve<REstateConfiguration>().ConnectionStrings.SchedulerConnectionString))
                 .As<IChronoRepositoryFactory>();
@@ -112,7 +112,7 @@ namespace REstate.Web
                     => new DefaultConnectorFactoryResolver(ctx.Resolve<IEnumerable<IConnectorFactory>>()))
                 .As<IConnectorFactoryResolver>();
             containerBuilder.Register((ctx) 
-                    => new RepositoryContextFactory(ctx.Resolve<REstateConfiguration>().ConnectionStrings.EngineConnectionString, ctx.Resolve<StringSerializer>()))
+                    => new RepositoryContextFactory(ctx.Resolve<REstateConfiguration>().ConnectionStrings.EngineConnectionString, ctx.Resolve<StringSerializer>(), ctx.Resolve<IPlatformLogger>()))
                 .As<IRepositoryContextFactory>();
             containerBuilder.RegisterType<StatelessStateMachineFactory>().As<IStateMachineFactory>();
             containerBuilder.RegisterType<StateEngineFactory>();

@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using REstateClient.Models;
+﻿using REstate;
+using REstate.Scheduling;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -10,34 +10,14 @@ namespace REstateClient
     public class ChronoSession
         : AuthenticatedSession, IChronoSession
     {
-        public ChronoSession(Uri apiKeyAuthAddress, Uri baseAddress, string apiKey, string token)
-            : base(apiKeyAuthAddress, baseAddress, apiKey, token)
+        public ChronoSession(StringSerializer stringSerializer, Uri apiKeyAuthAddress, Uri baseAddress, string apiKey, string token)
+            : base(stringSerializer, apiKeyAuthAddress, baseAddress, apiKey, token)
         {
         }
 
-        public async Task AddChronoTrigger(string machineInstanceId, string chronoTriggerJson)
+        public async Task AddChronoTrigger(ChronoTrigger chronoTrigger)
         {
-            var chronoTrigger = JsonConvert.DeserializeObject<ChronoTriggerRequest>(chronoTriggerJson);
-
-            chronoTrigger.MachineInstanceId = machineInstanceId;
-
-            await AddChronoTrigger(chronoTrigger);
-        }
-
-        public async Task AddChronoTrigger(string machineInstanceId, string chronoTriggerJson, string payload)
-        {
-            var chronoTrigger = JsonConvert.DeserializeObject<ChronoTriggerRequest>(chronoTriggerJson);
-
-            chronoTrigger.MachineInstanceId = machineInstanceId;
-
-            chronoTrigger.Payload = payload;
-
-            await AddChronoTrigger(chronoTrigger);
-        }
-
-        public async Task AddChronoTrigger(IChronoTriggerRequest chronoTrigger)
-        {
-            var payload = JsonConvert.SerializeObject(chronoTrigger);
+            var payload = StringSerializer.Serialize(chronoTrigger);
 
             await EnsureAuthenticatedRequest(async (client) =>
             {

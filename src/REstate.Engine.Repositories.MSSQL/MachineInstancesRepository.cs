@@ -1,6 +1,8 @@
 using REstate.Configuration;
 using REstate.Engine.Repositories;
+using REstate.Logging;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,11 +14,13 @@ namespace REstate.Repositories.Core.Susanoo
         : ContextualRepository, IMachineInstancesRepository
     {
         private readonly StringSerializer _stringSerializer;
+        private readonly IPlatformLogger _logger;
 
-        public MachineInstancesRepository(EngineRepositoryContext root, StringSerializer stringSerializer)
+        public MachineInstancesRepository(EngineRepositoryContext root, StringSerializer stringSerializer, IPlatformLogger logger)
             : base(root)
         {
             _stringSerializer = stringSerializer;
+            _logger = logger;
         }
 
         public async Task CreateInstance(string machineName, string instanceId, CancellationToken cancellationToken)
@@ -32,16 +36,15 @@ namespace REstate.Repositories.Core.Susanoo
 
             await DefineCommand(
                     @"
-                    IF NOT EXISTS (SELECT TOP 1 InstanceId FROM Instances WHERE InstanceId = @InstanceId)
-                    BEGIN
+                    DECLARE @InitialState varchar(250);
+                    DECLARE @StateChangedDateTime DATETIME2(3);
+                    DECLARE @CommitTag varchar(250);
+                    SELECT TOP 1 @InitialState = InitialState FROM Machines WHERE MachineName = @MachineName;
 
-                        DECLARE @InitialState varchar(250);
+                    SELECT @StateChangedDateTime = GETUTCDATE(), @CommitTag = NEWID()
 
-                        SELECT TOP 1 @InitialState = InitialState FROM Machines WHERE MachineName = @MachineName;
-
-                        INSERT INTO Instances (InstanceId, MachineName, StateName, Metadata)
-                        VALUES (@InstanceId, @MachineName, @InitialState, @Metadata);
-                    END")
+                    INSERT INTO Instances (InstanceId, MachineName, StateName, CommitTag, StateChangedDateTime, Metadata)
+                    VALUES (@InstanceId, @MachineName, @InitialState, @CommitTag, @StateChangedDateTime, @Metadata);")
                 .SendNullValues()
                 .Compile()
                 .ExecuteNonQueryAsync(DatabaseManagerPool.DatabaseManager, new
@@ -67,8 +70,7 @@ namespace REstate.Repositories.Core.Susanoo
             return (await DefineCommand(
                     "SELECT TOP 1 * " +
                     "FROM Instances " +
-                    "WHERE InstanceId = @InstanceId " +
-                    "ORDER BY StateChangedDateTime DESC;")
+                    "WHERE InstanceId = @InstanceId; ")
                 .WithResultsAs<InstanceRecord>()
                 .Compile()
                 .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { InstanceId = instanceId }, cancellationToken)
@@ -76,54 +78,76 @@ namespace REstate.Repositories.Core.Susanoo
                 .Single();
         }
 
-        public async Task SetInstanceState(string instanceId, string stateName, string triggerName, string lastCommitTag, CancellationToken cancellationToken)
+        public async Task<InstanceRecord> SetInstanceState(string instanceId, string stateName, string triggerName, string lastCommitTag, CancellationToken cancellationToken)
         {
-            await SetInstanceState(instanceId, stateName, triggerName, null, lastCommitTag, cancellationToken)
+            return await SetInstanceState(instanceId, stateName, triggerName, null, lastCommitTag, cancellationToken)
                 .ConfigureAwait(false);
         }
 
-        public async Task SetInstanceState(string instanceId, string stateName, string triggerName, string parameterData,
+        public async Task<InstanceRecord> SetInstanceState(string instanceId, string stateName, string triggerName, string parameterData,
             string lastCommitTag, CancellationToken cancellationToken)
         {
+            var sw = new Stopwatch();
+            sw.Start();
             var result = await DefineCommand(
-                    @"
+                    @"                    
                     BEGIN TRANSACTION
+                    
+                    BEGIN TRY
+                    
+                        DECLARE @StateChangedDateTime DATETIME2(3);
+                        DECLARE @CommitTag varchar(250);
 
-                    EXEC sp_getapplock @Resource = @InstanceId, @LockMode = 'Update'
+                        DECLARE @result int;
+                        EXEC @result = sp_getapplock @Resource = @InstanceId, @LockMode = 'Exclusive'
 
-                    DECLARE @MachineName varchar(250);
-                    DECLARE @CommitTag varchar(250);
+                        IF (@result = -3)
+                        BEGIN
+                            RAISERROR('Somehow a deadlock occured?!',16,1)
+                            ROLLBACK TRANSACTION;
+                        END
 
-                    SELECT TOP 1 @MachineName = MachineName, @CommitTag = CommitTag
-                    FROM Instances
-                    WHERE InstanceId = @InstanceId
-                    ORDER BY StateChangedDateTime DESC
+                        DECLARE @MachineName varchar(250);
+                        DECLARE @ActualCommitTag varchar(250);
 
-                    IF(@CommitTag = @LastCommitTag)
-                    BEGIN
-                        INSERT INTO Instances (InstanceId, MachineName, StateName, TriggerName, ParameterData)
-                        VALUES (@InstanceId, @MachineName, @StateName, @TriggerName, @ParameterData);
+                        SELECT TOP 1 @MachineName = MachineName, @ActualCommitTag = CommitTag
+                        FROM Instances
+                        WHERE InstanceId = @InstanceId;
 
-                        SELECT Success = 1;
-                    END
-                    ELSE
-                        SELECT Success = 0;
+                        IF(@ActualCommitTag = @LastCommitTag)
+                        BEGIN
+                            SELECT @StateChangedDateTime = GETUTCDATE(), @CommitTag = NEWID()
 
-                    COMMIT")
+                            UPDATE Instances SET StateName = @StateName, CommitTag = @CommitTag, StateChangedDateTime = @StateChangedDateTime WHERE InstanceId = @InstanceId
+
+                            SELECT InstanceId = @InstanceId, MachineName = @MachineName, StateName = @StateName, CommitTag = @CommitTag, StateChangedDateTime = @StateChangedDateTime, TriggerName = @TriggerName, ParameterData = @ParameterData;
+                        END
+
+                        COMMIT
+                    END TRY
+                    BEGIN CATCH
+                        ROLLBACK TRANSACTION;
+                    END CATCH")
                 .SendNullValues()
+                .WithResultsAs<InstanceRecord>()
                 .Compile()
-                .ExecuteScalarAsync<int>(DatabaseManagerPool.DatabaseManager, new
+                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new
                 {
                     InstanceId = instanceId,
                     StateName = stateName,
                     TriggerName = triggerName,
                     ParameterData = parameterData,
                     LastCommitTag = lastCommitTag
-                }, null, cancellationToken)
-                .ConfigureAwait(false);
+                }, null).ConfigureAwait(false);
 
-            if (result <= 0)
+            sw.Stop();
+
+            _logger.Verbose("Took {elapsed}ms", sw.ElapsedMilliseconds);
+
+            if (!result.Any())
                 throw new StateConflictException("State did not reflect original state when attempting to transition.");
+
+            return result.Single();
         }
 
         public async Task<string> GetInstanceMetadata(string instanceId, CancellationToken cancellationToken)
@@ -131,7 +155,7 @@ namespace REstate.Repositories.Core.Susanoo
             var result = await DefineCommand(
                     "SELECT Metadata " +
                     "FROM Instances " +
-                    "WHERE InstanceId = @InstanceId AND Metadata IS NOT NULL;")
+                    "WHERE InstanceId = @InstanceId;")
                 .Compile()
                 .ExecuteScalarAsync<string>(DatabaseManagerPool.DatabaseManager,
                 new

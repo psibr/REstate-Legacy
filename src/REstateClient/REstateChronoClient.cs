@@ -1,4 +1,5 @@
-﻿using System;
+﻿using REstate;
+using System;
 using System.Threading.Tasks;
 
 namespace REstateClient
@@ -6,8 +7,9 @@ namespace REstateClient
     public class REstateChronoClient
         : REstateAuthClient, IAuthSessionClient<IChronoSession>
     {
-        public REstateChronoClient(string apiKeyAuthAddress, string baseAddress)
-            : base(apiKeyAuthAddress)
+
+        public REstateChronoClient(StringSerializer stringSerializer, string apiKeyAuthAddress, string baseAddress)
+            : base(stringSerializer, apiKeyAuthAddress)
         {
             Uri baseUri;
             if (!Uri.TryCreate(baseAddress, UriKind.RelativeOrAbsolute, out baseUri)) throw new ArgumentException("Not a valid Uri", nameof(baseAddress));
@@ -17,8 +19,8 @@ namespace REstateClient
 
         protected readonly Uri BaseAddress;
 
-        public REstateChronoClient(Uri apiKeyAuthAddress, string baseAddress)
-            : base(apiKeyAuthAddress)
+        public REstateChronoClient(StringSerializer stringSerializer, Uri apiKeyAuthAddress, string baseAddress)
+            : base(stringSerializer, apiKeyAuthAddress)
         {
             Uri baseUri;
             if (!Uri.TryCreate(baseAddress, UriKind.RelativeOrAbsolute, out baseUri)) throw new ArgumentException("Not a valid Uri", nameof(baseAddress));
@@ -26,14 +28,14 @@ namespace REstateClient
             BaseAddress = baseUri;
         }
 
-        public REstateChronoClient(string apiKeyAuthAddress, Uri baseAddress)
-            : base(apiKeyAuthAddress)
+        public REstateChronoClient(StringSerializer stringSerializer, string apiKeyAuthAddress, Uri baseAddress)
+            : base(stringSerializer, apiKeyAuthAddress)
         {
             BaseAddress = baseAddress;
         }
 
-        public REstateChronoClient(Uri apiKeyAuthAddress, Uri baseAddress)
-            : base(apiKeyAuthAddress)
+        public REstateChronoClient(StringSerializer stringSerializer, Uri apiKeyAuthAddress, Uri baseAddress)
+            : base(stringSerializer, apiKeyAuthAddress)
         {
             BaseAddress = baseAddress;
         }
@@ -42,7 +44,7 @@ namespace REstateClient
         {
             var token = await GetAuthenticatedSessionToken(apiKey);
 
-            return new ChronoSession(ApiKeyAuthAddress, BaseAddress, apiKey, token);
+            return new ChronoSession(StringSerializer, ApiKeyAuthAddress, BaseAddress, apiKey, token);
         }
     }
 }

@@ -1,3 +1,4 @@
+using REstate;
 using System;
 using System.Threading.Tasks;
 
@@ -8,8 +9,20 @@ namespace REstateClient
     {
         protected readonly Uri BaseAddress;
 
-        public REstateConfigurationClient(string authServiceAddress, string baseAddress)
-            : base(authServiceAddress)
+        public REstateConfigurationClient(StringSerializer stringSerializer, string authServiceAddress, string baseAddress)
+            : base(stringSerializer, authServiceAddress)
+        {
+
+            if (string.IsNullOrWhiteSpace(baseAddress)) throw new ArgumentNullException(nameof(baseAddress));
+
+            Uri baseUri;
+            if (!Uri.TryCreate(baseAddress, UriKind.RelativeOrAbsolute, out baseUri)) throw new ArgumentException("Not a valid Uri", nameof(baseAddress));
+
+            BaseAddress = baseUri;
+        }
+
+        public REstateConfigurationClient(StringSerializer stringSerializer, Uri authServiceAddress, string baseAddress)
+            : base(stringSerializer, authServiceAddress)
         {
             if (string.IsNullOrWhiteSpace(baseAddress)) throw new ArgumentNullException(nameof(baseAddress));
 
@@ -19,25 +32,14 @@ namespace REstateClient
             BaseAddress = baseUri;
         }
 
-        public REstateConfigurationClient(Uri authServiceAddress, string baseAddress)
-            : base(authServiceAddress)
-        {
-            if (string.IsNullOrWhiteSpace(baseAddress)) throw new ArgumentNullException(nameof(baseAddress));
-
-            Uri baseUri;
-            if (!Uri.TryCreate(baseAddress, UriKind.RelativeOrAbsolute, out baseUri)) throw new ArgumentException("Not a valid Uri", nameof(baseAddress));
-
-            BaseAddress = baseUri;
-        }
-
-        public REstateConfigurationClient(Uri authServiceAddress, Uri baseAddress)
-            : base(authServiceAddress)
+        public REstateConfigurationClient(StringSerializer stringSerializer, Uri authServiceAddress, Uri baseAddress)
+            : base(stringSerializer, authServiceAddress)
         {
             BaseAddress = baseAddress;
         }
 
-        public REstateConfigurationClient(string authServiceAddress, Uri baseAddress)
-            : base(authServiceAddress)
+        public REstateConfigurationClient(StringSerializer stringSerializer, string authServiceAddress, Uri baseAddress)
+            : base(stringSerializer, authServiceAddress)
         {
             BaseAddress = baseAddress;
         }
@@ -46,7 +48,7 @@ namespace REstateClient
         {
             var token = await GetAuthenticatedSessionToken(apiKey);
 
-            return new ConfigurationSession(ApiKeyAuthAddress, BaseAddress, apiKey, token);
+            return new ConfigurationSession(StringSerializer, ApiKeyAuthAddress, BaseAddress, apiKey, token);
         }
     }
 }

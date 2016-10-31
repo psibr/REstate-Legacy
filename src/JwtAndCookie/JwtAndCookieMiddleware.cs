@@ -16,6 +16,7 @@ namespace OwinJwtAndCookie
     {
         private readonly AppFunc _next;
         private readonly Options _options;
+        private readonly Jose.JweEncryption encryptionAlg = Jose.JweEncryption.A256GCM; //Will switch to AES256GCM when CoreFx supports it. (Windows Only ATM)
 
         public JwtAndCookieMiddleware(AppFunc next, Options options)
         {
@@ -78,7 +79,7 @@ namespace OwinJwtAndCookie
                         { "exp",  BuildExpHeader(options) }
                     }.Union(claimBuilder(jti)).ToDictionary(p => p.Key, p => p.Value), 
                         _options.Certificate.GetRSAPublicKey() as RSACng,
-                        Jose.JweAlgorithm.RSA_OAEP, Jose.JweEncryption.A256GCM);
+                        Jose.JweAlgorithm.RSA_OAEP, encryptionAlg);
 
                     if (!buildCookie) return jwt;
 
@@ -108,7 +109,7 @@ namespace OwinJwtAndCookie
             {
                 payload = Jose.JWT.Decode<IDictionary<string, object>>(token, 
                     _options.Certificate.GetRSAPrivateKey() as RSACng,
-                    Jose.JweAlgorithm.RSA_OAEP, Jose.JweEncryption.A256GCM);
+                    Jose.JweAlgorithm.RSA_OAEP, encryptionAlg);
             }
             catch (Jose.JoseException) //No meaningful valid payload, return null.
             {

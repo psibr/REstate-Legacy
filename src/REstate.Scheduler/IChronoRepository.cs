@@ -9,10 +9,10 @@ namespace REstate.Scheduler
     public interface IChronoRepository
         : IDisposable
     {
-        IEnumerable<IChronoTrigger> GetChronoStream(CancellationToken cancellationToken);
+        IEnumerable<ChronoTrigger> GetChronoStream(CancellationToken cancellationToken);
 
-        Task AddChronoTrigger(IChronoTrigger trigger, CancellationToken cancellationToken);
+        Task AddChronoTrigger(ChronoTrigger trigger, CancellationToken cancellationToken);
 
-        Task RemoveChronoTrigger(IChronoTrigger trigger, CancellationToken cancellationToken);
+        Task RemoveChronoTrigger(ChronoTrigger trigger, CancellationToken cancellationToken);
     }
 }

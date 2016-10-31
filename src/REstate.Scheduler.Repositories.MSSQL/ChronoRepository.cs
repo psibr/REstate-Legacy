@@ -29,7 +29,7 @@ namespace REstate.Scheduler.Repositories.MSSQL
             ApiKey = apiKey;
         }
 
-        public IEnumerable<IChronoTrigger> GetChronoStream(CancellationToken cancellationToken)
+        public IEnumerable<ChronoTrigger> GetChronoStream(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -38,7 +38,7 @@ namespace REstate.Scheduler.Repositories.MSSQL
 
                 if (!results.Any())
                 {
-                    Task.Delay(100);
+                    Task.Delay(1000);
                 }
 
                 foreach (var chronoTrigger in results)
@@ -48,11 +48,11 @@ namespace REstate.Scheduler.Repositories.MSSQL
             }
         }
 
-        public async Task AddChronoTrigger(IChronoTrigger trigger, CancellationToken cancellationToken)
+        public async Task AddChronoTrigger(ChronoTrigger trigger, CancellationToken cancellationToken)
         {
-            await DefineCommand<IChronoTrigger>(
-                    @"INSERT INTO ChronoTriggers ( ChronoTriggerId, MachineInstanceId, StateName, TriggerName, Payload, FireAfter)
-                    VALUES(newId(), @MachineInstanceId, @StateName, @TriggerName, @Payload, @FireAfter)")
+            await DefineCommand<ChronoTrigger>(
+                    @"INSERT INTO ChronoTriggers ( ChronoTriggerId, MachineInstanceId, StateName, TriggerName, Payload, LastCommitTag, VerifyCommitTag, FireAfter)
+                    VALUES(newId(), @MachineInstanceId, @StateName, @TriggerName, @Payload, @LastCommitTag, @VerifyCommitTag, @FireAfter)")
                 .ExcludeProperty(o => o.Delay)
                 .ExcludeProperty(o => o.ChronoTriggerId)
                 .SendNullValues()
@@ -61,9 +61,9 @@ namespace REstate.Scheduler.Repositories.MSSQL
                     new { FireAfter = DateTime.UtcNow + TimeSpan.FromSeconds(trigger.Delay) }, cancellationToken);
         }
 
-        public async Task RemoveChronoTrigger(IChronoTrigger trigger, CancellationToken cancellationToken)
+        public async Task RemoveChronoTrigger(ChronoTrigger trigger, CancellationToken cancellationToken)
         {
-            await DefineCommand<IChronoTrigger>("DELETE FROM ChronoTriggers WHERE ChronoTriggerId = @ChronoTriggerId")
+            await DefineCommand<ChronoTrigger>("DELETE FROM ChronoTriggers WHERE ChronoTriggerId = @ChronoTriggerId")
                 .UseExplicitPropertyInclusionMode()
                 .IncludeProperty(o => o.ChronoTriggerId)
                 .Compile()
