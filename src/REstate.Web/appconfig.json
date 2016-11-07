@@ -1,10 +1,10 @@
 ﻿{
   "REstateConfiguration": {
     "ConnectionStrings": {
-      "EngineConnectionString": "server=(localdb)\\MSSQLLocalDB;database=REstate;Application Name=REstate;integrated security=sspi;"
+      "EngineConnectionString": "Server=tcp:psibr.database.windows.net,1433;Initial Catalog=REstate;Persist Security Info=False;User ID=REstateUser;Password=REstate_is_alive_2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
     },
     "AuthenticationSettings": {
-      "UseAuthentication": false,
+      "UseAuthentication": true,
       "ClaimsPrincipalResourceName": "REstate.User",
       "SchedulerApiKey": "F1752DAA-1A32-41D7-9106-1FF2890B377A"
     }

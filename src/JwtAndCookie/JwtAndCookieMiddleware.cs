@@ -16,7 +16,7 @@ namespace OwinJwtAndCookie
     {
         private readonly AppFunc _next;
         private readonly Options _options;
-        private readonly Jose.JweEncryption encryptionAlg = Jose.JweEncryption.A128GCM; //Will switch to AES###GCM when CoreFx supports it. (Windows Only ATM)
+        private readonly Jose.JweEncryption encryptionAlg = Jose.JweEncryption.A128CBC_HS256; //Will switch to AES###GCM when CoreFx supports it. (Windows Only ATM)
 
         public JwtAndCookieMiddleware(AppFunc next, Options options)
         {
@@ -78,7 +78,7 @@ namespace OwinJwtAndCookie
                         { "jti", jti.ToString() },
                         { "exp",  BuildExpHeader(options) }
                     }.Union(claimBuilder(jti)).ToDictionary(p => p.Key, p => p.Value),
-                        _options.Certificate.GetRSAPublicKey() as RSACng,
+                        _options.Certificate.GetRSAPublicKey(),
                         Jose.JweAlgorithm.RSA_OAEP, encryptionAlg);
 
                     if (!buildCookie) return jwt;
@@ -107,18 +107,9 @@ namespace OwinJwtAndCookie
 
             try
             {
-/*                payload = Jose.JWT.Decode<IDictionary<string, object>>(token,
-                    _options.Certificate.GetRSAPrivateKey() as RSACng,
-                    Jose.JweAlgorithm.RSA_OAEP, encryptionAlg);*/
-
-                payload = new Dictionary<string, object>()
-                {
-                    ["jti"] = "467db408-9ace-4710-9cde-fe28f108d3c0",
-                    ["exp"] = "1480578213",
-                    ["sub"] = "AdminUI",
-                    ["apikey"] = "e17705b5-d0fd-47f5-849f-f0881b954c58",
-                    ["claims"] = new Newtonsoft.Json.Linq.JArray("developer", "machineBuilder", "operator")
-                };
+                payload = Jose.JWT.Decode<IDictionary<string, object>>(token,
+                    _options.Certificate.GetRSAPrivateKey(),
+                    Jose.JweAlgorithm.RSA_OAEP, encryptionAlg);
             }
             catch (Jose.JoseException) //No meaningful valid payload, return null.
             {

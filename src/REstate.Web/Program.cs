@@ -93,8 +93,8 @@ namespace REstate.Web
             ConfigurationBinder.Bind(configuration, config);
 
             var logger = new LoggerConfiguration()
-                .MinimumLevel.Warning()
-                //.WriteTo.LiterateConsole()
+                .MinimumLevel.Verbose()
+                .WriteTo.LiterateConsole()
                 .CreateLogger();
 
             var containerBuilder = new ContainerBuilder();
