@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace OwinJwtAndCookie
 {
     using Newtonsoft.Json;
-    using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
     using AppFunc = Func<IDictionary<string, object>, Task>;
 
