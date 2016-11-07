@@ -18,14 +18,14 @@ namespace REstate.Web.Modules
         /// </summary>
         /// <param name="prefix">The prefix.</param>
         /// <param name="chronoRepository">The chrono repository.</param>
-        public ChronoModule(IChronoRepositoryFactory chronoRepositoryFactory)
-            : base("/scheduler", claim => claim.Type == "claim" && claim.Value == "operator")
+        public ChronoModule(REstateConfiguration configuration, IChronoRepositoryFactory chronoRepositoryFactory)
+            : base(configuration, "/scheduler", claim => claim.Type == "claim" && claim.Value == "operator")
         {
             _chronoRepositoryFactory = chronoRepositoryFactory;
 
             Post("/triggers", async (parameters, ct) =>
             {
-                var chronoRepository = _chronoRepositoryFactory.OpenRepository(Context.CurrentUser.GetApiKey());
+                var chronoRepository = _chronoRepositoryFactory.OpenRepository(Context.CurrentUser?.GetApiKey());
 
                 var addChronoTriggerRequest = this.Bind<ChronoTrigger>();
 

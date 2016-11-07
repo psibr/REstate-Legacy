@@ -3,8 +3,6 @@ using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Bootstrappers.Autofac;
 using Nancy.Conventions;
-using Nancy.Cryptography;
-using Nancy.Diagnostics;
 using REstate.Logging;
 using System;
 using System.Collections.Generic;

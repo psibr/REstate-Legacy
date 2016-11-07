@@ -18,15 +18,15 @@
   },
   "buildOptions": {
     "emitEntryPoint": true,
+    "debugType": "portable",
     "copyToOutput": { "includeFiles": [ "appconfig.json", "REstate.pfx" ] }
   },
-
   "frameworks": {
-
     "netcoreapp1.0": {
       "dependencies": {
         "Microsoft.NETCore.App": {
-          "version": "1.0.1"
+          "version": "1.0.1",
+          "type": "platform"
         }
       }
     }

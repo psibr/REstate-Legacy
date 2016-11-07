@@ -20,14 +20,12 @@ namespace REstate.Web
     using Scheduler.Repositories.MSSQL;
     using Serilog;
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
     using System.Security.Principal;
-    using Microsoft.AspNetCore.Hosting.Server;
     using Nancy.ModelBinding;
 
     public class RootConfig
@@ -44,6 +42,8 @@ namespace REstate.Web
 
     public class AuthenticationSettings
     {
+        public bool UseAuthentication { get; set; } = true;
+
         public string ClaimsPrincipalResourceName { get; set; }
 
         public string SchedulerApiKey { get; set; }
@@ -93,8 +93,8 @@ namespace REstate.Web
             ConfigurationBinder.Bind(configuration, config);
 
             var logger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .WriteTo.LiterateConsole()
+                .MinimumLevel.Warning()
+                //.WriteTo.LiterateConsole()
                 .CreateLogger();
 
             var containerBuilder = new ContainerBuilder();
@@ -108,16 +108,16 @@ namespace REstate.Web
                 .As<IChronoRepositoryFactory>();
             containerBuilder.RegisterType<TriggerSchedulerFactory>();
             containerBuilder.RegisterType<DirectChronoTriggerConnectorFactory>().As<IConnectorFactory>();
-            containerBuilder.Register((ctx) 
+            containerBuilder.Register((ctx)
                     => new DefaultConnectorFactoryResolver(ctx.Resolve<IEnumerable<IConnectorFactory>>()))
                 .As<IConnectorFactoryResolver>();
-            containerBuilder.Register((ctx) 
+            containerBuilder.Register((ctx)
                     => new RepositoryContextFactory(ctx.Resolve<REstateConfiguration>().ConnectionStrings.EngineConnectionString, ctx.Resolve<StringSerializer>(), ctx.Resolve<IPlatformLogger>()))
                 .As<IRepositoryContextFactory>();
             containerBuilder.RegisterType<StatelessStateMachineFactory>().As<IStateMachineFactory>();
             containerBuilder.RegisterType<StateEngineFactory>();
             containerBuilder.RegisterType<DirectChronoConsumer>().As<ChronoConsumer>();
-            containerBuilder.Register((ctx) 
+            containerBuilder.Register((ctx)
                     => new AuthRepositoryFactory(ctx.Resolve<REstateConfiguration>().ConnectionStrings.AuthConnectionString))
                 .As<IAuthRepositoryFactory>();
 
@@ -132,56 +132,62 @@ namespace REstate.Web
                     app.UseDeveloperExceptionPage(new DeveloperExceptionPageOptions { });
                     app.UseOwin(owin =>
                     {
-                        owin((next) =>
-                            new JwtAndCookieMiddleware(next, new Options
-                            {
-                                Certificate = new X509Certificate2(Path.Combine(Directory.GetCurrentDirectory(), "REstate.pfx"), "development"),
-                                CookieName = "REstate.Auth",
-                                CookiePath = "/",
-                                CookieHttpOnly = true,
-                                TokenLifeSpan = TimeSpan.FromMinutes(43200), //30 days
-                                ClaimsPrincipalResourceName = config.REstateConfiguration.AuthenticationSettings.ClaimsPrincipalResourceName,
-                                CreatePrincipal = (payload) => 
+                        if (config.REstateConfiguration.AuthenticationSettings.UseAuthentication)
+                        {
+                            owin((next) =>
+                                new JwtAndCookieMiddleware(next, new Options
                                 {
-                                    if (payload == null) return null;
+                                    Certificate = new X509Certificate2(Path.Combine(Directory.GetCurrentDirectory(), "REstate.pfx"), "development"),
+                                    CookieName = "REstate.Auth",
+                                    CookiePath = "/",
+                                    CookieHttpOnly = true,
+                                    TokenLifeSpan = TimeSpan.FromMinutes(43200), //30 days
+                                ClaimsPrincipalResourceName = config.REstateConfiguration.AuthenticationSettings.ClaimsPrincipalResourceName,
+                                    CreatePrincipal = (payload) =>
+                                    {
+                                        if (payload == null) return null;
 
-                                    object jtiObj;
-                                    if (!payload.TryGetValue("jti", out jtiObj)) return null;
+                                        object jtiObj;
+                                        if (!payload.TryGetValue("jti", out jtiObj)) return null;
 
-                                    object apikeyObj;
-                                    if (!payload.TryGetValue("apikey", out apikeyObj)) return null;
+                                        object apikeyObj;
+                                        if (!payload.TryGetValue("apikey", out apikeyObj)) return null;
 
-                                    object identityObj;
-                                    if (!payload.TryGetValue("sub", out identityObj)) return null;
+                                        object identityObj;
+                                        if (!payload.TryGetValue("sub", out identityObj)) return null;
 
-                                    var identity = identityObj as string;
-                                    var apikey = apikeyObj as string;
-                                    var jti = jtiObj as string;
-                                    if (identity == null || apikey == null) return null;
+                                        var identity = identityObj as string;
+                                        var apikey = apikeyObj as string;
+                                        var jti = jtiObj as string;
+                                        if (identity == null || apikey == null) return null;
 
-                                    var claims = payload.ContainsKey("claims")
-                                        ? (container.Resolve<StringSerializer>().Deserialize<IEnumerable<string>>(payload["claims"].ToString())).Select(claim => new Claim("claim", claim))
-                                          ?? new Claim[0]
-                                        : new Claim[0];
+                                        var claims = payload.ContainsKey("claims")
+                                            ? (container.Resolve<StringSerializer>().Deserialize<IEnumerable<string>>(payload["claims"].ToString()))
+                                                .Select(claim => new Claim("claim", claim))
+                                              ?? new Claim[0]
+                                            : new Claim[0];
 
-                                    claims = claims.Union(new[] { new Claim("apikey", apikey), new Claim("jti", jti) });
+                                        claims = claims.Union(new[] { new Claim("apikey", apikey), new Claim("jti", jti) });
 
-                                    var principal = new ClaimsPrincipal(
-                                        new ClaimsIdentity(
-                                            new GenericIdentity(identity),
-                                            claims));
+                                        var principal = new ClaimsPrincipal(
+                                            new ClaimsIdentity(
+                                                new GenericIdentity(identity),
+                                                claims));
 
-                                    return principal;
-                                }
-                            }).Invoke);
+                                        return principal;
+                                    }
+                                }).Invoke);
+                        }
 
                         owin.UseNancy(o =>
                         {
-                            o.Bootstrapper = new PlatformJwtNancyBootstrapper(container);
+                            o.Bootstrapper = config.REstateConfiguration.AuthenticationSettings.UseAuthentication 
+                                ? new PlatformJwtNancyBootstrapper(container) 
+                                : new PlatformNancyBootstrapper(container);
                         });
 
 
-                        
+
                     });
 
                 })

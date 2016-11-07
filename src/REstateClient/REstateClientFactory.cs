@@ -1,6 +1,5 @@
 ﻿using REstate;
 using System;
-using System.Collections.Generic;
 
 namespace REstateClient
 {

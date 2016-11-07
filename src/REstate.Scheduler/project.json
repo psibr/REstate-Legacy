@@ -16,6 +16,9 @@
       "imports": "dnxcore50"
     }
   },
+  "buildOptions": {
+    "debugType": "portable"
+  },
   "packOptions": {
     "requireLicenseAcceptance": false,
     "licenseUrl": "https://opensource.org/licenses/MIT",

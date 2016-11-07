@@ -1,5 +1,4 @@
 ﻿using REstate.Scheduling;
-using REstateClient.Models;
 using System.Threading.Tasks;
 
 namespace REstateClient

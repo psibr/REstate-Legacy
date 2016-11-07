@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using Nancy.Bootstrapper;
 using Nancy.Owin;
-using REstate.Logging;
 using System.Security.Claims;
 
 namespace REstate.Web

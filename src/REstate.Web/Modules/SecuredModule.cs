@@ -14,8 +14,8 @@ namespace REstate.Web.Modules
         /// <summary>
         /// Requires the inheriting module to have authentication only.
         /// </summary>
-        protected SecuredModule()
-            : this(null)
+        protected SecuredModule(REstateConfiguration configuration)
+            : this(configuration, null)
         {
         }
 
@@ -23,8 +23,8 @@ namespace REstate.Web.Modules
         /// Requires the inheriting module to have authentication only.
         /// </summary>
         /// <param name="modulePath">The module path prefix.</param>
-        protected SecuredModule(string modulePath)
-            : this(modulePath, null)
+        protected SecuredModule(REstateConfiguration configuration, string modulePath)
+            : this(configuration, modulePath, null)
         {
         }
 
@@ -34,13 +34,16 @@ namespace REstate.Web.Modules
         /// </summary>
         /// <param name="modulePath">The module path prefix.</param>
         /// <param name="claimPredicates"></param>
-        protected SecuredModule(string modulePath, params Predicate<Claim>[] claimPredicates)
+        protected SecuredModule(REstateConfiguration configuration, string modulePath, params Predicate<Claim>[] claimPredicates)
             : base(modulePath)
         {
-            if (claimPredicates != null)
-                this.RequiresClaims(claimPredicates);
-            else
-                this.RequiresAuthentication();
+            if (configuration.AuthenticationSettings.UseAuthentication)
+            {
+                if (claimPredicates != null)
+                    this.RequiresClaims(claimPredicates);
+                else
+                    this.RequiresAuthentication();
+            }
         }
     }
 }

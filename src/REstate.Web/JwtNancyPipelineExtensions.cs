@@ -23,8 +23,7 @@ namespace REstate.Web
 
                     ctx.CurrentUser = new ClaimsPrincipal(identity);
 
-                    logger
-                        .ForContext("clientAddress", ctx.Request.UserHostAddress)
+                    logger.ForContext("clientAddress", ctx.Request.UserHostAddress)
                         .Verbose("Authenticated principal: {principalName} " +
                                  "for request {requestMethod} {requestPath}.",
                                  ctx.CurrentUser.Identity.Name, ctx.Request.Method, ctx.Request.Path);

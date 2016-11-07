@@ -12,7 +12,6 @@ namespace REstate.Web.Auth.Modules
     public sealed class AuthenticationModule
         : NancyModule
     {
-
         public AuthenticationModule(REstateConfiguration configuration,
             IAuthRepositoryFactory authRepositoryFactory)
             : base("/auth")
@@ -53,39 +52,43 @@ namespace REstate.Web.Auth.Modules
             //    return 201;
             //});
 
-            Post("/apikey", async (parameters, ct) =>
+            //We only have routes if authentication is turned on.
+            if (configuration.AuthenticationSettings.UseAuthentication)
             {
-                var apiKeyRequest = this.Bind<ApiKeyAuthenticationRequest>();
+                Post("/apikey", async (parameters, ct) =>
+                {
+                    var apiKeyRequest = this.Bind<ApiKeyAuthenticationRequest>();
 
-                if(string.IsNullOrWhiteSpace(apiKeyRequest?.ApiKey))
-                    return new Response
+                    if (string.IsNullOrWhiteSpace(apiKeyRequest?.ApiKey))
+                        return new Response
+                        {
+                            StatusCode = HttpStatusCode.BadRequest,
+                            ReasonPhrase = "Unable to detect ApiKey, check content-type headers."
+                        };
+
+                    var apiKey = apiKeyRequest.ApiKey;
+
+                    var environment = Context.GetOwinEnvironment();
+                    var signInDelegate = (SignInDelegate)environment["jwtandcookie.signin"];
+
+                    IPrincipal principal;
+                    using (var repository = authRepositoryFactory.OpenRepository())
                     {
-                        StatusCode = HttpStatusCode.BadRequest,
-                        ReasonPhrase = "Unable to detect ApiKey, check content-type headers."
-                    };
+                        principal = await repository.LoadPrincipalByApiKey(apiKey, ct);
+                    }
 
-                var apiKey = apiKeyRequest.ApiKey;
+                    if (principal == null) return 401;
 
-                var environment = Context.GetOwinEnvironment();
-                var signInDelegate = (SignInDelegate)environment["jwtandcookie.signin"];
-
-                IPrincipal principal;
-                using (var repository = authRepositoryFactory.OpenRepository())
-                {
-                    principal = await repository.LoadPrincipalByApiKey(apiKey, ct);
-                }
-
-                if (principal == null) return 401;
-
-                var jwt = signInDelegate((jti) => new Dictionary<string, object>
-                {
+                    var jwt = signInDelegate((jti) => new Dictionary<string, object>
+                    {
                     { "sub", principal.UserOrApplicationName},
                     { "apikey", principal.ApiKey},
                     { "claims", principal.Claims }
-                }, false);
+                    }, false);
 
-                return new JwtResponse { Jwt = jwt };
-            });
+                    return new JwtResponse { Jwt = jwt };
+                });
+            }
         }
     }
 }

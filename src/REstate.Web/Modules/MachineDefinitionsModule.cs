@@ -25,9 +25,10 @@ namespace REstate.Web.Modules
         /// <param name="stateMachineFactory">The state machine factory.</param>
         /// <param name="logger"></param>
         public MachineDefinitionsModule(
+            REstateConfiguration configuration,
             StateEngineFactory stateEngineFactory,
             IPlatformLogger logger)
-            : base("/machines", claim => claim.Type == "claim" && claim.Value == "machineBuilder")
+            : base(configuration, "/machines", claim => claim.Type == "claim" && claim.Value == "machineBuilder")
         {
             Logger = logger;
             StateEngineFactory = stateEngineFactory;
@@ -50,7 +51,7 @@ namespace REstate.Web.Modules
             Post("{MachineDefinitionId}/instantiate/", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
-                    .GetStateEngine(Context.CurrentUser.GetApiKey());
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 var metadata = this.Bind<IDictionary<string, string>>();
 
@@ -71,7 +72,7 @@ namespace REstate.Web.Modules
             Get("/", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
-                    .GetStateEngine(Context.CurrentUser.GetApiKey());
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 return await stateEngine.ListMachines(ct);
             });
@@ -82,7 +83,7 @@ namespace REstate.Web.Modules
             Post("/", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
-                    .GetStateEngine(Context.CurrentUser.GetApiKey());
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 var stateMachineConfiguration = this.Bind<Machine>();
 
@@ -98,7 +99,7 @@ namespace REstate.Web.Modules
             Post("/preview", (parameters) =>
             {
                 var stateEngine = StateEngineFactory
-                    .GetStateEngine(Context.CurrentUser.GetApiKey());
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 var stateMachineConfiguration = this.Bind<Machine>();
 
@@ -117,7 +118,7 @@ namespace REstate.Web.Modules
             Get("/{MachineDefinitionId}", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
-                    .GetStateEngine(Context.CurrentUser.GetApiKey());
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 string machineDefinitionId = parameters.MachineDefinitionId;
 
@@ -140,7 +141,7 @@ namespace REstate.Web.Modules
             Get("/{MachineDefinitionId}/diagram", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
-                    .GetStateEngine(Context.CurrentUser.GetApiKey());
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 string machineDefinitionId = parameters.MachineDefinitionId;
 

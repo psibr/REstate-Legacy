@@ -16,7 +16,9 @@
     ],
     "summary": "Client library for REstate."
   },
-
+    "buildOptions": {
+    "debugType": "portable"
+  },
   "dependencies": {
     "System.Collections": "4.0.11",
     "System.Linq": "4.1.0",
@@ -34,7 +36,6 @@
     "System.Threading": "4.0.11",
     "System.Collections.Concurrent": "4.0.12"
   },
-
   "frameworks": {
     "netstandard1.6": {
       "imports": "dnxcore50"

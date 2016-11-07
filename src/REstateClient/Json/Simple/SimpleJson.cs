@@ -66,7 +66,6 @@ namespace REstateClient.Json.Simple
     using System.Reflection;
     using System.Runtime.Serialization;
     using System.Text;
-    using System.Threading;
 
     // ReSharper disable LoopCanBeConvertedToQuery
     // ReSharper disable RedundantExplicitArrayCreation

@@ -27,9 +27,10 @@ namespace REstate.Web.Modules
         /// <param name="stateMachineFactory">The state machine factory.</param>
         /// <param name="logger"></param>
         public InstancesModule(
+            REstateConfiguration configuration,
             StateEngineFactory stateEngineFactory,
             IPlatformLogger logger)
-            : base("/instances", claim => claim.Type == "claim" && claim.Value == "operator")
+            : base(configuration, "/instances", claim => claim.Type == "claim" && claim.Value == "operator")
         {
             Logger = logger;
             StateEngineFactory = stateEngineFactory;
@@ -54,7 +55,7 @@ namespace REstate.Web.Modules
             Get("/{MachineInstanceId}", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
-                    .GetStateEngine(Context.CurrentUser.GetApiKey());
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 string machineInstanceId = parameters.machineInstanceId;
 
@@ -67,7 +68,7 @@ namespace REstate.Web.Modules
             Get("/{MachineInstanceId}/diagram", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
-                    .GetStateEngine(Context.CurrentUser.GetApiKey());
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 string machineInstanceId = parameters.machineInstanceId;
 
@@ -81,7 +82,7 @@ namespace REstate.Web.Modules
             Delete("/{MachineInstanceId}", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
-                    .GetStateEngine(Context.CurrentUser.GetApiKey());
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 string machineInstanceId = parameters.machineInstanceId;
 
@@ -94,7 +95,7 @@ namespace REstate.Web.Modules
             Post("/{MachineInstanceId}/fire/{TriggerName}", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
-                    .GetStateEngine(Context.CurrentUser.GetApiKey());
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 var triggerFireRequest = this.Bind<TriggerFireRequest>();
                 InstanceRecord instanceRecord;
@@ -140,7 +141,7 @@ namespace REstate.Web.Modules
             Get("/{MachineInstanceId}/triggers", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
-                    .GetStateEngine(Context.CurrentUser.GetApiKey());
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 string machineInstanceId = parameters.MachineInstanceId;
 
@@ -159,7 +160,7 @@ namespace REstate.Web.Modules
             Get("/{MachineInstanceId}/isinstate/{StateName}", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
-                    .GetStateEngine(Context.CurrentUser.GetApiKey());
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 string machineInstanceId = parameters.MachineInstanceId;
                 string isInStateName = parameters.StateName;
@@ -177,7 +178,7 @@ namespace REstate.Web.Modules
             Get("/{MachineInstanceId}/state", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
-                    .GetStateEngine(Context.CurrentUser.GetApiKey());
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 string machineInstanceId = parameters.MachineInstanceId;
 
