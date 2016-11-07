@@ -6,9 +6,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}\\src\\REstate.Web\\bin\\Debug\\netcoreapp1.0\\REstate.Web.dll",
+            "program": "${workspaceRoot}/src/REstate.Web/bin/Debug/netcoreapp1.0/REstate.Web.dll",
             "args": [],
-            "cwd": "${workspaceRoot}\\src\\REstate.Web",
+            "cwd": "${workspaceRoot}/src/REstate.Web",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "launchBrowser": {
