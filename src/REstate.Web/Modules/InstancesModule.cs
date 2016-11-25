@@ -7,6 +7,7 @@ using REstate.Web.Requests;
 using REstate.Web.Responses;
 using System;
 using System.Linq;
+using static Nancy.Responses.RedirectResponse;
 
 namespace REstate.Web.Modules
 {
@@ -46,6 +47,8 @@ namespace REstate.Web.Modules
 
             GetDiagramForInstance();
 
+            GetDiagramChartForInstance();
+
             GetInstanceMetadata();
 
             DeleteInstance();
@@ -61,7 +64,9 @@ namespace REstate.Web.Modules
 
                 string metadata = await stateEngine.GetInstanceMetadataRaw(machineInstanceId, ct);
 
-                return Response.AsText(metadata ?? "{ }", "application/json");
+                return Negotiate
+                    .WithMediaRangeResponse("application/json", Response.AsText(metadata ?? "{ }", "application/json"))
+                    .WithAllowedMediaRange("application/json");
             });
 
         private void GetDiagramForInstance() =>
@@ -75,7 +80,25 @@ namespace REstate.Web.Modules
                 IStateMachine machine = await stateEngine
                     .GetInstance(machineInstanceId, ct);
 
-                return Response.AsText(machine.ToString(), "text/plain");
+                return Negotiate
+                    .WithMediaRangeResponse("text/plain", Response.AsText(machine.ToString(), "text/plain"))
+                    .WithAllowedMediaRange("text/plain");
+            });
+
+        private void GetDiagramChartForInstance() =>
+            Get("/{MachineInstanceId}/diagram/chart", async (parameters, ct) =>
+            {
+                var stateEngine = StateEngineFactory
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
+
+                string machineInstanceId = parameters.machineInstanceId;
+
+                IStateMachine machine = await stateEngine
+                    .GetInstance(machineInstanceId, ct);
+
+                var encodedDiagram = System.Net.WebUtility.UrlEncode(machine.ToString());
+
+                return Response.AsRedirect($"https://chart.googleapis.com/chart?chl={encodedDiagram}&cht=gv", RedirectType.SeeOther);
             });
 
         private void DeleteInstance() =>
@@ -134,7 +157,9 @@ namespace REstate.Web.Modules
 
                 instanceRecord = await stateEngine.GetInstanceInfo(triggerFireRequest.MachineInstanceId, ct);
 
-                return instanceRecord;
+                return Negotiate
+                    .WithModel(instanceRecord)
+                    .WithAllowedMediaRange("application/json");
             });
 
         private void GetAvailableTriggers() =>
@@ -148,12 +173,16 @@ namespace REstate.Web.Modules
                 var machine = await stateEngine
                     .GetInstance(machineInstanceId, ct);
 
-                return machine.PermittedTriggers.Select(trigger =>
+                var permittedTriggers = machine.PermittedTriggers.Select(trigger =>
                     new Responses.Trigger
                     {
                         MachineName = trigger.MachineDefinitionId,
                         TriggerName = trigger.TriggerName
                     }).ToList();
+
+                return Negotiate
+                    .WithModel(permittedTriggers)
+                    .WithAllowedMediaRange("application/json");
             });
 
         private void IsInState() =>
@@ -171,7 +200,10 @@ namespace REstate.Web.Modules
                 var isInState = machine.IsInState(
                         new State(machine.MachineDefinitionId, isInStateName));
 
-                return new IsInStateResponse { QueriedStateName = isInStateName, IsInState = isInState };
+                return Negotiate
+                    .WithModel(new IsInStateResponse { QueriedStateName = isInStateName, IsInState = isInState })
+                    .WithAllowedMediaRange("application/json");
+                
             });
 
         private void GetMachineState() =>
@@ -192,7 +224,9 @@ namespace REstate.Web.Modules
                         ReasonPhrase = "The machine instance requested does not exist."
                     };
 
-                return instanceRecord;
+                return Negotiate
+                    .WithModel(instanceRecord)
+                    .WithAllowedMediaRange("application/json");
             });
     }
 }

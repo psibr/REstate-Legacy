@@ -81,12 +81,14 @@ namespace REstate.Web.Auth.Modules
 
                     var jwt = signInDelegate((jti) => new Dictionary<string, object>
                     {
-                    { "sub", principal.UserOrApplicationName},
-                    { "apikey", principal.ApiKey},
-                    { "claims", principal.Claims }
+                        { "sub", principal.UserOrApplicationName},
+                        { "apikey", principal.ApiKey},
+                        { "claims", principal.Claims }
                     }, false);
 
-                    return new JwtResponse { Jwt = jwt };
+                    return Negotiate
+                        .WithModel(new JwtResponse { Jwt = jwt })
+                        .WithAllowedMediaRange("application/json");
                 });
             }
         }

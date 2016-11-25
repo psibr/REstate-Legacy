@@ -6,6 +6,7 @@ using REstate.Logging;
 using REstate.Web.Responses;
 using System;
 using System.Collections.Generic;
+using static Nancy.Responses.RedirectResponse;
 
 namespace REstate.Web.Modules
 {
@@ -37,6 +38,8 @@ namespace REstate.Web.Modules
 
             GetDiagramForDefinition();
 
+            GetDiagramChartForDefinition();
+
             DefineStateMachine();
 
             ListMachines();
@@ -60,10 +63,12 @@ namespace REstate.Web.Modules
                 var machineInstanceId = await stateEngine
                     .InstantiateMachine(machineDefinitionId, metadata, ct);
 
-                return new MachineInstanceResponse
-                {
-                    MachineInstanceId = machineInstanceId
-                };
+                return Negotiate
+                    .WithModel(new MachineInstanceResponse
+                        {
+                            MachineInstanceId = machineInstanceId
+                        })
+                    .WithAllowedMediaRange("application/json");
             });
         }
 
@@ -74,7 +79,9 @@ namespace REstate.Web.Modules
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
-                return await stateEngine.ListMachines(ct);
+                return Negotiate
+                    .WithModel(await stateEngine.ListMachines(ct))
+                    .WithAllowedMediaRange("application/json");
             });
         }
 
@@ -90,7 +97,9 @@ namespace REstate.Web.Modules
                 Machine newMachineConfiguration = await stateEngine
                     .DefineStateMachine(stateMachineConfiguration, ct);
 
-                return newMachineConfiguration;
+                return Negotiate
+                    .WithModel(newMachineConfiguration)
+                    .WithAllowedMediaRange("application/json");
             });
         }
 
@@ -108,8 +117,10 @@ namespace REstate.Web.Modules
 
                 if (machine == null)
                     throw new Exception("Unable to construct machine.");
-
-                return Response.AsText(machine.ToString(), "text/plain");
+                    
+                return Negotiate
+                    .WithMediaRangeResponse("text/plain", Response.AsText(machine.ToString(), "text/plain"))
+                    .WithAllowedMediaRange("text/plain");
             });
         }
 
@@ -127,7 +138,10 @@ namespace REstate.Web.Modules
                     Machine configuration = await stateEngine
                         .GetMachineDefinition(machineDefinitionId, ct);
 
-                    return configuration;
+                return Negotiate
+                    .WithModel(configuration)
+                    .WithAllowedMediaRange("application/json");
+
                 }
                 catch(InvalidOperationException)
                 {
@@ -148,7 +162,27 @@ namespace REstate.Web.Modules
                 string diagram = await stateEngine
                     .GetDiagramForDefinition(machineDefinitionId, ct);
 
-                return Response.AsText(diagram, "text/plain");
+                return Negotiate
+                    .WithMediaRangeResponse("text/plain", Response.AsText(diagram, "text/plain"))
+                    .WithAllowedMediaRange("text/plain");
+            });
+        }
+
+        private void GetDiagramChartForDefinition()
+        {
+            Get("/{MachineDefinitionId}/diagram/chart", async (parameters, ct) =>
+            {
+                var stateEngine = StateEngineFactory
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
+
+                string machineDefinitionId = parameters.MachineDefinitionId;
+
+                string diagram = await stateEngine
+                    .GetDiagramForDefinition(machineDefinitionId, ct);
+
+                var encodedDiagram = System.Net.WebUtility.UrlEncode(diagram);
+
+                return Response.AsRedirect($"https://chart.googleapis.com/chart?chl={encodedDiagram}&cht=gv", RedirectType.SeeOther);
             });
         }
     }

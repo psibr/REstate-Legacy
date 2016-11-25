@@ -1,0 +1,15 @@
+FROM microsoft/dotnet:latest
+WORKDIR /app
+
+COPY . .
+
+COPY NuGet.Config ~/.nuget/NuGet/NuGet.Config
+
+RUN dotnet restore
+RUN dotnet publish src/REstate.Web --output /out --configuration Release
+ENV ASPNETCORE_URLS http://*:5000
+EXPOSE 5000
+
+WORKDIR /out
+
+ENTRYPOINT ["dotnet", "REstate.Web.dll"]

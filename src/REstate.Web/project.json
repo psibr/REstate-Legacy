@@ -19,7 +19,10 @@
   "buildOptions": {
     "emitEntryPoint": true,
     "debugType": "portable",
-    "copyToOutput": { "includeFiles": [ "appconfig.json", "REstate.pfx" ] }
+    "copyToOutput": { "includeFiles": [ "appconfig.json", "REstate.pfx" ], "include": "Views/**" }
+  },
+  "publishOptions": {
+    "includeFiles": [ "appconfig.json", "REstate.pfx" ]
   },
   "frameworks": {
     "netcoreapp1.0": {
@@ -54,7 +57,11 @@
     "REstate.Auth.Repositories.MSSQL": "0.1.0-*",
     "JwtAndCookie": "2.0.0-*",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
-    "Serilog.Sinks.Literate": "2.0.0"
+    "Serilog.Sinks.Literate": "2.0.0",
+    "REstate.Connectors.RabbitMQ": {
+      "target": "project",
+      "version": "0.1.0-*"
+    }
   },
   "runtimes": { "win10-x64": {} }
 }
