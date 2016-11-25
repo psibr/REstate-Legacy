@@ -35,7 +35,8 @@
   "publishOptions": {
     "includeFiles": [
       "appconfig.json",
-      "REstate.pfx"
+      "REstate.pfx",
+      "web.config"
     ]
   },
   "frameworks": {
