@@ -9,7 +9,11 @@
     "requireLicenseAcceptance": false,
     "licenseUrl": "https://opensource.org/licenses/MIT",
     "projectUrl": "",
-    "tags": [ "StateMachine", "SMAAS", "SM-AAS" ],
+    "tags": [
+      "StateMachine",
+      "SMAAS",
+      "SM-AAS"
+    ],
     "owners": [
       "Donovan (Ovan) Crone",
       "Andrea Balfour"
@@ -19,10 +23,19 @@
   "buildOptions": {
     "emitEntryPoint": true,
     "debugType": "portable",
-    "copyToOutput": { "includeFiles": [ "appconfig.json", "REstate.pfx" ], "include": "Views/**" }
+    "copyToOutput": {
+      "includeFiles": [
+        "appconfig.json",
+        "REstate.pfx"
+      ],
+      "include": "Views/**"
+    }
   },
   "publishOptions": {
-    "includeFiles": [ "appconfig.json", "REstate.pfx" ]
+    "includeFiles": [
+      "appconfig.json",
+      "REstate.pfx"
+    ]
   },
   "frameworks": {
     "netcoreapp1.0": {
@@ -31,7 +44,8 @@
           "version": "1.0.1",
           "type": "platform"
         }
-      }
+      },
+      "imports": "portable-net45+win8+wp8+wpa81"
     }
   },
   "dependencies": {
@@ -61,7 +75,19 @@
     "REstate.Connectors.RabbitMQ": {
       "target": "project",
       "version": "0.1.0-*"
+    },
+    "Microsoft.AspNetCore.AzureAppServicesIntegration": "1.0.0-preview1-final",
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
+      "version": "1.0.0-preview2-final",
+      "imports": "portable-net45+win8+dnxcore50"
     }
   },
-  "runtimes": { "win10-x64": {} }
+  "runtimes": {
+    "win10-x64": {}
+  },
+  "scripts": {
+    "postpublish": [
+      "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%"
+    ]
+  }
 }
