@@ -76,7 +76,9 @@
       "target": "project",
       "version": "0.1.0-*"
     },
-    "Microsoft.AspNetCore.AzureAppServicesIntegration": "1.0.0-preview1-final",
+    "Microsoft.AspNetCore.AzureAppServicesIntegration": "1.0.0-preview1-final"
+  },
+  "tools": {
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
       "version": "1.0.0-preview2-final",
       "imports": "portable-net45+win8+dnxcore50"
