@@ -22,7 +22,7 @@ namespace REstate.Repositories.Core.Susanoo
         public async Task<IEnumerable<MachineRecord>> ListMachines(CancellationToken cancellationToken)
         {
             return (await DefineCommand(
-                    "SELECT MachineName, InitialState, AutoIgnoreTriggers, CreatedDateTime " +
+                    "SELECT MachineName, InitialState, CreatedDateTime " +
                     "FROM Machines;")
                 .WithResultsAs<MachineRecord>()
                 .Compile()
@@ -65,8 +65,8 @@ namespace REstate.Repositories.Core.Susanoo
             var definition = _StringSerializer.Serialize(machine);
 
             var results = await DefineCommand(
-                    "INSERT INTO Machines (MachineName, ForkedFrom, InitialState, AutoIgnoreTriggers, Definition) " +
-                    "VALUES (@MachineName, @ForkedFrom, @InitialState, @AutoIgnoreTriggers, @Definition);" +
+                    "INSERT INTO Machines (MachineName, ForkedFrom, InitialState, Definition) " +
+                    "VALUES (@MachineName, @ForkedFrom, @InitialState, @Definition);" +
                     "\r\n\r\n" +
                     "SELECT * FROM Machines WHERE MachineName = @MachineName")
                 .SendNullValues()
@@ -77,7 +77,6 @@ namespace REstate.Repositories.Core.Susanoo
                     machine.MachineName,
                     ForkedFrom = forkedFrom,
                     machine.InitialState,
-                    machine.AutoIgnoreTriggers,
                     Definition = definition
                 }, cancellationToken);
 

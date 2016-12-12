@@ -4,6 +4,6 @@ namespace REstate.Configuration
     {
         public string TriggerName { get; set; }
         public string ResultantStateName { get; set; }
-        public Code Guard { get; set; }
+        public GuardConnector Guard { get; set; }
     }
 }

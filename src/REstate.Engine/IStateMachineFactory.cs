@@ -1,12 +1,10 @@
 ﻿using REstate.Configuration;
 
-namespace REstate.Engine.Services
+namespace REstate.Engine
 {
     public interface IStateMachineFactory
     {
         IStateMachine ConstructFromConfiguration(string apiKey, string machineInstanceId,
             Machine configuration);
-
-        IStateMachine ConstructFromConfiguration(string apiKey, Machine configuration);
     }
 }

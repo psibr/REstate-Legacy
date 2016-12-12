@@ -86,7 +86,6 @@ namespace REstate
         /// <returns>
         /// A hash code for the current object.
         /// </returns>
-        /// <filterpriority>2</filterpriority>
         public override int GetHashCode()
         {
             unchecked

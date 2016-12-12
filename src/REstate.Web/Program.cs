@@ -5,7 +5,6 @@ namespace REstate.Web
     using Engine.Connectors.Scheduler;
     using Engine.Repositories;
     using Engine.Services;
-    using Engine.Stateless;
     using Logging;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -29,6 +28,7 @@ namespace REstate.Web
     using Nancy.ModelBinding;
     using RabbitMQ.Client;
     using Engine.Connectors.RabbitMq;
+    using System.Threading;
 
     public class Program
     {
@@ -54,7 +54,6 @@ namespace REstate.Web
                 .UseConfiguration(configuration)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseKestrel()
-                .UseIISIntegration()
                 .Configure(app =>
                 {
                     app.UseDeveloperExceptionPage(new DeveloperExceptionPageOptions { });
@@ -88,17 +87,22 @@ namespace REstate.Web
 
             var chronoConsumer = container.Resolve<ChronoConsumer>();
 
-            //Start the Consumer thread and hold a reference to the task.
-            var chronoTask = chronoConsumer.StartAsync(config.REstateConfiguration.AuthenticationSettings.SchedulerApiKey);
+            using(CancellationTokenSource chronoConsumerSource = new CancellationTokenSource())
+            {
+                //Start the Consumer thread and hold a reference to the task.
+                var chronoTask = chronoConsumer.StartAsync(config.REstateConfiguration.AuthenticationSettings.SchedulerApiKey, chronoConsumerSource.Token);
 
-            //Running web layer, blocking call.
-            host.Run();
+                //Running web layer, blocking call.
+                host.Run();
 
-            //Request work to stop.
-            chronoConsumer.Stop();
+                //Request work to stop.
+                chronoConsumerSource.Cancel();
 
-            //Wait for work to finish before exiting.
-            chronoTask.Wait();
+                //Wait for work to finish before exiting.
+                chronoTask.Wait();
+            }
+
+
         }
 
         private static IContainer RegisterComponents(ContainerBuilder containerBuilder, RootConfig config, ILogger logger)
@@ -125,7 +129,8 @@ namespace REstate.Web
             containerBuilder.Register((ctx)
                     => new RepositoryContextFactory(ctx.Resolve<REstateConfiguration>().ConnectionStrings.EngineConnectionString, ctx.Resolve<StringSerializer>(), ctx.Resolve<IPlatformLogger>()))
                 .As<IRepositoryContextFactory>();
-            containerBuilder.RegisterType<StatelessStateMachineFactory>().As<IStateMachineFactory>();
+            containerBuilder.RegisterInstance(new DotGraphCartographer()).AsSelf();
+            containerBuilder.RegisterType<REstateMachineFactory>().As<IStateMachineFactory>();
             containerBuilder.RegisterType<StateEngineFactory>();
             containerBuilder.RegisterType<DirectChronoConsumer>().As<ChronoConsumer>();
             containerBuilder.Register((ctx)

@@ -20,14 +20,14 @@ namespace REstate.Web
         public object Bind(NancyContext context, Type modelType, object instance,
             BindingConfig configuration, params string[] blackList)
         {
-            var result = (instance as Dictionary<string, string>);
+            IDictionary<string, string> result = (instance as Dictionary<string, string>);
 
             if (result == null)
             {
                 var body = context.Request.Body.AsString();
 
                 if(!string.IsNullOrWhiteSpace(body))
-                    result = StringSerializer.Deserialize<Dictionary<string, string>>(body);
+                    result = StringSerializer.Deserialize<IDictionary<string, string>>(body);
             }
 
             return result ?? new Dictionary<string, string>();

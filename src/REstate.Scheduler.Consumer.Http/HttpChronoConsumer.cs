@@ -1,7 +1,7 @@
-using REstate.Configuration;
 using REstate.Logging;
 using REstateClient;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace REstate.Scheduler.Service
 {
@@ -26,14 +26,16 @@ namespace REstate.Scheduler.Service
             Session = await Client.GetSession(apiKey);
         }
 
-        protected async override Task<InstanceRecord> GetState(string machineInstanceId)
+        protected async override Task<State> GetStateAsync(string machineInstanceId, CancellationToken cancellationToken)
         {
-            return await Session.GetInstanceInfo(machineInstanceId);
+            var record = await Session.GetInstanceInfo(machineInstanceId);
+
+            return new State(record.MachineName, record.StateName, record.CommitTag);
         }
 
-        protected async override Task FireTrigger(string machineInstanceId, string triggerName, string payload)
+        protected async override Task FireTriggerAsync(string machineInstanceId, string triggerName, string contentType, string payload, string lastCommitTag, CancellationToken cancellationToken)
         {
-            await Session.FireTrigger(machineInstanceId, triggerName, payload);
+            await Session.FireTrigger(machineInstanceId, triggerName, payload, contentType, lastCommitTag); //TODO: add commitTag and contentType.
         }
     }
 }

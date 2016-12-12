@@ -1,5 +1,4 @@
-﻿using REstate.Configuration;
-using REstate.Logging;
+﻿using REstate.Logging;
 using System;
 using System.Linq;
 using System.Threading;
@@ -11,7 +10,6 @@ namespace REstate.Scheduler
     {
         protected IPlatformLogger Logger { get; }
         protected IChronoRepositoryFactory RepositoryFactory { get; }
-        protected CancellationTokenSource Cts { get; } = new CancellationTokenSource();
 
         private readonly TriggerSchedulerFactory _TriggerSchedulerFactory;
 
@@ -23,16 +21,16 @@ namespace REstate.Scheduler
             _TriggerSchedulerFactory = triggerSchedulerFactory;
         }
 
-        protected abstract Task<InstanceRecord> GetState(string machineInstanceId);
+        protected abstract Task<State> GetStateAsync(string machineInstanceId, CancellationToken cancellationToken);
 
-        protected abstract Task FireTrigger(string machineInstanceId, string triggerName, string payload);
+        protected abstract Task FireTriggerAsync(string machineInstanceId, string triggerName, string contentType, string payload, string lastCommitTag, CancellationToken cancellationToken);
 
         protected async virtual Task Initialize(string apiKey)
         {
             await Task.CompletedTask;
         }
 
-        public Task StartAsync(string apiKey)
+        public Task StartAsync(string apiKey, CancellationToken cancellationToken)
         {
             return Task.Run(async () =>
             {
@@ -45,7 +43,7 @@ namespace REstate.Scheduler
 
                 Logger.Debug("Initialization completed.");
 
-                foreach (var chronoTrigger in repository.GetChronoStream(Cts.Token))
+                foreach (var chronoTrigger in repository.GetChronoStream(cancellationToken))
                 {
                     Logger.Debug("ChronoTrigger found: {@chronoTrigger}.", chronoTrigger);
 
@@ -54,7 +52,7 @@ namespace REstate.Scheduler
                         Logger.Verbose("Checking state to ensure ChronoTrigger {{{chronoTriggerId}}} is still valid.",
                             chronoTrigger.ChronoTriggerId, chronoTrigger);
 
-                        var currentState = await GetState(chronoTrigger.MachineInstanceId);
+                        var currentState = await GetStateAsync(chronoTrigger.MachineInstanceId, cancellationToken);
 
                         if (currentState.StateName != chronoTrigger.StateName)
                         {
@@ -62,7 +60,7 @@ namespace REstate.Scheduler
                                 "ChronoTrigger {{{chronoTriggerId}}} trigger state ({triggerState}) did not match current state ({currentState}). Removing.",
                                 chronoTrigger.ChronoTriggerId, chronoTrigger.StateName, currentState.StateName);
 
-                            await scheduler.RemoveTrigger(chronoTrigger, Cts.Token);
+                            await scheduler.RemoveTrigger(chronoTrigger, cancellationToken);
                         }
                         else if (chronoTrigger.VerifyCommitTag && currentState.CommitTag != chronoTrigger.LastCommitTag)
                         {
@@ -71,7 +69,7 @@ namespace REstate.Scheduler
                                 "but commit tag did not. Removing.",
                                 chronoTrigger.ChronoTriggerId, chronoTrigger.StateName, currentState.StateName);
 
-                            await scheduler.RemoveTrigger(chronoTrigger, Cts.Token);
+                            await scheduler.RemoveTrigger(chronoTrigger, cancellationToken);
                         }
                         else
                         {
@@ -81,10 +79,10 @@ namespace REstate.Scheduler
 
                             try
                             {
-                                await FireTrigger(chronoTrigger.MachineInstanceId,
-                                    chronoTrigger.TriggerName, chronoTrigger.Payload);
+                                await FireTriggerAsync(chronoTrigger.MachineInstanceId,
+                                    chronoTrigger.TriggerName, chronoTrigger.ContentType, chronoTrigger.Payload, chronoTrigger.VerifyCommitTag ? chronoTrigger.LastCommitTag : null, cancellationToken);
 
-                                await scheduler.RemoveTrigger(chronoTrigger, Cts.Token);
+                                await scheduler.RemoveTrigger(chronoTrigger, cancellationToken);
 
                                 Logger.Information("ChronoTrigger {{{chronoTriggerId}}} fired successfully.",
                                     chronoTrigger.ChronoTriggerId, chronoTrigger);
@@ -107,15 +105,7 @@ namespace REstate.Scheduler
                         Logger.Error(ex, "Unable to check current state.");
                     }
                 }
-            }, Cts.Token);
-        }
-
-        public void Start(string apiKey) =>
-            StartAsync(apiKey);
-
-        public void Stop()
-        {
-            Cts.Cancel();
+            }, CancellationToken.None);
         }
     }
 }

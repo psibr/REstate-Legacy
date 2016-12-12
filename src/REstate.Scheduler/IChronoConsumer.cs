@@ -1,13 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace REstate.Scheduler
 {
     public interface IChronoConsumer
     {
-        void Start(string apiKey);
-
-        Task StartAsync(string apiKey);
-
-        void Stop();
+        Task StartAsync(string apiKey, CancellationToken cancellationToken);
     }
 }

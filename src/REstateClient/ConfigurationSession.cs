@@ -99,16 +99,20 @@ namespace REstateClient
             return triggers.Select(t => (Trigger)t).ToArray();
         }
 
-        public async Task<State> FireTrigger(string instanceId, string triggerName, string payload = null)
+        public async Task<State> FireTrigger(string instanceId, string triggerName, string contentType, string payload, string commitTag)
         {
             var responseBody = await EnsureAuthenticatedRequest(async (client) =>
             {
-                var payloadBody = StringSerializer.Serialize(new PayloadContainer { Payload = payload });
-
-                var response = await client.PostAsync($"instances/{instanceId}/fire/{triggerName}",
-                    payload == null
+                var content = payload == null
                         ? new StringContent(string.Empty)
-                        : new StringContent(payloadBody, Encoding.UTF8, "application/json"));
+                        : new StringContent(payload, Encoding.UTF8, contentType);
+
+                if(!string.IsNullOrWhiteSpace(commitTag))
+                    content.Headers.Add("X-REstate-CommitTag", new [] { commitTag });
+
+                var response = await client.PostAsync(
+                    $"instances/{instanceId}/fire/{triggerName}",
+                    content);
 
                 if (!response.IsSuccessStatusCode) throw GetException(response);
 
@@ -118,11 +122,6 @@ namespace REstateClient
             StateModel state = StringSerializer.Deserialize<StateModel>(responseBody);
 
             return state;
-        }
-
-        private class PayloadContainer
-        {
-            public string Payload { get; set; }
         }
 
         public async Task DeleteInstance(string machineInstanceId)

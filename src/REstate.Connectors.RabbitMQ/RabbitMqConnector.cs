@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
-using REstate.Engine;
 using REstate.Engine.Services;
 using REstate.Logging;
 
@@ -27,10 +26,10 @@ namespace REstate.Engine.Connectors.RabbitMq
 
         public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, State state, IDictionary<string, string> configuration)
         {
-            return ConstructAction(machineInstance, state, null, configuration);
+            return ConstructAction(machineInstance, state, null, null, configuration);
         }
 
-        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, State state, string payload, IDictionary<string, string> configuration)
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, State state, string contentType, string payload, IDictionary<string, string> configuration)
         {
             return (cancellationToken) =>
             {
@@ -52,7 +51,7 @@ namespace REstate.Engine.Connectors.RabbitMq
                 {
                     var properties = channel.CreateBasicProperties();
 
-                    properties.ContentType = actionSettings.ContentType ?? "application/json";
+                    properties.ContentType = contentType ?? actionSettings.ContentType ?? "text/plain";
                     properties.Type = actionSettings.MessageType;
                     if (actionSettings.Headers != null)
                         properties.Headers = actionSettings.Headers

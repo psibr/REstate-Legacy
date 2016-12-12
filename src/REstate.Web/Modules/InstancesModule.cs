@@ -1,13 +1,12 @@
 ﻿using Nancy;
-using Nancy.ModelBinding;
 using REstate.Configuration;
 using REstate.Engine;
 using REstate.Logging;
-using REstate.Web.Requests;
 using REstate.Web.Responses;
 using System;
 using System.Linq;
 using static Nancy.Responses.RedirectResponse;
+using Nancy.Extensions;
 
 namespace REstate.Web.Modules
 {
@@ -119,18 +118,30 @@ namespace REstate.Web.Modules
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
+                
+                string machineInstanceId = parameters.MachineInstanceId;
+                string triggerName = parameters.TriggerName;
+                var payload = this.Request.Body.AsString();
 
-                var triggerFireRequest = this.Bind<TriggerFireRequest>();
+                string contentType = this.Request.Headers.ContentType;
+
+                var commitTagHeaders = this.Request.Headers.Where(h => h.Key == "X-REstate-CommitTag");
+
+                var commitTag = commitTagHeaders.Any() ? commitTagHeaders.First().Value.FirstOrDefault() : null;
+
                 InstanceRecord instanceRecord;
 
                 IStateMachine machine = await stateEngine
-                    .GetInstance(triggerFireRequest.MachineInstanceId, ct);
+                    .GetInstance(machineInstanceId, ct);
 
                 try
                 {
-                    machine.Fire(new Trigger(machine.MachineDefinitionId,
-                        triggerFireRequest.TriggerName),
-                        triggerFireRequest.Payload);
+                    await machine.FireAsync(
+                        new Trigger(machine.MachineDefinitionId, triggerName),
+                        contentType,
+                        payload,
+                        commitTag,
+                        ct);
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -155,7 +166,7 @@ namespace REstate.Web.Modules
                         .WithModel(new ReasonPhraseResponse { ReasonPhrase = ex.InnerExceptions.First().Message });
                 }
 
-                instanceRecord = await stateEngine.GetInstanceInfo(triggerFireRequest.MachineInstanceId, ct);
+                instanceRecord = await stateEngine.GetInstanceInfoAsync(parameters.MachineInstanceId, ct);
 
                 return Negotiate
                     .WithModel(instanceRecord)
@@ -173,7 +184,7 @@ namespace REstate.Web.Modules
                 var machine = await stateEngine
                     .GetInstance(machineInstanceId, ct);
 
-                var permittedTriggers = machine.PermittedTriggers.Select(trigger =>
+                var permittedTriggers = (await machine.GetPermittedTriggersAsync(ct)).Select(trigger =>
                     new Responses.Trigger
                     {
                         MachineName = trigger.MachineDefinitionId,
@@ -197,11 +208,15 @@ namespace REstate.Web.Modules
                 var machine = await stateEngine
                     .GetInstance(machineInstanceId, ct);
 
-                var isInState = machine.IsInState(
-                        new State(machine.MachineDefinitionId, isInStateName));
+                var isInState = await machine.IsInStateAsync(
+                    new State(machine.MachineDefinitionId, isInStateName), ct);
 
                 return Negotiate
-                    .WithModel(new IsInStateResponse { QueriedStateName = isInStateName, IsInState = isInState })
+                    .WithModel(new IsInStateResponse 
+                    {
+                        QueriedStateName = isInStateName, 
+                        IsInState = isInState 
+                    })
                     .WithAllowedMediaRange("application/json");
                 
             });
@@ -215,7 +230,7 @@ namespace REstate.Web.Modules
                 string machineInstanceId = parameters.MachineInstanceId;
 
                 var instanceRecord = await stateEngine
-                    .GetInstanceInfo(machineInstanceId, ct);
+                    .GetInstanceInfoAsync(machineInstanceId, ct);
 
                 if (instanceRecord == null)
                     return new Response

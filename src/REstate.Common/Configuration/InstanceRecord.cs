@@ -10,7 +10,7 @@ namespace REstate.Configuration
 
         public string TriggerName { get; set; }
 
-        public string ParameterData { get; set; }
+        public string Payload { get; set; }
 
         public string CommitTag { get; set; }
 

@@ -9,7 +9,7 @@ namespace REstateClient
     {
         Task DeleteInstance(string instanceId);
 
-        Task<State> FireTrigger(string instanceId, string triggerName, string payload = null);
+        Task<State> FireTrigger(string instanceId, string triggerName, string contentType, string payload, string commitTag);
 
         Task<ICollection<Trigger>> GetAvailableTriggers(string instanceId);
 

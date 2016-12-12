@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace REstate.Engine
 {
@@ -8,16 +10,23 @@ namespace REstate.Engine
 
         string MachineDefinitionId { get; }
 
-        void Fire(Trigger trigger);
+        Task FireAsync(
+            Trigger trigger, 
+            string contentType,
+            string payload, 
+            CancellationToken cancellationToken);
 
-        void Fire(Trigger trigger, string payload);
+        Task FireAsync(
+            Trigger trigger,
+            string contentType, 
+            string payload, 
+            string lastCommitTag,
+            CancellationToken cancellationToken);
 
-        bool IsInState(State state);
+        Task<bool> IsInStateAsync(State state, CancellationToken cancellationToken);
 
-        State GetCurrentState();
+        Task<State> GetCurrentStateAsync(CancellationToken cancellationToken);
 
-        ICollection<Trigger> PermittedTriggers { get; }
-
-        string ToString();
+        Task<ICollection<Trigger>> GetPermittedTriggersAsync(CancellationToken cancellationToken);
     }
 }

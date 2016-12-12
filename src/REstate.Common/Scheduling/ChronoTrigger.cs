@@ -21,6 +21,7 @@ namespace REstate.Scheduling
             long delay;
             string verifyCommitTagString;
             bool verifyCommitTag;
+            string contentType;
             string payload;
 
             if (configuration.TryGetValue("triggerName", out triggerName))
@@ -36,6 +37,9 @@ namespace REstate.Scheduling
             if (configuration.TryGetValue("machineInstanceId", out machineInstanceId))
                 MachineInstanceId = machineInstanceId;
 
+            if (configuration.TryGetValue("contentType", out contentType))
+                ContentType = contentType;
+
             if (configuration.TryGetValue("payload", out payload))
                 Payload = payload;
 
@@ -50,6 +54,8 @@ namespace REstate.Scheduling
         public string StateName { get; set; }
 
         public string TriggerName { get; set; }
+
+        public string ContentType { get; set; }
 
         public string Payload { get; set; }
 

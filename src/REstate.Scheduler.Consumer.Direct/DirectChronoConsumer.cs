@@ -1,4 +1,3 @@
-using REstate.Configuration;
 using REstate.Engine;
 using REstate.Logging;
 using System.Threading;
@@ -29,16 +28,18 @@ namespace REstate.Scheduler.Consumer.Direct
             return Task.CompletedTask;
         }
 
-        protected async override Task<InstanceRecord> GetState(string machineInstanceId)
+        protected async override Task<State> GetStateAsync(string machineInstanceId, CancellationToken cancellationToken)
         {
-            return await StateEngine.GetInstanceInfo(machineInstanceId, CancellationToken.None);
+            var record = await StateEngine.GetInstanceInfoAsync(machineInstanceId, cancellationToken).ConfigureAwait(false);
+
+            return new State(record.MachineName, record.StateName, record.CommitTag);
         }
 
-        protected async override Task FireTrigger(string machineInstanceId, string triggerName, string payload)
+        protected async override Task FireTriggerAsync(string machineInstanceId, string triggerName, string contentType, string payload, string lastCommitTag, CancellationToken cancellationToken)
         {
-            var machine = await StateEngine.GetInstance(machineInstanceId, CancellationToken.None);
+            var machine = await StateEngine.GetInstance(machineInstanceId, cancellationToken);
 
-            machine.Fire(new Trigger(machine.MachineDefinitionId, triggerName), payload);
+            await machine.FireAsync(new Trigger(machine.MachineDefinitionId, triggerName), contentType, payload, lastCommitTag, cancellationToken);
         }
     }
 }

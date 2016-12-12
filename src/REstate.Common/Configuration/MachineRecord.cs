@@ -10,8 +10,6 @@ namespace REstate.Configuration
 
         public string InitialState { get; set; }
 
-        public bool AutoIgnoreTriggers { get; set; }
-
         public string Definition { get; set; }
 
         public DateTime CreatedDateTime { get; set; }

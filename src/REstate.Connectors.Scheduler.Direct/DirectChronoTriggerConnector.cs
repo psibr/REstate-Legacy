@@ -34,27 +34,7 @@ namespace REstate.Engine.Connectors.Scheduler
             }
         }
 
-        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, State state, IDictionary<string, string> configuration)
-        {
-            return async (cancellationToken) =>
-            {
-                if (configuration == null)
-                    throw new ArgumentNullException(nameof(configuration));
-
-                var trigger = new ChronoTrigger(configuration);
-
-                if (trigger.MachineInstanceId == null)
-                    trigger.MachineInstanceId = machineInstance.MachineInstanceId;
-
-                trigger.StateName = state.StateName;
-
-                trigger.LastCommitTag = state.CommitTag;
-
-                await _TriggerScheduler.ScheduleTrigger(trigger, cancellationToken);
-            };
-        }
-
-        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, State state, string payload, IDictionary<string, string> configuration)
+        public Func<CancellationToken, Task> ConstructAction(IStateMachine machineInstance, State state, string contentType, string payload, IDictionary<string, string> configuration)
         {
             return async (cancellationToken) =>
             {
@@ -64,6 +44,7 @@ namespace REstate.Engine.Connectors.Scheduler
                     trigger.MachineInstanceId = machineInstance.MachineInstanceId;
 
                 trigger.StateName = state.StateName;
+                trigger.ContentType = contentType;
                 trigger.Payload = payload;
 
                 trigger.LastCommitTag = state.CommitTag;
