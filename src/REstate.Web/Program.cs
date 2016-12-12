@@ -54,6 +54,7 @@ namespace REstate.Web
                 .UseConfiguration(configuration)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseKestrel()
+                .UseIISIntegration()
                 .Configure(app =>
                 {
                     app.UseDeveloperExceptionPage(new DeveloperExceptionPageOptions { });
