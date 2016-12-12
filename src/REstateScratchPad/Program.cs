@@ -72,7 +72,7 @@ namespace REstateScratchPad
 
                 var instanceId = session.Instantiate("Load-Test-Machine3").Result;
 
-                var resultState = session.FireTrigger(instanceId, "GoPathA").Result;
+                var resultState = session.FireTrigger(instanceId, "GoPathA", null, null, null).Result;
 
                 //var triggers = session.GetAvailableTriggers(instanceId).Result;
                 //var random = new Random();
