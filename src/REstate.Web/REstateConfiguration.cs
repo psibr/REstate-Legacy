@@ -27,31 +27,31 @@ namespace REstate.Web
 
     public class ConnectionStrings
     {
-        public string EngineConnectionString { get; set; }
+        public string Engine { get; set; }
 
-        private string _SchedulerConnectionString;
-        public string SchedulerConnectionString
+        private string _Scheduler;
+        public string Scheduler
         {
             get
             {
-                return _SchedulerConnectionString ?? EngineConnectionString;
+                return _Scheduler ?? Engine;
             }
             set
             {
-                _SchedulerConnectionString = value;
+                _Scheduler = value;
             }
         }
 
-        private string _AuthConnectionString;
-        public string AuthConnectionString
+        private string _Auth;
+        public string Auth
         {
             get
             {
-                return _AuthConnectionString ?? EngineConnectionString;
+                return _Auth ?? Engine;
             }
             set
             {
-                _AuthConnectionString = value;
+                _Auth = value;
             }
         }
 

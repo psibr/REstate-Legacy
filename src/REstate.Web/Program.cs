@@ -38,8 +38,8 @@ namespace REstate.Web
                 .AddJsonFile("appconfig.json")
                 .Build();
 
-            var config = new RootConfig();
-            ConfigurationBinder.Bind(configuration, config);
+            var config = new REstateConfiguration();
+            configuration.GetSection("REstate").Bind(config);
 
             var logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -48,7 +48,7 @@ namespace REstate.Web
 
             var containerBuilder = new ContainerBuilder();
 
-            var container = RegisterComponents(containerBuilder, config, logger);
+            var container = RegisterComponents(containerBuilder, configuration, config, logger);
 
             var host = new WebHostBuilder()
                 .UseConfiguration(configuration)
@@ -60,24 +60,24 @@ namespace REstate.Web
                     app.UseDeveloperExceptionPage(new DeveloperExceptionPageOptions { });
                     app.UseOwin(owin =>
                     {
-                        if (config.REstateConfiguration.AuthenticationSettings.UseAuthentication)
+                        if (config.AuthenticationSettings.UseAuthentication)
                         {
                             owin((next) =>
                                 new JwtAndCookieMiddleware(next, new Options
                                 {
                                     Certificate = new X509Certificate2(Path.Combine(Directory.GetCurrentDirectory(), "REstate.pfx"), "development"),
-                                    CookieName = config.REstateConfiguration.AuthenticationSettings.CookieName,
+                                    CookieName = config.AuthenticationSettings.CookieName,
                                     CookiePath = "/",
                                     CookieHttpOnly = true,
-                                    TokenLifeSpan = TimeSpan.FromMinutes(config.REstateConfiguration.AuthenticationSettings.TokenLifeSpanMinutes),
-                                    ClaimsPrincipalResourceName = config.REstateConfiguration.AuthenticationSettings.ClaimsPrincipalResourceName,
+                                    TokenLifeSpan = TimeSpan.FromMinutes(config.AuthenticationSettings.TokenLifeSpanMinutes),
+                                    ClaimsPrincipalResourceName = config.AuthenticationSettings.ClaimsPrincipalResourceName,
                                     CreatePrincipal = (payload) => CreateClaimsPrincipalFromPayload(container.Resolve<StringSerializer>(), payload)
                                 }).Invoke);
                         }
 
                         owin.UseNancy(o =>
                         {
-                            o.Bootstrapper = config.REstateConfiguration.AuthenticationSettings.UseAuthentication
+                            o.Bootstrapper = config.AuthenticationSettings.UseAuthentication
                                 ? new PlatformJwtNancyBootstrapper(container)
                                 : new PlatformNancyBootstrapper(container);
                         });
@@ -91,7 +91,7 @@ namespace REstate.Web
             using(CancellationTokenSource chronoConsumerSource = new CancellationTokenSource())
             {
                 //Start the Consumer thread and hold a reference to the task.
-                var chronoTask = chronoConsumer.StartAsync(config.REstateConfiguration.AuthenticationSettings.SchedulerApiKey, chronoConsumerSource.Token);
+                var chronoTask = chronoConsumer.StartAsync(config.AuthenticationSettings.SchedulerApiKey, chronoConsumerSource.Token);
 
                 //Running web layer, blocking call.
                 host.Run();
@@ -106,37 +106,63 @@ namespace REstate.Web
 
         }
 
-        private static IContainer RegisterComponents(ContainerBuilder containerBuilder, RootConfig config, ILogger logger)
+        private static IContainer RegisterComponents(ContainerBuilder containerBuilder, IConfigurationRoot configurationSource, REstateConfiguration config, ILogger logger)
         {
+            //rabbitmq connection factory            
             containerBuilder.RegisterInstance(new ConnectionFactory()
             {
-                Uri = "amqp://restate:restate_is_alive_2@40.118.135.89:5672/"
+                Uri = configurationSource.GetSection("RabbitMQ").GetValue<string>("Uri")
             });
 
+            //nancy binders
             containerBuilder.RegisterType<JsonOnlyStringDictionaryBinder>().As<IModelBinder>();
-            containerBuilder.RegisterInstance(config.REstateConfiguration);
+
+            //configuration
+            containerBuilder.RegisterInstance(config);
+
+            //serilog + adapter
             containerBuilder.RegisterInstance(logger).As<ILogger>();
             containerBuilder.RegisterAdapter<ILogger, IPlatformLogger>((serilogLogger) => new SerilogLoggingAdapter(serilogLogger));
+
+            //simplejson serializer
             containerBuilder.RegisterType<SimpleJsonSerializer>().As<StringSerializer>();
+
+            //repositories
             containerBuilder.Register((ctx)
-                    => new ChronoRepositoryFactory(ctx.Resolve<REstateConfiguration>().ConnectionStrings.SchedulerConnectionString))
+                    => new ChronoRepositoryFactory(
+                        config.ConnectionStrings.Scheduler))
                 .As<IChronoRepositoryFactory>();
-            containerBuilder.RegisterType<TriggerSchedulerFactory>();
+
+            containerBuilder.Register((ctx)
+                    => new RepositoryContextFactory(
+                        config.ConnectionStrings.Engine, 
+                        ctx.Resolve<StringSerializer>(), 
+                        ctx.Resolve<IPlatformLogger>()))
+                .As<IRepositoryContextFactory>();
+            
+            containerBuilder.Register((ctx)
+                    => new AuthRepositoryFactory(config.ConnectionStrings.Auth))
+                .As<IAuthRepositoryFactory>();
+
+            //API
+            containerBuilder.RegisterType<REstateMachineFactory>().As<IStateMachineFactory>();
+            containerBuilder.RegisterType<StateEngineFactory>();
+
+            //connectors
             containerBuilder.RegisterType<DirectChronoTriggerConnectorFactory>().As<IConnectorFactory>();
             containerBuilder.RegisterType<RabbitMqConnectorFactory>().As<IConnectorFactory>();
+
+            //connector resolver
             containerBuilder.Register((ctx)
                     => new DefaultConnectorFactoryResolver(ctx.Resolve<IEnumerable<IConnectorFactory>>()))
                 .As<IConnectorFactoryResolver>();
-            containerBuilder.Register((ctx)
-                    => new RepositoryContextFactory(ctx.Resolve<REstateConfiguration>().ConnectionStrings.EngineConnectionString, ctx.Resolve<StringSerializer>(), ctx.Resolve<IPlatformLogger>()))
-                .As<IRepositoryContextFactory>();
+            
+            //diagram service (cartographer)
             containerBuilder.RegisterInstance(new DotGraphCartographer()).AsSelf();
-            containerBuilder.RegisterType<REstateMachineFactory>().As<IStateMachineFactory>();
-            containerBuilder.RegisterType<StateEngineFactory>();
+
+            //delay processor (chronoconsumer)
             containerBuilder.RegisterType<DirectChronoConsumer>().As<ChronoConsumer>();
-            containerBuilder.Register((ctx)
-                    => new AuthRepositoryFactory(ctx.Resolve<REstateConfiguration>().ConnectionStrings.AuthConnectionString))
-                .As<IAuthRepositoryFactory>();
+            containerBuilder.RegisterType<TriggerSchedulerFactory>();
 
             return containerBuilder.Build();
         }
