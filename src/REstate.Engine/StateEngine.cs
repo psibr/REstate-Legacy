@@ -37,7 +37,7 @@ namespace REstate.Engine
                 .OpenContext(_apiKey))
             {
                 configuration = await repository.Machines
-                    .RetrieveMachineConfiguration(machineDefinitionId, cancellationToken)
+                    .RetrieveMachineConfigurationAsync(machineDefinitionId, cancellationToken)
                     .ConfigureAwait(false);
             }
 
@@ -52,7 +52,7 @@ namespace REstate.Engine
                 .OpenContext(_apiKey))
             {
                 configuration = await repository.Machines
-                    .RetrieveMachineConfiguration(machineDefinitionId, cancellationToken)
+                    .RetrieveMachineConfigurationAsync(machineDefinitionId, cancellationToken)
                     .ConfigureAwait(false);
             }
 
@@ -77,7 +77,7 @@ namespace REstate.Engine
                 .OpenContext(_apiKey))
             {
                 newMachineConfiguration = await repository.Machines
-                    .DefineStateMachine(machineDefinition, cancellationToken)
+                    .DefineStateMachineAsync(machineDefinition, cancellationToken)
                     .ConfigureAwait(false);
             }
 
@@ -90,7 +90,7 @@ namespace REstate.Engine
                 .OpenContext(_apiKey))
             {
                 return await repository.Machines
-                    .ListMachines(cancellationToken)
+                    .ListMachinesAsync(cancellationToken)
                     .ConfigureAwait(false);
             }
         }
@@ -103,7 +103,7 @@ namespace REstate.Engine
                 .OpenContext(_apiKey))
             {
                 await configruationRepository.MachineInstances
-                    .CreateInstance(machineDefinitionId, machineInstanceId, metadata, cancellationToken)
+                    .CreateInstanceAsync(machineDefinitionId, machineInstanceId, metadata, cancellationToken)
                     .ConfigureAwait(false);
             }
 
@@ -125,7 +125,7 @@ namespace REstate.Engine
                 .OpenContext(_apiKey))
             {
                 metadata = await repository.MachineInstances
-                    .GetInstanceMetadata(machineInstanceId, cancellationToken)
+                    .GetInstanceMetadataAsync(machineInstanceId, cancellationToken)
                     .ConfigureAwait(false);
             }
 
@@ -140,7 +140,8 @@ namespace REstate.Engine
                 .OpenContext(_apiKey))
             {
                 //TODO: Andrea doesn't like this. Review.
-                configuration = await repository.Machines.RetrieveMachineConfigurationForInstance(machineInstanceId, cancellationToken)
+                configuration = await repository.Machines
+                    .RetrieveMachineConfigurationForInstanceAsync(machineInstanceId, cancellationToken)
                     .ConfigureAwait(false);
             }
 
@@ -158,7 +159,7 @@ namespace REstate.Engine
                 .OpenContext(_apiKey))
             {
                 await repository.MachineInstances
-                    .DeleteInstance(machineInstanceId, cancellationToken)
+                    .DeleteInstanceAsync(machineInstanceId, cancellationToken)
                     .ConfigureAwait(false);
             }
         }
@@ -171,7 +172,7 @@ namespace REstate.Engine
                 .OpenContext(_apiKey))
             {
                 instanceInfo = await repository.MachineInstances
-                    .GetInstanceState(machineInstanceId, cancellationToken)
+                    .GetInstanceStateAsync(machineInstanceId, cancellationToken)
                     .ConfigureAwait(false);
             }
 

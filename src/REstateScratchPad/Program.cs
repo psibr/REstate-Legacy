@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace REstateScratchPad
@@ -11,7 +12,7 @@ namespace REstateScratchPad
 
             var configClient = restateClientFactory.GetConfigurationClient("http://localhost:5000");
 
-            var session = configClient.GetSession("E17705B5-D0FD-47F5-849F-F0881B954C58").Result;
+            var session = configClient.GetSessionAsync("E17705B5-D0FD-47F5-849F-F0881B954C58", CancellationToken.None).Result;
 
             var act = new Action(() =>
             {
@@ -70,9 +71,9 @@ namespace REstateScratchPad
                 //    machineDefinitnion = session.DefineStateMachine(def).Result;
                 //}
 
-                var instanceId = session.Instantiate("Load-Test-Machine3").Result;
+                var instanceId = session.InstantiateAsync("Load-Test-Machine3", CancellationToken.None).Result;
 
-                var resultState = session.FireTrigger(instanceId, "GoPathA", null, null, null).Result;
+                var resultState = session.FireTriggerAsync(instanceId, "GoPathA", null, null, null, CancellationToken.None).Result;
 
                 //var triggers = session.GetAvailableTriggers(instanceId).Result;
                 //var random = new Random();

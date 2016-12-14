@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace REstate.Engine.Services
 {
@@ -6,7 +7,7 @@ namespace REstate.Engine.Services
     {
         string ConnectorKey { get; }
 
-        Task<IConnector> BuildConnector(string apiKey);
+        Task<IConnector> BuildConnectorAsync(string apiKey, CancellationToken cancellationToken);
 
         bool IsActionConnector { get; }
 

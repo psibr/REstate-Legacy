@@ -1,14 +1,15 @@
 ﻿using REstate.Configuration;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace REstateClient
 {
     public interface IConfigurationSession : IAuthenticatedSession, IInstancesSession
     {
-        Task<Machine> DefineStateMachine(Machine configuration);
+        Task<Machine> DefineStateMachineAsync(Machine configuration, CancellationToken cancellationToken);
 
-        Task<string> GetMachineDiagram(string machineName);
+        Task<string> GetMachineDiagramAsync(string machineName, CancellationToken cancellationToken);
 
-        Task<Machine> GetMachine(string machineName);
+        Task<Machine> GetMachineAsync(string machineName, CancellationToken cancellationToken);
     }
 }

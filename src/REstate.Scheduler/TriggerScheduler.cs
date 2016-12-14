@@ -20,20 +20,20 @@ namespace REstate.Scheduler
             _ApiKey = apiKey;
         }
 
-        public async Task ScheduleTrigger(ChronoTrigger trigger, CancellationToken cancellationToken)
+        public async Task ScheduleTriggerAsync(ChronoTrigger trigger, CancellationToken cancellationToken)
         {
             using (var repository = _ChronoRepositoryFactory.OpenRepository(_ApiKey))
             {
-                await repository.AddChronoTrigger(trigger, cancellationToken)
+                await repository.AddChronoTriggerAsync(trigger, cancellationToken)
                     .ConfigureAwait(false);
             }
         }
 
-        public async Task RemoveTrigger(ChronoTrigger trigger, CancellationToken cancellationToken)
+        public async Task RemoveTriggerAsync(ChronoTrigger trigger, CancellationToken cancellationToken)
         {
             using (var repository = _ChronoRepositoryFactory.OpenRepository(_ApiKey))
             {
-                await repository.RemoveChronoTrigger(trigger, cancellationToken)
+                await repository.RemoveChronoTriggerAsync(trigger, cancellationToken)
                     .ConfigureAwait(false);
             }
         }

@@ -29,7 +29,7 @@ namespace REstate.Web.Modules
 
                 var addChronoTriggerRequest = this.Bind<ChronoTrigger>();
 
-                await chronoRepository.AddChronoTrigger(addChronoTriggerRequest, ct);
+                await chronoRepository.AddChronoTriggerAsync(addChronoTriggerRequest, ct).ConfigureAwait(false);
 
                 return HttpStatusCode.OK;
             });

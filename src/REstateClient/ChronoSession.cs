@@ -4,6 +4,7 @@ using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace REstateClient
 {
@@ -15,19 +16,19 @@ namespace REstateClient
         {
         }
 
-        public async Task AddChronoTrigger(ChronoTrigger chronoTrigger)
+        public async Task AddChronoTriggerAsync(ChronoTrigger chronoTrigger, CancellationToken cancellationToken)
         {
             var payload = StringSerializer.Serialize(chronoTrigger);
 
-            await EnsureAuthenticatedRequest(async (client) =>
+            await EnsureAuthenticatedRequestAsync(async (client) =>
             {
                 var response = await client.PostAsync("triggers",
-                    new StringContent(payload, Encoding.UTF8, "application/json"));
+                    new StringContent(payload, Encoding.UTF8, "application/json")).ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode) throw GetException(response);
 
-                return await response.Content.ReadAsStringAsync();
-            });
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
         }
     }
 }

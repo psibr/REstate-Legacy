@@ -11,8 +11,8 @@ namespace REstate.Scheduler
     {
         IEnumerable<ChronoTrigger> GetChronoStream(CancellationToken cancellationToken);
 
-        Task AddChronoTrigger(ChronoTrigger trigger, CancellationToken cancellationToken);
+        Task AddChronoTriggerAsync(ChronoTrigger trigger, CancellationToken cancellationToken);
 
-        Task RemoveChronoTrigger(ChronoTrigger trigger, CancellationToken cancellationToken);
+        Task RemoveChronoTriggerAsync(ChronoTrigger trigger, CancellationToken cancellationToken);
     }
 }

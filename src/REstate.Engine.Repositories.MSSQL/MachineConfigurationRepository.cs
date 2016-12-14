@@ -19,23 +19,24 @@ namespace REstate.Repositories.Core.Susanoo
             _StringSerializer = stringSerializer;
         }
 
-        public async Task<IEnumerable<MachineRecord>> ListMachines(CancellationToken cancellationToken)
+        public Task<IEnumerable<MachineRecord>> ListMachinesAsync(CancellationToken cancellationToken)
         {
-            return (await DefineCommand(
+            return DefineCommand(
                     "SELECT MachineName, InitialState, CreatedDateTime " +
                     "FROM Machines;")
                 .WithResultsAs<MachineRecord>()
                 .Compile()
-                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, cancellationToken));
+                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, cancellationToken);
         }
 
-        public async Task<Machine> RetrieveMachineConfiguration(string machineName, CancellationToken cancellationToken)
+        public async Task<Machine> RetrieveMachineConfigurationAsync(string machineName, CancellationToken cancellationToken)
         {
             var machineRecord = (await DefineCommand(
                     "SELECT * FROM Machines WHERE MachineName = @MachineName;")
                 .WithResultsAs<MachineRecord>()
                 .Compile()
-                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { MachineName = machineName }, cancellationToken))
+                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { MachineName = machineName }, cancellationToken)
+                    .ConfigureAwait(false))
                 .Single();
 
             var machine = _StringSerializer.Deserialize<Machine>(machineRecord.Definition);
@@ -43,7 +44,7 @@ namespace REstate.Repositories.Core.Susanoo
             return machine;
         }
 
-        public async Task<Machine> RetrieveMachineConfigurationForInstance(string instanceId, CancellationToken cancellationToken)
+        public async Task<Machine> RetrieveMachineConfigurationForInstanceAsync(string instanceId, CancellationToken cancellationToken)
         {
             var machineRecord = (await DefineCommand(
                     "SELECT TOP 1 Machines.* " +
@@ -52,7 +53,8 @@ namespace REstate.Repositories.Core.Susanoo
                     "WHERE InstanceId = @InstanceId;")
                 .WithResultsAs<MachineRecord>()
                 .Compile()
-                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { InstanceId = instanceId }, cancellationToken))
+                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { InstanceId = instanceId }, cancellationToken)
+                    .ConfigureAwait(false))
                 .Single();
 
             var machine = _StringSerializer.Deserialize<Machine>(machineRecord.Definition);
@@ -60,7 +62,7 @@ namespace REstate.Repositories.Core.Susanoo
             return machine;
         }
 
-        public async Task<Machine> DefineStateMachine(Machine machine, string forkedFrom, CancellationToken cancellationToken)
+        public async Task<Machine> DefineStateMachineAsync(Machine machine, string forkedFrom, CancellationToken cancellationToken)
         {
             var definition = _StringSerializer.Serialize(machine);
 
@@ -78,7 +80,7 @@ namespace REstate.Repositories.Core.Susanoo
                     ForkedFrom = forkedFrom,
                     machine.InitialState,
                     Definition = definition
-                }, cancellationToken);
+                }, cancellationToken).ConfigureAwait(false);
 
             var machineRecord = results.Single();
 
@@ -87,9 +89,9 @@ namespace REstate.Repositories.Core.Susanoo
             return machineResult;
         }
 
-        public async Task<Machine> DefineStateMachine(Machine machine, CancellationToken cancellationToken)
+        public Task<Machine> DefineStateMachineAsync(Machine machine, CancellationToken cancellationToken)
         {
-            return await DefineStateMachine(machine, null, cancellationToken);
+            return DefineStateMachineAsync(machine, null, cancellationToken);
         }
     }
 }

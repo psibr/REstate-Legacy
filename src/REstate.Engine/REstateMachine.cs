@@ -42,12 +42,12 @@ namespace REstate.Engine
         public string MachineInstanceId { get; }
         public string MachineDefinitionId { get; }
 
-        public async Task FireAsync(
+        public Task FireAsync(
             Trigger trigger, 
             string contentType, string payload, 
             CancellationToken cancellationToken)
         {
-            await FireAsync(trigger, contentType, payload, null, cancellationToken).ConfigureAwait(false);
+            return FireAsync(trigger, contentType, payload, null, cancellationToken);
         }
 
         public async Task FireAsync(
@@ -58,7 +58,7 @@ namespace REstate.Engine
             using (var dataContext = _repositoryContextFactory.OpenContext(ApiKey))
             {
                 var record = await dataContext.MachineInstances
-                    .GetInstanceState(MachineInstanceId, cancellationToken).ConfigureAwait(false);
+                    .GetInstanceStateAsync(MachineInstanceId, cancellationToken).ConfigureAwait(false);
 
                 var currentState = new State(MachineDefinitionId, record.StateName, record.CommitTag);
 
@@ -70,7 +70,7 @@ namespace REstate.Engine
                 {
                     var guardConnector = await _connectorFactoryResolver
                         .ResolveConnectorFactory(transition.Guard.ConnectorKey)
-                        .BuildConnector(ApiKey).ConfigureAwait(false);
+                        .BuildConnectorAsync(ApiKey, cancellationToken).ConfigureAwait(false);
 
                     if (!await guardConnector
                         .ConstructPredicate(this, transition.Guard.Configuration)
@@ -80,7 +80,7 @@ namespace REstate.Engine
                     }
                 }
 
-                record = await dataContext.MachineInstances.SetInstanceState(
+                record = await dataContext.MachineInstances.SetInstanceStateAsync(
                     MachineInstanceId,
                     currentState.StateName, 
                     trigger.TriggerName, 
@@ -97,7 +97,7 @@ namespace REstate.Engine
                     {
                         var entryConnector = await _connectorFactoryResolver
                             .ResolveConnectorFactory(stateConfig.OnEntry.ConnectorKey)
-                            .BuildConnector(ApiKey).ConfigureAwait(false);
+                            .BuildConnectorAsync(ApiKey, cancellationToken).ConfigureAwait(false);
                         
                         await entryConnector
                             .ConstructAction(this, currentState, contentType, payload, stateConfig.OnEntry.Configuration) 
@@ -152,7 +152,8 @@ namespace REstate.Engine
             using (var dataContext = _repositoryContextFactory.OpenContext(ApiKey))
             {
                 var record = await dataContext.MachineInstances
-                    .GetInstanceState(MachineInstanceId, cancellationToken).ConfigureAwait(false);
+                    .GetInstanceStateAsync(MachineInstanceId, cancellationToken)
+                    .ConfigureAwait(false);
 
                 currentState = new State(MachineDefinitionId, record.StateName, record.CommitTag);
             }

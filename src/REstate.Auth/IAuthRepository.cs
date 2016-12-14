@@ -6,7 +6,7 @@ namespace REstate.Auth
 {
     public interface IAuthRepository : IDisposable
     {
-        Task<IPrincipal> LoadPrincipalByApiKey(string apiKey, CancellationToken cancellationToken);
-        Task<IPrincipal> LoadPrincipalByCredentials(string username, string passwordHash, CancellationToken cancellationToken);
+        Task<IPrincipal> LoadPrincipalByApiKeyAsync(string apiKey, CancellationToken cancellationToken);
+        Task<IPrincipal> LoadPrincipalByCredentialsAsync(string username, string passwordHash, CancellationToken cancellationToken);
     }
 }

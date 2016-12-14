@@ -46,7 +46,7 @@ namespace REstate.Engine.Connectors.Scheduler
 
                 trigger.LastCommitTag = state.CommitTag;
 
-                await _chronoSession.AddChronoTrigger(trigger);
+                await _chronoSession.AddChronoTriggerAsync(trigger, cancellationToken);
             };
         }
 

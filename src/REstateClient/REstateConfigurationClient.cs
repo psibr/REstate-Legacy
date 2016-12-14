@@ -1,6 +1,7 @@
 using REstate;
 using System;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace REstateClient
 {
@@ -44,9 +45,9 @@ namespace REstateClient
             BaseAddress = baseAddress;
         }
 
-        public async Task<IConfigurationSession> GetSession(string apiKey)
+        public async Task<IConfigurationSession> GetSessionAsync(string apiKey, CancellationToken cancellationToken)
         {
-            var token = await GetAuthenticatedSessionToken(apiKey);
+            var token = await GetAuthenticatedSessionTokenAsync(apiKey, cancellationToken).ConfigureAwait(false);
 
             return new ConfigurationSession(StringSerializer, ApiKeyAuthAddress, BaseAddress, apiKey, token);
         }

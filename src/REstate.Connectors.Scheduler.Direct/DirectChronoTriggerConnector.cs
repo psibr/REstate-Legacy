@@ -49,7 +49,7 @@ namespace REstate.Engine.Connectors.Scheduler
 
                 trigger.LastCommitTag = state.CommitTag;
 
-                await _TriggerScheduler.ScheduleTrigger(trigger, cancellationToken);
+                await _TriggerScheduler.ScheduleTriggerAsync(trigger, cancellationToken).ConfigureAwait(false);
             };
         }
 

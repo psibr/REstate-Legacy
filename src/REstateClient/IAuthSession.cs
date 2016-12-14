@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace REstateClient
 {
     public interface IAuthSessionClient<TSession>
         where TSession : IAuthenticatedSession
     {
-        Task<TSession> GetSession(string apiKey);
+        Task<TSession> GetSessionAsync(string apiKey, CancellationToken cancellationToken);
     }
 }

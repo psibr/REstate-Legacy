@@ -48,9 +48,9 @@ namespace REstate.Scheduler.Repositories.MSSQL
             }
         }
 
-        public async Task AddChronoTrigger(ChronoTrigger trigger, CancellationToken cancellationToken)
+        public Task AddChronoTriggerAsync(ChronoTrigger trigger, CancellationToken cancellationToken)
         {
-            await DefineCommand<ChronoTrigger>(
+            return DefineCommand<ChronoTrigger>(
                     @"INSERT INTO ChronoTriggers ( ChronoTriggerId, MachineInstanceId, StateName, TriggerName, Payload, LastCommitTag, VerifyCommitTag, FireAfter)
                     VALUES(newId(), @MachineInstanceId, @StateName, @TriggerName, @Payload, @LastCommitTag, @VerifyCommitTag, @FireAfter)")
                 .ExcludeProperty(o => o.Delay)
@@ -61,9 +61,9 @@ namespace REstate.Scheduler.Repositories.MSSQL
                     new { FireAfter = DateTime.UtcNow + TimeSpan.FromSeconds(trigger.Delay) }, cancellationToken);
         }
 
-        public async Task RemoveChronoTrigger(ChronoTrigger trigger, CancellationToken cancellationToken)
+        public Task RemoveChronoTriggerAsync(ChronoTrigger trigger, CancellationToken cancellationToken)
         {
-            await DefineCommand<ChronoTrigger>("DELETE FROM ChronoTriggers WHERE ChronoTriggerId = @ChronoTriggerId")
+            return DefineCommand<ChronoTrigger>("DELETE FROM ChronoTriggers WHERE ChronoTriggerId = @ChronoTriggerId")
                 .UseExplicitPropertyInclusionMode()
                 .IncludeProperty(o => o.ChronoTriggerId)
                 .Compile()

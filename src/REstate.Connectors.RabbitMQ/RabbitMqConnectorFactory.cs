@@ -2,6 +2,7 @@ using REstate.Engine.Services;
 using REstate.Logging;
 using System.Threading.Tasks;
 using RabbitMQ.Client;
+using System.Threading;
 
 namespace REstate.Engine.Connectors.RabbitMq
 {
@@ -26,7 +27,7 @@ namespace REstate.Engine.Connectors.RabbitMq
         public bool IsGuardConnector { get; } = false;
         public string ConnectorSchema { get; set; } = "{ }";
 
-        public Task<IConnector> BuildConnector(string apiKey)
+        public Task<IConnector> BuildConnectorAsync(string apiKey, CancellationToken cancellationToken)
         {
             var connector = new RabbitMqConnector(_rabbitConnectionFactory, _stringSerializer, _logger);
 

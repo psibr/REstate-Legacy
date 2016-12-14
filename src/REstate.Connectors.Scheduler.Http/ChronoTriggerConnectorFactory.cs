@@ -2,6 +2,7 @@ using REstate.Engine.Services;
 using REstate.Logging;
 using REstateClient;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace REstate.Engine.Connectors.Scheduler
 {
@@ -22,7 +23,7 @@ namespace REstate.Engine.Connectors.Scheduler
         public bool IsGuardConnector { get; } = false;
         public string ConnectorSchema { get; set; } = "{ }";
 
-        public async Task<IConnector> BuildConnector(string apiKey) =>
-            new ChronoTriggerConnector(await _Client.GetSession(apiKey));
+        public async Task<IConnector> BuildConnectorAsync(string apiKey, CancellationToken cancellationToken) =>
+            new ChronoTriggerConnector(await _Client.GetSessionAsync(apiKey, cancellationToken).ConfigureAwait(false));
     }
 }

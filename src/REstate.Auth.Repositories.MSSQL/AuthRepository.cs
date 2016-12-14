@@ -18,7 +18,7 @@ namespace REstate.Auth.Repositories.MSSQL
             DatabaseManagerPool = databaseManagerPool;
         }
 
-        public async Task<IPrincipal> LoadPrincipalByApiKey(string apiKey, CancellationToken cancellationToken)
+        public async Task<IPrincipal> LoadPrincipalByApiKeyAsync(string apiKey, CancellationToken cancellationToken)
         {
             var results = (await DefineCommand(
                     "SELECT ApiKey, PrincipalType, UserOrApplicationName\n" +
@@ -29,7 +29,8 @@ namespace REstate.Auth.Repositories.MSSQL
                     "WHERE p.ApiKey = @ApiKey")
                 .WithResultsAs(typeof(Principal), typeof(string))
                 .Compile()
-                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { ApiKey = apiKey }, cancellationToken))
+                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { ApiKey = apiKey }, cancellationToken)
+                    .ConfigureAwait(false))
                 .ToArray();
 
             var principal = results[0].Cast<IPrincipal>().SingleOrDefault();
@@ -40,7 +41,7 @@ namespace REstate.Auth.Repositories.MSSQL
             return principal;
         }
 
-        public async Task<IPrincipal> LoadPrincipalByCredentials(string username, string passwordHash, CancellationToken cancellationToken)
+        public async Task<IPrincipal> LoadPrincipalByCredentialsAsync(string username, string passwordHash, CancellationToken cancellationToken)
         {
             var results = (await DefineCommand(
                     "SELECT ApiKey, PrincipalType, UserOrApplicationName\n" +
@@ -51,7 +52,8 @@ namespace REstate.Auth.Repositories.MSSQL
                     "WHERE p.UserOrApplicationName = @username AND p.PasswordHash = @passwordHash")
                 .WithResultsAs(typeof(Principal), typeof(string))
                 .Compile()
-                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { username, passwordHash }, cancellationToken))
+                .ExecuteAsync(DatabaseManagerPool.DatabaseManager, new { username, passwordHash }, cancellationToken)
+                    .ConfigureAwait(false))
                 .ToArray();
 
             var principal = results[0].Cast<IPrincipal>().SingleOrDefault();

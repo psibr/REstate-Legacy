@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace REstateClient
 {
@@ -34,18 +35,18 @@ namespace REstateClient
             ApiKeyAuthAddress = apiKeyAuthAddress;
         }
 
-        public async Task<string> GetAuthenticatedSessionToken(string apiKey)
+        public async Task<string> GetAuthenticatedSessionTokenAsync(string apiKey, CancellationToken cancellationToken)
         {
             using (var httpClient = new HttpClient())
             {
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(Json));
 
                 var response = await httpClient.PostAsync(ApiKeyAuthAddress,
-                    new StringContent($"{{ \"apiKey\": \"{apiKey}\" }}", Encoding.UTF8, Json));
+                    new StringContent($"{{ \"apiKey\": \"{apiKey}\" }}", Encoding.UTF8, Json)).ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode) return null;
 
-                var responseBody = await response.Content.ReadAsStringAsync();
+                var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var tokenResponse = StringSerializer.Deserialize<JwtResponse>(responseBody);
 
                 return tokenResponse.Jwt;

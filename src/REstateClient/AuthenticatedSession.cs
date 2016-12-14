@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace REstateClient
 {
@@ -26,7 +27,7 @@ namespace REstateClient
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        protected async Task<string> EnsureAuthenticatedRequest(Func<HttpClient, Task<string>> func)
+        protected async Task<string> EnsureAuthenticatedRequestAsync(Func<HttpClient, Task<string>> func, CancellationToken cancellationToken)
 
         {
             try
@@ -38,7 +39,7 @@ namespace REstateClient
                 var client = new REstateClientFactory(StringSerializer, _authBaseAddress).GetAuthClient();
 
                 _httpClient.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", await client.GetAuthenticatedSessionToken(_apiKey));
+                    new AuthenticationHeaderValue("Bearer", await client.GetAuthenticatedSessionTokenAsync(_apiKey, cancellationToken).ConfigureAwait(false));
 
                 return await func(_httpClient);
             }

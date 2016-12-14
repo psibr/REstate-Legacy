@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace REstateClient
 {
@@ -18,90 +19,90 @@ namespace REstateClient
         {
         }
 
-        public async Task<string> Instantiate(string machineName)
+        public async Task<string> InstantiateAsync(string machineName, CancellationToken cancellationToken)
         {
-            var responseBody = await EnsureAuthenticatedRequest(async (client) =>
+            var responseBody = await EnsureAuthenticatedRequestAsync(async (client) =>
             {
                 var response = await client.PostAsync($"machines/{machineName}/instantiate",
-                    new StringContent(string.Empty));
+                    new StringContent(string.Empty)).ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode) throw GetException(response);
 
-                return await response.Content.ReadAsStringAsync();
-            });
+                return (await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            }, cancellationToken).ConfigureAwait(false);
 
             var instance = StringSerializer.Deserialize<MachineInstantiateResponse>(responseBody);
 
             return instance.MachineInstanceId;
         }
 
-        public async Task<State> GetState(string instanceId)
+        public async Task<State> GetStateAsync(string instanceId, CancellationToken cancellationToken)
         {
-            var responseBody = await EnsureAuthenticatedRequest(async (client) =>
+            var responseBody = await EnsureAuthenticatedRequestAsync(async (client) =>
             {
-                var response = await client.GetAsync($"instances/{instanceId}/state");
+                var response = await client.GetAsync($"instances/{instanceId}/state").ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode) throw GetException(response);
 
-                return await response.Content.ReadAsStringAsync();
-            });
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
 
             State state = StringSerializer.Deserialize<StateModel>(responseBody);
 
             return state;
         }
 
-        public async Task<InstanceRecord> GetInstanceInfo(string instanceId)
+        public async Task<InstanceRecord> GetInstanceInfoAsync(string instanceId, CancellationToken cancellationToken)
         {
-            var responseBody = await EnsureAuthenticatedRequest(async (client) =>
+            var responseBody = await EnsureAuthenticatedRequestAsync(async (client) =>
             {
-                var response = await client.GetAsync($"instances/{instanceId}");
+                var response = await client.GetAsync($"instances/{instanceId}").ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode) throw GetException(response);
 
-                return await response.Content.ReadAsStringAsync();
-            });
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
 
             InstanceRecord info = StringSerializer.Deserialize<InstanceRecord>(responseBody);
 
             return info;
         }
 
-        public async Task<bool> IsInState(string instanceId, string stateName)
+        public async Task<bool> IsInStateAsync(string instanceId, string stateName, CancellationToken cancellationToken)
         {
-            var responseBody = await EnsureAuthenticatedRequest(async (client) =>
+            var responseBody = await EnsureAuthenticatedRequestAsync(async (client) =>
             {
-                var response = await client.GetAsync($"instances/{instanceId}/isinstate/{stateName}");
+                var response = await client.GetAsync($"instances/{instanceId}/isinstate/{stateName}").ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode) throw GetException(response);
 
-                return await response.Content.ReadAsStringAsync();
-            });
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
 
             var isInStateResponse = StringSerializer.Deserialize<IsInStateResponse>(responseBody);
 
             return isInStateResponse.IsInState;
         }
 
-        public async Task<ICollection<Trigger>> GetAvailableTriggers(string instanceId)
+        public async Task<ICollection<Trigger>> GetAvailableTriggersAsync(string instanceId, CancellationToken cancellationToken)
         {
-            var responseBody = await EnsureAuthenticatedRequest(async (client) =>
+            var responseBody = await EnsureAuthenticatedRequestAsync(async (client) =>
             {
-                var response = await client.GetAsync($"instances/{instanceId}/triggers");
+                var response = await client.GetAsync($"instances/{instanceId}/triggers").ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode) throw GetException(response);
 
-                return await response.Content.ReadAsStringAsync();
-            });
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
 
             var triggers = StringSerializer.Deserialize<TriggerModel[]>(responseBody);
 
             return triggers.Select(t => (Trigger)t).ToArray();
         }
 
-        public async Task<State> FireTrigger(string instanceId, string triggerName, string contentType, string payload, string commitTag)
+        public async Task<State> FireTriggerAsync(string instanceId, string triggerName, string contentType, string payload, string commitTag, CancellationToken cancellationToken)
         {
-            var responseBody = await EnsureAuthenticatedRequest(async (client) =>
+            var responseBody = await EnsureAuthenticatedRequestAsync(async (client) =>
             {
                 var content = payload == null
                         ? new StringContent(string.Empty)
@@ -112,49 +113,49 @@ namespace REstateClient
 
                 var response = await client.PostAsync(
                     $"instances/{instanceId}/fire/{triggerName}",
-                    content);
+                    content).ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode) throw GetException(response);
 
-                return await response.Content.ReadAsStringAsync();
-            });
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
 
             StateModel state = StringSerializer.Deserialize<StateModel>(responseBody);
 
             return state;
         }
 
-        public async Task DeleteInstance(string machineInstanceId)
+        public async Task DeleteInstanceAsync(string machineInstanceId, CancellationToken cancellationToken)
         {
-            await EnsureAuthenticatedRequest(async (client) =>
+            await EnsureAuthenticatedRequestAsync(async (client) =>
             {
-                var response = await client.DeleteAsync($"{machineInstanceId}");
+                var response = await client.DeleteAsync($"{machineInstanceId}").ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode) throw GetException(response);
 
-                return null;
-            });
+                return null; //TODO: make Task overload
+            }, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<string> GetDiagram(string instanceId)
+        public async Task<string> GetDiagramAsync(string instanceId, CancellationToken cancellationToken)
         {
-            var responseBody = await EnsureAuthenticatedRequest(async (client) =>
+            var responseBody = await EnsureAuthenticatedRequestAsync(async (client) =>
             {
-                var response = await client.GetAsync($"instances/{instanceId}/diagram");
+                var response = await client.GetAsync($"instances/{instanceId}/diagram").ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode) throw GetException(response);
 
-                return await response.Content.ReadAsStringAsync();
-            });
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
 
             return responseBody;
         }
 
-        public async Task<Machine> GetMachine(string machineName)
+        public async Task<Machine> GetMachineAsync(string machineName, CancellationToken cancellationToken)
         {
-            var responseBody = await EnsureAuthenticatedRequest(async (client) =>
+            var responseBody = await EnsureAuthenticatedRequestAsync(async (client) =>
             {
-                var response = await client.GetAsync($"machines/{machineName}");
+                var response = await client.GetAsync($"machines/{machineName}").ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -164,44 +165,44 @@ namespace REstateClient
                     throw GetException(response);
                 }
 
-                return await response.Content.ReadAsStringAsync();
-            });
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
 
             var configuration = responseBody != null ? StringSerializer.Deserialize<Machine>(responseBody) : null;
 
             return configuration;
         }
 
-        public async Task<Machine> DefineStateMachine(Machine configuration)
+        public async Task<Machine> DefineStateMachineAsync(Machine configuration, CancellationToken cancellationToken)
         {
             var payload = StringSerializer.Serialize(configuration);
 
-            var responseBody = await EnsureAuthenticatedRequest(async (client) =>
+            var responseBody = await EnsureAuthenticatedRequestAsync(async (client) =>
             {
 
                 var response = await client.PostAsync("machines/",
-                    new StringContent(payload, Encoding.UTF8, "application/json"));
+                    new StringContent(payload, Encoding.UTF8, "application/json")).ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode) throw GetException(response);
 
-                return await response.Content.ReadAsStringAsync();
-            });
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
 
             var configurationResponse = StringSerializer.Deserialize<Machine>(responseBody);
 
             return configurationResponse;
         }
 
-        public async Task<string> GetMachineDiagram(string machineName)
+        public async Task<string> GetMachineDiagramAsync(string machineName, CancellationToken cancellationToken)
         {
-            var responseBody = await EnsureAuthenticatedRequest(async (client) =>
+            var responseBody = await EnsureAuthenticatedRequestAsync(async (client) =>
             {
-                var response = await client.GetAsync($"machines/{machineName}/diagram");
+                var response = await client.GetAsync($"machines/{machineName}/diagram").ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode) throw GetException(response);
 
-                return await response.Content.ReadAsStringAsync();
-            });
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
 
             return responseBody;
         }

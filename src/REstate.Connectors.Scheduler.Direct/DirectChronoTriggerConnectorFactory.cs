@@ -2,6 +2,7 @@ using REstate.Engine.Services;
 using REstate.Logging;
 using REstate.Scheduler;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace REstate.Engine.Connectors.Scheduler
 {
@@ -26,7 +27,7 @@ namespace REstate.Engine.Connectors.Scheduler
         public bool IsGuardConnector { get; } = false;
         public string ConnectorSchema { get; set; } = "{ }";
 
-        public Task<IConnector> BuildConnector(string apiKey)
+        public Task<IConnector> BuildConnectorAsync(string apiKey, CancellationToken cancellationToken)
         {
             var connector = new DirectChronoTriggerConnector(_TriggerSchedulerFactory.GetTriggerScheduler(apiKey), _StringSerializer);
 

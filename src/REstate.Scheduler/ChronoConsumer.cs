@@ -60,7 +60,7 @@ namespace REstate.Scheduler
                                 "ChronoTrigger {{{chronoTriggerId}}} trigger state ({triggerState}) did not match current state ({currentState}). Removing.",
                                 chronoTrigger.ChronoTriggerId, chronoTrigger.StateName, currentState.StateName);
 
-                            await scheduler.RemoveTrigger(chronoTrigger, cancellationToken);
+                            await scheduler.RemoveTriggerAsync(chronoTrigger, cancellationToken);
                         }
                         else if (chronoTrigger.VerifyCommitTag && currentState.CommitTag != chronoTrigger.LastCommitTag)
                         {
@@ -69,7 +69,7 @@ namespace REstate.Scheduler
                                 "but commit tag did not. Removing.",
                                 chronoTrigger.ChronoTriggerId, chronoTrigger.StateName, currentState.StateName);
 
-                            await scheduler.RemoveTrigger(chronoTrigger, cancellationToken);
+                            await scheduler.RemoveTriggerAsync(chronoTrigger, cancellationToken);
                         }
                         else
                         {
@@ -82,7 +82,7 @@ namespace REstate.Scheduler
                                 await FireTriggerAsync(chronoTrigger.MachineInstanceId,
                                     chronoTrigger.TriggerName, chronoTrigger.ContentType, chronoTrigger.Payload, chronoTrigger.VerifyCommitTag ? chronoTrigger.LastCommitTag : null, cancellationToken);
 
-                                await scheduler.RemoveTrigger(chronoTrigger, cancellationToken);
+                                await scheduler.RemoveTriggerAsync(chronoTrigger, cancellationToken);
 
                                 Logger.Information("ChronoTrigger {{{chronoTriggerId}}} fired successfully.",
                                     chronoTrigger.ChronoTriggerId, chronoTrigger);

@@ -74,7 +74,7 @@ namespace REstate.Web.Auth.Modules
                     IPrincipal principal;
                     using (var repository = authRepositoryFactory.OpenRepository())
                     {
-                        principal = await repository.LoadPrincipalByApiKey(apiKey, ct);
+                        principal = await repository.LoadPrincipalByApiKeyAsync(apiKey, ct).ConfigureAwait(false);
                     }
 
                     if (principal == null) return 401;

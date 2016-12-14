@@ -23,18 +23,17 @@ namespace REstate.Repositories.Core.Susanoo
             _logger = logger;
         }
 
-        public async Task CreateInstance(string machineName, string instanceId, CancellationToken cancellationToken)
+        public Task CreateInstanceAsync(string machineName, string instanceId, CancellationToken cancellationToken)
         {
-            await CreateInstance(machineName, instanceId, null, cancellationToken)
-                .ConfigureAwait(false);
+            return CreateInstanceAsync(machineName, instanceId, null, cancellationToken);
         }
 
-        public async Task CreateInstance(string machineName, string instanceId,
+        public Task CreateInstanceAsync(string machineName, string instanceId,
             IDictionary<string, string> metadata, CancellationToken cancellationToken)
         {
             var serializedMetadata = metadata == null ? null : _stringSerializer.Serialize(metadata);
-
-            await DefineCommand(
+            
+            return DefineCommand(
                     @"
                     DECLARE @InitialState varchar(250);
                     DECLARE @StateChangedDateTime DATETIME2(3);
@@ -52,20 +51,18 @@ namespace REstate.Repositories.Core.Susanoo
                     InstanceId = instanceId,
                     MachineName = machineName,
                     Metadata = serializedMetadata
-                }, null, cancellationToken)
-                .ConfigureAwait(false);
+                }, null, cancellationToken);
         }
 
-        public async Task DeleteInstance(string instanceId, CancellationToken cancellationToken)
+        public Task DeleteInstanceAsync(string instanceId, CancellationToken cancellationToken)
         {
-            await DefineCommand("DELETE FROM Instances WHERE InstanceId = @InstanceId")
+            return DefineCommand("DELETE FROM Instances WHERE InstanceId = @InstanceId")
                 .Compile()
                 .ExecuteNonQueryAsync(DatabaseManagerPool.DatabaseManager, new { InstanceId = instanceId }, null,
-                    cancellationToken)
-                .ConfigureAwait(false);
+                    cancellationToken);
         }
 
-        public async Task<InstanceRecord> GetInstanceState(string instanceId, CancellationToken cancellationToken)
+        public async Task<InstanceRecord> GetInstanceStateAsync(string instanceId, CancellationToken cancellationToken)
         {
             return (await DefineCommand(
                     "SELECT TOP 1 * " +
@@ -78,13 +75,12 @@ namespace REstate.Repositories.Core.Susanoo
                 .Single();
         }
 
-        public async Task<InstanceRecord> SetInstanceState(string instanceId, string stateName, string triggerName, string lastCommitTag, CancellationToken cancellationToken)
+        public Task<InstanceRecord> SetInstanceStateAsync(string instanceId, string stateName, string triggerName, string lastCommitTag, CancellationToken cancellationToken)
         {
-            return await SetInstanceState(instanceId, stateName, triggerName, null, lastCommitTag, cancellationToken)
-                .ConfigureAwait(false);
+            return SetInstanceStateAsync(instanceId, stateName, triggerName, null, lastCommitTag, cancellationToken);
         }
 
-        public async Task<InstanceRecord> SetInstanceState(string instanceId, string stateName, string triggerName, string parameterData,
+        public async Task<InstanceRecord> SetInstanceStateAsync(string instanceId, string stateName, string triggerName, string parameterData,
             string lastCommitTag, CancellationToken cancellationToken)
         {
             var sw = new Stopwatch();
@@ -150,9 +146,9 @@ namespace REstate.Repositories.Core.Susanoo
             return result.Single();
         }
 
-        public async Task<string> GetInstanceMetadata(string instanceId, CancellationToken cancellationToken)
+        public Task<string> GetInstanceMetadataAsync(string instanceId, CancellationToken cancellationToken)
         {
-            var result = await DefineCommand(
+            return DefineCommand(
                     "SELECT Metadata " +
                     "FROM Instances " +
                     "WHERE InstanceId = @InstanceId;")
@@ -161,10 +157,7 @@ namespace REstate.Repositories.Core.Susanoo
                 new
                 {
                     InstanceId = instanceId
-                }, cancellationToken)
-                .ConfigureAwait(false);
-
-            return result;
+                }, cancellationToken);
         }
     }
 }

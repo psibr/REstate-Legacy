@@ -23,19 +23,19 @@ namespace REstate.Scheduler.Service
 
         protected async override Task Initialize(string apiKey)
         {
-            Session = await Client.GetSession(apiKey);
+            Session = await Client.GetSessionAsync(apiKey, CancellationToken.None).ConfigureAwait(false);
         }
 
         protected async override Task<State> GetStateAsync(string machineInstanceId, CancellationToken cancellationToken)
         {
-            var record = await Session.GetInstanceInfo(machineInstanceId);
+            var record = await Session.GetInstanceInfoAsync(machineInstanceId, cancellationToken).ConfigureAwait(false);
 
             return new State(record.MachineName, record.StateName, record.CommitTag);
         }
 
-        protected async override Task FireTriggerAsync(string machineInstanceId, string triggerName, string contentType, string payload, string lastCommitTag, CancellationToken cancellationToken)
+        protected override Task FireTriggerAsync(string machineInstanceId, string triggerName, string contentType, string payload, string lastCommitTag, CancellationToken cancellationToken)
         {
-            await Session.FireTrigger(machineInstanceId, triggerName, payload, contentType, lastCommitTag); //TODO: add commitTag and contentType.
+            return Session.FireTriggerAsync(machineInstanceId, triggerName, payload, contentType, lastCommitTag, cancellationToken);
         }
     }
 }
