@@ -10,7 +10,9 @@
       "type": "platform",
       "version": "1.0.1"
     },
-    "REstateClient": "0.1.0-*"
+    "REstateClient": "0.1.0-*",
+    "REstate.Common": "0.1.0-*",
+    "NJsonSchema": "6.6.6192.39835"
   },
 
   "frameworks": {

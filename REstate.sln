@@ -19,8 +19,6 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "REstate.Scheduler.Consumer.
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "REstate.Engine.Connectors.Scheduler.Http", "src\REstate.Connectors.Scheduler.Http\REstate.Engine.Connectors.Scheduler.Http.xproj", "{19895F87-B1ED-4E66-95B0-1EBAE56BE6C5}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "REstate.Engine.Stateless", "src\REstate.Engine.Stateless\REstate.Engine.Stateless.xproj", "{0CA1D5EC-8D2B-406F-A19B-CFB8E7EE389A}"
-EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "REstate.Scheduler.Consumer.Direct", "src\REstate.Scheduler.Consumer.Direct\REstate.Scheduler.Consumer.Direct.xproj", "{6FDA4BF1-AF3D-4AAB-A8A2-CD774EA67A72}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "REstate.Engine.Connectors.Scheduler.Direct", "src\REstate.Connectors.Scheduler.Direct\REstate.Engine.Connectors.Scheduler.Direct.xproj", "{45D22768-619B-429A-B067-9AAC77B4355C}"
@@ -44,10 +42,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Performance1.psess = Performance1.psess
 	EndProjectSection
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "REstate.Connectors.RabbitMQ", "src\REstate.Connectors.RabbitMQ\REstate.Connectors.RabbitMQ.xproj", "{E43A1B20-C7EC-451D-8F2D-8A42023C0FB0}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "REstate.Engine.Repositories.InMemory", "src\REstate.Engine.Repositories.InMemory\REstate.Engine.Repositories.InMemory.xproj", "{3EA42477-E490-4C97-A7C9-E73FA2B08FCE}"
+EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -85,10 +84,6 @@ Global
 		{19895F87-B1ED-4E66-95B0-1EBAE56BE6C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19895F87-B1ED-4E66-95B0-1EBAE56BE6C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19895F87-B1ED-4E66-95B0-1EBAE56BE6C5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0CA1D5EC-8D2B-406F-A19B-CFB8E7EE389A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0CA1D5EC-8D2B-406F-A19B-CFB8E7EE389A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0CA1D5EC-8D2B-406F-A19B-CFB8E7EE389A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0CA1D5EC-8D2B-406F-A19B-CFB8E7EE389A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6FDA4BF1-AF3D-4AAB-A8A2-CD774EA67A72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6FDA4BF1-AF3D-4AAB-A8A2-CD774EA67A72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FDA4BF1-AF3D-4AAB-A8A2-CD774EA67A72}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -121,6 +116,14 @@ Global
 		{E87875D2-B9BF-49BA-B433-3C681FC7B928}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E87875D2-B9BF-49BA-B433-3C681FC7B928}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E87875D2-B9BF-49BA-B433-3C681FC7B928}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E43A1B20-C7EC-451D-8F2D-8A42023C0FB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E43A1B20-C7EC-451D-8F2D-8A42023C0FB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E43A1B20-C7EC-451D-8F2D-8A42023C0FB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E43A1B20-C7EC-451D-8F2D-8A42023C0FB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EA42477-E490-4C97-A7C9-E73FA2B08FCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EA42477-E490-4C97-A7C9-E73FA2B08FCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EA42477-E490-4C97-A7C9-E73FA2B08FCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EA42477-E490-4C97-A7C9-E73FA2B08FCE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

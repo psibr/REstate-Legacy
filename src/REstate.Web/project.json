@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "Serilog": "2.3.0",
+    "Serilog.Sinks.Logentries": "3.0.0-dev-00020",
     "Microsoft.AspNetCore.Hosting": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
     "Microsoft.AspNetCore.Owin": "1.0.0",

@@ -1,0 +1,36 @@
+{
+  "authors": [
+    "Donovan (Ovan) Crone",
+    "Andrea Balfour"
+  ],
+  "dependencies": {
+    "REstate.Engine": "0.1.0-*",
+    "System.Collections": "4.3.0",
+    "System.Linq": "4.3.0",
+    "System.Runtime": "4.3.0",
+    "System.Runtime.InteropServices": "4.3.0",
+    "System.Threading.Tasks": "4.3.0",
+    "System.Threading": "4.3.0"
+  },
+  "description": "In-memory repository for engine-level components of REstate a StateMachine-As-A-Service concept.",
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
+    }
+  },
+    "buildOptions": {
+    "debugType": "portable"
+  },
+  "packOptions": {
+    "requireLicenseAcceptance": false,
+    "licenseUrl": "https://opensource.org/licenses/MIT",
+    "projectUrl": "",
+    "tags": [ "StateMachine", "SMAAS", "SM-AAS" ],
+    "owners": [
+      "Donovan (Ovan) Crone",
+      "Andrea Balfour"
+    ],
+    "summary": "MSSQL repository for engine-level components of REstate."
+  },
+  "version": "0.1.0-*"
+}

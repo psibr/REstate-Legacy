@@ -3,15 +3,19 @@
     "ConnectionStrings": {
       "Engine": "Server=tcp:psibr.database.windows.net,1433;Initial Catalog=REstate;Persist Security Info=False;User ID=REstateUser;Password=REstate_is_alive_2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
     },
-    "AuthenticationSettings": {
+    "Authentication": {
       "UseAuthentication": false,
       "ClaimsPrincipalResourceName": "REstate.User",
       "CookieName": "REstate",
       "SchedulerApiKey": "F1752DAA-1A32-41D7-9106-1FF2890B377A",
-      "TokenLifeSpanMinutes": 43200
+      "TokenLifeSpanMinutes": 43200,
+      "TokenEncryptionCertificate": {
+        "FileName": "REstate.pfx",
+        "PrivateKeyPassword": "development"
+      }
     }
   },
   "RabbitMQ": {
-    "Uri": "amqp://restate:restate_is_alive_2@40.118.135.89:5672/"
+    "AmqpUri": "amqp://restate:restate_is_alive_2@40.118.135.89:5672/"
   }
 }

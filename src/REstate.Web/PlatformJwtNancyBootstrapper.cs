@@ -12,9 +12,9 @@ namespace REstate.Web
             pipelines.EnableJwtStatelessAuthentication(
                 ctx => ctx
                     .GetOwinEnvironment()
-                    .ContainsKey(Configuration.AuthenticationSettings.ClaimsPrincipalResourceName)
+                    .ContainsKey(Configuration.Authentication.ClaimsPrincipalResourceName)
                         ? ctx.GetOwinEnvironment()
-                            [Configuration.AuthenticationSettings
+                            [Configuration.Authentication
                                 .ClaimsPrincipalResourceName] as ClaimsPrincipal
                         : null,
                 Logger);

@@ -42,7 +42,7 @@ namespace REstate.Engine
         public string MachineInstanceId { get; }
         public string MachineDefinitionId { get; }
 
-        public Task FireAsync(
+        public Task<InstanceRecord> FireAsync(
             Trigger trigger, 
             string contentType, string payload, 
             CancellationToken cancellationToken)
@@ -50,17 +50,15 @@ namespace REstate.Engine
             return FireAsync(trigger, contentType, payload, null, cancellationToken);
         }
 
-        public async Task FireAsync(
+        public async Task<InstanceRecord> FireAsync(
             Trigger trigger,
             string contentType, string payload, string lastCommitTag,
             CancellationToken cancellationToken)
         {
             using (var dataContext = _repositoryContextFactory.OpenContext(ApiKey))
             {
-                var record = await dataContext.MachineInstances
+                var currentState = await dataContext.MachineInstances
                     .GetInstanceStateAsync(MachineInstanceId, cancellationToken).ConfigureAwait(false);
-
-                var currentState = new State(MachineDefinitionId, record.StateName, record.CommitTag);
 
                 var stateConfig = StateMappings[currentState];
 
@@ -80,14 +78,12 @@ namespace REstate.Engine
                     }
                 }
 
-                record = await dataContext.MachineInstances.SetInstanceStateAsync(
+                currentState = await dataContext.MachineInstances.SetInstanceStateAsync(
                     MachineInstanceId,
-                    currentState.StateName, 
+                    transition.ResultantStateName, 
                     trigger.TriggerName, 
                     lastCommitTag ?? currentState.CommitTag, 
-                    CancellationToken.None).ConfigureAwait(false);
-
-                currentState = new State(MachineDefinitionId, record.StateName, record.CommitTag);
+                    cancellationToken).ConfigureAwait(false);
 
                 stateConfig = StateMappings[currentState];
 
@@ -118,6 +114,8 @@ namespace REstate.Engine
                         throw;
                     }
                 }
+
+                return currentState;
             }
         }
 
@@ -145,17 +143,16 @@ namespace REstate.Engine
             return false;
         }
 
-        public async Task<State> GetCurrentStateAsync(CancellationToken cancellationToken)
+        public async Task<InstanceRecord> GetCurrentStateAsync(CancellationToken cancellationToken)
         {
-            State currentState;
+            InstanceRecord currentState;
 
             using (var dataContext = _repositoryContextFactory.OpenContext(ApiKey))
             {
-                var record = await dataContext.MachineInstances
+                currentState = await dataContext.MachineInstances
                     .GetInstanceStateAsync(MachineInstanceId, cancellationToken)
                     .ConfigureAwait(false);
 
-                currentState = new State(MachineDefinitionId, record.StateName, record.CommitTag);
             }
 
             return currentState;

@@ -37,7 +37,7 @@ namespace REstate.Web.Modules
         protected SecuredModule(REstateConfiguration configuration, string modulePath, params Predicate<Claim>[] claimPredicates)
             : base(modulePath)
         {
-            if (configuration.AuthenticationSettings.UseAuthentication)
+            if (configuration.Authentication.UseAuthentication)
             {
                 if (claimPredicates != null)
                     this.RequiresClaims(claimPredicates);

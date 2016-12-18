@@ -15,5 +15,10 @@ namespace REstate.Configuration
         public string CommitTag { get; set; }
 
         public DateTime StateChangedDateTime { get; set; }
+
+        public static implicit operator State(InstanceRecord record)
+        {
+            return new State(record.MachineName, record.StateName, record.CommitTag);
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using REstate.Configuration;
 
 namespace REstate.Engine
 {
@@ -10,13 +11,13 @@ namespace REstate.Engine
 
         string MachineDefinitionId { get; }
 
-        Task FireAsync(
+        Task<InstanceRecord> FireAsync(
             Trigger trigger, 
             string contentType,
             string payload, 
             CancellationToken cancellationToken);
 
-        Task FireAsync(
+        Task<InstanceRecord> FireAsync(
             Trigger trigger,
             string contentType, 
             string payload, 
@@ -25,7 +26,7 @@ namespace REstate.Engine
 
         Task<bool> IsInStateAsync(State state, CancellationToken cancellationToken);
 
-        Task<State> GetCurrentStateAsync(CancellationToken cancellationToken);
+        Task<InstanceRecord> GetCurrentStateAsync(CancellationToken cancellationToken);
 
         Task<ICollection<Trigger>> GetPermittedTriggersAsync(CancellationToken cancellationToken);
     }

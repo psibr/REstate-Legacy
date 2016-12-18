@@ -122,8 +122,10 @@ namespace REstate.Web.Modules
                 string machineInstanceId = parameters.MachineInstanceId;
                 string triggerName = parameters.TriggerName;
                 var payload = this.Request.Body.AsString();
-
-                string contentType = this.Request.Headers.ContentType;
+                
+                string contentType = null;
+                if(this.Request.Headers.Keys.Contains("Content-Type"))
+                    contentType = this.Request.Headers.ContentType;
 
                 var commitTagHeaders = this.Request.Headers.Where(h => h.Key == "X-REstate-CommitTag");
 
@@ -134,9 +136,10 @@ namespace REstate.Web.Modules
                 IStateMachine machine = await stateEngine
                     .GetInstance(machineInstanceId, ct);
 
+                State resultantState;
                 try
                 {
-                    await machine.FireAsync(
+                    resultantState = await machine.FireAsync(
                         new Trigger(machine.MachineDefinitionId, triggerName),
                         contentType,
                         payload,

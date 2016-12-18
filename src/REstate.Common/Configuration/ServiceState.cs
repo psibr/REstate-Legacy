@@ -1,16 +1,20 @@
-using REstate.Configuration;
+using System.ComponentModel.DataAnnotations;
 
-public class ServiceState
+namespace REstate.Configuration
 {
-    public string StateName { get; set; }
+    public class ServiceState
+    {
+        [Required]
+        public string StateName { get; set; }
 
-    public string Description { get; set; }
+        public string Description { get; set; }
 
-    public bool DisableAcknowledgement { get; set; }
+        public bool DisableAcknowledgement { get; set; }
 
-    public Transition[] Transitions { get; set; }
+        public Transition[] Transitions { get; set; }
 
-    public long? RetryDelaySeconds { get; set; }
+        public long? RetryDelaySeconds { get; set; }
 
-    public ServiceEntryConnector OnEntry { get; set; }
+        public ServiceEntryConnector OnEntry { get; set; }
+    }
 }

@@ -53,7 +53,7 @@ namespace REstate.Web.Auth.Modules
             //});
 
             //We only have routes if authentication is turned on.
-            if (configuration.AuthenticationSettings.UseAuthentication)
+            if (configuration.Authentication.UseAuthentication)
             {
                 Post("/apikey", async (parameters, ct) =>
                 {

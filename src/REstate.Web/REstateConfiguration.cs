@@ -9,7 +9,7 @@ namespace REstate.Web
     {
         public ConnectionStrings ConnectionStrings { get; set; }
 
-        public AuthenticationSettings AuthenticationSettings { get; set; }
+        public AuthenticationSettings Authentication { get; set; }
     }
 
     public class AuthenticationSettings
@@ -23,6 +23,15 @@ namespace REstate.Web
         public string SchedulerApiKey { get; set; }
 
         public long TokenLifeSpanMinutes { get; set; } = 30;
+
+        public TokenEncryptionCertificateSettings TokenEncryptionCertificate { get; set; }
+    }
+
+    public class TokenEncryptionCertificateSettings
+    {
+        public string FileName { get; set; }
+
+        public string PrivateKeyPassword { get; set; }
     }
 
     public class ConnectionStrings
