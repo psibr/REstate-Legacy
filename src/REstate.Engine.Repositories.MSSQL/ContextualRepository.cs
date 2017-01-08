@@ -1,7 +1,6 @@
-﻿using REstate.Engine.Repositories;
-using Susanoo.ConnectionPooling;
+﻿using Susanoo.ConnectionPooling;
 
-namespace REstate.Repositories.Core.Susanoo
+namespace REstate.Engine.Repositories.MSSQL
 {
     public abstract class ContextualRepository
         : IContextualRepository

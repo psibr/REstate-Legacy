@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using REstate.Logging;
 
 namespace REstate.Engine
 {
@@ -14,12 +15,15 @@ namespace REstate.Engine
 
         private readonly StringSerializer _stringSerializer;
 
+        private readonly IPlatformLogger _Logger;
+
         private readonly string _apiKey;
 
         public StateEngine(
             IStateMachineFactory stateMachineFactory,
             IRepositoryContextFactory repositoryContextFactory,
             StringSerializer stringSerializer,
+            IPlatformLogger logger,
             string apiKey)
         {
             _stateMachineFactory = stateMachineFactory;
@@ -27,156 +31,158 @@ namespace REstate.Engine
 
             _stringSerializer = stringSerializer;
 
+            _Logger = logger;
+
             _apiKey = apiKey;
         }
 
-        public async Task<Machine> GetMachineDefinition(string machineDefinitionId, CancellationToken cancellationToken)
+        public async Task<Schematic> GetSchematic(string schematicName, CancellationToken cancellationToken)
         {
-            Machine configuration;
+            Schematic configuration;
             using (var repository = _repositoryContextFactory
                 .OpenContext(_apiKey))
             {
-                configuration = await repository.Machines
-                    .RetrieveMachineConfigurationAsync(machineDefinitionId, cancellationToken)
+                configuration = await repository.Schematics
+                    .RetrieveSchematicAsync(schematicName, cancellationToken)
                     .ConfigureAwait(false);
             }
 
             return configuration;
         }
 
-        public async Task<string> GetDiagramForDefinition(string machineDefinitionId, CancellationToken cancellationToken)
+        public async Task<string> GetSchematicDiagram(string schematicName, CancellationToken cancellationToken)
         {
-            Machine configuration;
+            Schematic schematic;
 
             using (var repository = _repositoryContextFactory
                 .OpenContext(_apiKey))
             {
-                configuration = await repository.Machines
-                    .RetrieveMachineConfigurationAsync(machineDefinitionId, cancellationToken)
+                schematic = await repository.Schematics
+                    .RetrieveSchematicAsync(schematicName, cancellationToken)
                     .ConfigureAwait(false);
             }
 
             var machine = _stateMachineFactory
-                .ConstructFromConfiguration(_apiKey, null, configuration);
+                .ConstructFromConfiguration(_apiKey, null, schematic);
 
             return machine.ToString();
         }
 
-        public string PreviewDiagram(Machine machineDefinition)
+        public string PreviewDiagram(Schematic schematic)
         {
             var machine = _stateMachineFactory
-                .ConstructFromConfiguration(_apiKey, null, machineDefinition);
+                .ConstructFromConfiguration(_apiKey, null, schematic);
 
             return machine.ToString();
         }
 
-        public async Task<Machine> DefineStateMachine(Machine machineDefinition, CancellationToken cancellationToken)
+        public async Task<Schematic> CreateSchematic(Schematic schematic, CancellationToken cancellationToken)
         {
-            Machine newMachineConfiguration;
+            Schematic newSchematic;
             using (var repository = _repositoryContextFactory
                 .OpenContext(_apiKey))
             {
-                newMachineConfiguration = await repository.Machines
-                    .DefineStateMachineAsync(machineDefinition, cancellationToken)
+                newSchematic = await repository.Schematics
+                    .CreateSchematicAsync(schematic, cancellationToken)
                     .ConfigureAwait(false);
             }
 
-            return newMachineConfiguration;
+            return newSchematic;
         }
 
-        public async Task<IEnumerable<MachineRecord>> ListMachines(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Schematic>> ListSchematics(CancellationToken cancellationToken)
         {
             using (var repository = _repositoryContextFactory
                 .OpenContext(_apiKey))
             {
-                return await repository.Machines
-                    .ListMachinesAsync(cancellationToken)
+                return await repository.Schematics
+                    .ListSchematicsAsync(cancellationToken)
                     .ConfigureAwait(false);
             }
         }
 
-        public async Task<string> InstantiateMachine(string machineDefinitionId, IDictionary<string, string> metadata, CancellationToken cancellationToken)
+        public async Task<string> InstantiateMachine(string schematicName, IDictionary<string, string> metadata, CancellationToken cancellationToken)
         {
-            var machineInstanceId = Guid.NewGuid().ToString();
+            var machineId = Guid.NewGuid().ToString();
 
             using (var configruationRepository = _repositoryContextFactory
                 .OpenContext(_apiKey))
             {
-                await configruationRepository.MachineInstances
-                    .CreateInstanceAsync(machineDefinitionId, machineInstanceId, metadata, cancellationToken)
+                await configruationRepository.Machines
+                    .CreateMachineAsync(schematicName, machineId, metadata, cancellationToken)
                     .ConfigureAwait(false);
             }
 
-            return machineInstanceId;
+            return machineId;
         }
 
-        public async Task<IDictionary<string, string>> GetInstanceMetadata(string machineInstanceId, CancellationToken cancellationToken)
+        public async Task<IDictionary<string, string>> GetMachineMetadata(string machineId, CancellationToken cancellationToken)
         {
-            string metadata = await GetInstanceMetadataRaw(machineInstanceId, cancellationToken);
+            string metadata = await GetMachineMetadataRaw(machineId, cancellationToken);
 
             return _stringSerializer.Deserialize<Dictionary<string, string>>(metadata);
         }
 
-        public async Task<string> GetInstanceMetadataRaw(string machineInstanceId, CancellationToken cancellationToken)
+        public async Task<string> GetMachineMetadataRaw(string machineId, CancellationToken cancellationToken)
         {
             string metadata;
 
             using (var repository = _repositoryContextFactory
                 .OpenContext(_apiKey))
             {
-                metadata = await repository.MachineInstances
-                    .GetInstanceMetadataAsync(machineInstanceId, cancellationToken)
+                metadata = await repository.Machines
+                    .GetMachineMetadataAsync(machineId, cancellationToken)
                     .ConfigureAwait(false);
             }
 
             return metadata;
         }
 
-        public async Task<IStateMachine> GetInstance(string machineInstanceId, CancellationToken cancellationToken)
+        public async Task<IStateMachine> GetMachine(string machineId, CancellationToken cancellationToken)
         {
-            Machine configuration;
+            Schematic schematic;
 
             using (var repository = _repositoryContextFactory
                 .OpenContext(_apiKey))
             {
                 //TODO: Andrea doesn't like this. Review.
-                configuration = await repository.Machines
-                    .RetrieveMachineConfigurationForInstanceAsync(machineInstanceId, cancellationToken)
+                schematic = await repository.Schematics
+                    .RetrieveSchematicForMachineAsync(machineId, cancellationToken)
                     .ConfigureAwait(false);
             }
 
             var machine = _stateMachineFactory
                 .ConstructFromConfiguration(_apiKey,
-                    machineInstanceId,
-                    configuration);
+                    machineId,
+                    schematic);
 
             return machine;
         }
 
-        public async Task DeleteInstance(string machineInstanceId, CancellationToken cancellationToken)
+        public async Task DeleteMachine(string machineId, CancellationToken cancellationToken)
         {
             using (var repository = _repositoryContextFactory
                 .OpenContext(_apiKey))
             {
-                await repository.MachineInstances
-                    .DeleteInstanceAsync(machineInstanceId, cancellationToken)
+                await repository.Machines
+                    .DeleteMachineAsync(machineId, cancellationToken)
                     .ConfigureAwait(false);
             }
         }
 
-        public async Task<InstanceRecord> GetInstanceInfoAsync(string machineInstanceId, CancellationToken cancellationToken)
+        public async Task<InstanceRecord> GetMachineInfoAsync(string machineId, CancellationToken cancellationToken)
         {
-            InstanceRecord instanceInfo;
+            InstanceRecord machineInfo;
 
             using (var repository = _repositoryContextFactory
                 .OpenContext(_apiKey))
             {
-                instanceInfo = await repository.MachineInstances
-                    .GetInstanceStateAsync(machineInstanceId, cancellationToken)
+                machineInfo = await repository.Machines
+                    .GetMachineStateAsync(machineId, cancellationToken)
                     .ConfigureAwait(false);
             }
 
-            return instanceInfo;
+            return machineInfo;
         }
     }
 }

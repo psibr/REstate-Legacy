@@ -38,10 +38,10 @@ namespace REstate.Engine.Connectors.Scheduler
         {
             return async (cancellationToken) =>
             {
-                var trigger = new ChronoTrigger(configuration);
+                var trigger = ChronoTrigger.FromConfiguration(configuration);
 
                 if (trigger.MachineInstanceId == null)
-                    trigger.MachineInstanceId = machineInstance.MachineInstanceId;
+                    trigger.MachineInstanceId = machineInstance.MachineId;
 
                 trigger.StateName = state.StateName;
                 trigger.ContentType = contentType;

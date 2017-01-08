@@ -1,9 +1,8 @@
-﻿using REstate.Engine.Repositories;
-using REstate.Logging;
+﻿using REstate.Logging;
 using Susanoo;
 using Susanoo.ConnectionPooling;
 
-namespace REstate.Repositories.Core.Susanoo
+namespace REstate.Engine.Repositories.MSSQL
 {
     public class RepositoryContextFactory
         : IRepositoryContextFactory

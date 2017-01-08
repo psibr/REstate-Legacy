@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using REstate.Configuration;
@@ -7,9 +8,7 @@ namespace REstate.Engine
 {
     public interface IStateMachine
     {
-        string MachineInstanceId { get; }
-
-        string MachineDefinitionId { get; }
+        string MachineId { get; }
 
         Task<InstanceRecord> FireAsync(
             Trigger trigger, 
@@ -21,7 +20,7 @@ namespace REstate.Engine
             Trigger trigger,
             string contentType, 
             string payload, 
-            string lastCommitTag,
+            Guid? lastCommitTag,
             CancellationToken cancellationToken);
 
         Task<bool> IsInStateAsync(State state, CancellationToken cancellationToken);

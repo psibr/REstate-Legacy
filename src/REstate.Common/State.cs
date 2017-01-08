@@ -1,28 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace REstate
 {
-    public class State
-        : IEquatable<State>, IEquatable<KeyValuePair<string, string>>
+    public struct State
+        : IEquatable<State>
     {
-        public State(string machineDefinitionId, string stateName, string commitTag = null)
+        public State(string stateName, Guid commitTag)
         {
-            if (string.IsNullOrWhiteSpace(machineDefinitionId))
-                throw new ArgumentException("Argument is null or whitespace", nameof(stateName));
             if (string.IsNullOrWhiteSpace(stateName))
                 throw new ArgumentException("Argument is null or whitespace", nameof(stateName));
+            
+            if (commitTag == Guid.Empty)
+                throw new ArgumentException("Must not be an empty Guid.", nameof(commitTag));
 
-            MachineDefinitionId = machineDefinitionId;
             StateName = stateName;
             CommitTag = commitTag;
         }
 
-        public string MachineDefinitionId { get; }
+        public State(string stateName)
+        {
+            if (string.IsNullOrWhiteSpace(stateName))
+                throw new ArgumentException("Argument is null or whitespace", nameof(stateName));
+
+            StateName = stateName;
+            CommitTag = Guid.Empty;
+        }
 
         public string StateName { get; }
 
-        public string CommitTag { get; }
+        public Guid CommitTag { get; }
 
         public override string ToString()
         {
@@ -38,24 +44,7 @@ namespace REstate
         /// <param name="other">An object to compare with this object.</param>
         public bool Equals(State other)
         {
-            return other != null
-                   && MachineDefinitionId == other.MachineDefinitionId
-                   && StateName == other.StateName;
-        }
-
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <returns>
-        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-        /// </returns>
-        /// <param name="other">An object to compare with this object.</param>
-        public bool Equals(KeyValuePair<string, string> other)
-        {
-            return !string.IsNullOrWhiteSpace(other.Key)
-                && !string.IsNullOrWhiteSpace(other.Value)
-                && MachineDefinitionId == other.Key
-                && StateName == other.Value;
+            return StateName == other.StateName;
         }
 
         /// <summary>
@@ -70,12 +59,8 @@ namespace REstate
             if (obj == null)
                 return false;
 
-            var state = obj as State;
-            if (state != null)
-                return Equals(state);
-
-            if (obj is KeyValuePair<int, string>)
-                return Equals((KeyValuePair<int, string>)obj);
+            if (obj is State)
+                return Equals((State)obj);
 
             return false;
         }
@@ -88,10 +73,22 @@ namespace REstate
         /// </returns>
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return (MachineDefinitionId.GetHashCode() * 397) ^ (StateName?.GetHashCode() ?? 0);
-            }
+            return StateName.GetHashCode();
+        }
+
+        public static bool IsSameCommit(State a, State b)
+        {
+            return a == b && a.CommitTag == b.CommitTag;
+        }
+
+        public bool IsSameCommit(State other)
+        {
+            return IsSameCommit(this, other);
+        }
+
+        public bool HasChanged(State newState)
+        {
+            return !IsSameCommit(newState);
         }
 
         public static bool operator ==(State a, State b)

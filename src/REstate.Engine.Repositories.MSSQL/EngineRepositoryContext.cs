@@ -1,8 +1,7 @@
-﻿using REstate.Engine.Repositories;
-using REstate.Logging;
+﻿using REstate.Logging;
 using Susanoo.ConnectionPooling;
 
-namespace REstate.Repositories.Core.Susanoo
+namespace REstate.Engine.Repositories.MSSQL
 {
     public class EngineRepositoryContext
         : IEngineRepositoryContext
@@ -11,8 +10,8 @@ namespace REstate.Repositories.Core.Susanoo
         {
             DatabaseManagerPool = databaseManagerPool;
             ApiKey = apiKey;
-            Machines = new MachineConfigurationRepository(this, stringSerializer);
-            MachineInstances = new MachineInstancesRepository(this, stringSerializer, logger);
+            Schematics = new SchematicRepository(this, stringSerializer);
+            Machines = new MachineRepository(this, stringSerializer, logger);
         }
 
         public IEngineRepositoryContext Root => this;
@@ -37,8 +36,8 @@ namespace REstate.Repositories.Core.Susanoo
             DatabaseManagerPool.Dispose();
         }
 
-        public IMachineConfigurationRepository Machines { get; }
+        public ISchematicRepository Schematics { get; }
 
-        public IMachineInstancesRepository MachineInstances { get; }
+        public IMachineRepository Machines { get; }
     }
 }

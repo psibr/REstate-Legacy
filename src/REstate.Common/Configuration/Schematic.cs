@@ -2,10 +2,10 @@
 
 namespace REstate.Configuration
 {
-    public class Machine
+    public class Schematic
     {
         [Required]
-        public string MachineName { get; set; }
+        public string SchematicName { get; set; }
 
         [Required]
         public string InitialState { get; set; }

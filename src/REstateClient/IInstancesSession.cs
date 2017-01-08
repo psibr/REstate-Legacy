@@ -3,25 +3,26 @@ using REstate.Configuration;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
+using System;
 
 namespace REstateClient
 {
     public interface IInstancesSession : IAuthenticatedSession
     {
-        Task DeleteInstanceAsync(string instanceId, CancellationToken cancellationToken);
+        Task DeleteMachineAsync(string machineId, CancellationToken cancellationToken);
 
-        Task<State> FireTriggerAsync(string instanceId, string triggerName, string contentType, string payload, string commitTag, CancellationToken cancellationToken);
+        Task<State> FireTriggerAsync(string machineId, string triggerName, string contentType, string payload, Guid? commitTag, CancellationToken cancellationToken);
 
-        Task<ICollection<Trigger>> GetAvailableTriggersAsync(string instanceId, CancellationToken cancellationToken);
+        Task<ICollection<Trigger>> GetAvailableTriggersAsync(string machineId, CancellationToken cancellationToken);
 
-        Task<string> GetDiagramAsync(string instanceId, CancellationToken cancellationToken);
+        Task<string> GetMachineDiagramAsync(string machineId, CancellationToken cancellationToken);
 
-        Task<State> GetStateAsync(string instanceId, CancellationToken cancellationToken);
+        Task<State> GetStateAsync(string machineId, CancellationToken cancellationToken);
 
-        Task<InstanceRecord> GetInstanceInfoAsync(string instanceId, CancellationToken cancellationToken);
+        Task<InstanceRecord> GetInstanceInfoAsync(string machineId, CancellationToken cancellationToken);
 
-        Task<string> InstantiateAsync(string machineName, CancellationToken cancellationToken);
+        Task<string> InstantiateAsync(string schematicName, CancellationToken cancellationToken);
 
-        Task<bool> IsInStateAsync(string instanceId, string stateName, CancellationToken cancellationToken);
+        Task<bool> IsInStateAsync(string machineId, string stateName, CancellationToken cancellationToken);
     }
 }

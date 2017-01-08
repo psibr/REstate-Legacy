@@ -55,32 +55,32 @@ namespace REstate.Web
                     case 401:
                         requestLogger
                             .Debug("Attempt to access resource while unauthorized: {statusCode} " +
-                                   "with reason-phrase: {reasonPhrase} at {method} {requestPath}",
+                                   "with reason-phrase: '{reasonPhrase}' at {method} {requestPath}",
                                 statusCode, ctx.Response.ReasonPhrase, ctx.Request.Method, ctx.Request.Path);
                         break;
 
                     case 403:
                         requestLogger
                             .Warning("Attempt to access forbidden resource: {statusCode} with reason-phrase:" +
-                                     " {reasonPhrase} at {method} {requestPath}",
+                                     " '{reasonPhrase}' at {method} {requestPath}",
                                 statusCode, ctx.Response.ReasonPhrase, ctx.Request.Method, ctx.Request.Path);
                         break;
 
                     case 404:
                         requestLogger
-                            .Debug("Not Found request: {statusCode} with reason-phrase: {reasonPhrase} at {method} {requestPath}",
+                            .Debug("Not Found request: {statusCode} with reason-phrase: '{reasonPhrase}' at {method} {requestPath}",
                                 statusCode, ctx.Response.ReasonPhrase, ctx.Request.Method, ctx.Request.Path);
                         break;
 
                     case 500:
                         requestLogger
-                            .Warning("Internal Server Error: {statusCode} with reason-phrase: {reasonPhrase} at {method} {requestPath}",
+                            .Warning("Internal Server Error: {statusCode} with reason-phrase: '{reasonPhrase}' at {method} {requestPath}",
                                 statusCode, ctx.Response.ReasonPhrase, ctx.Request.Method, ctx.Request.Path);
                         break;
 
                     default:
                         requestLogger
-                            .Warning("Unhandled status code: {statusCode} with reason-phrase: {reasonPhrase} at {method} {requestPath}",
+                            .Warning("Unhandled status code: {statusCode} with reason-phrase: '{reasonPhrase}' at {method} {requestPath}",
                                 statusCode, ctx.Response.ReasonPhrase, ctx.Request.Method, ctx.Request.Path);
                         break;
                 }
@@ -92,7 +92,8 @@ namespace REstate.Web
 
                 var requestLogger = Logger.ForContext("clientAddress", ctx.Request.UserHostAddress)
                     .ForContext("userName", ctx.CurrentUser?.Identity.Name)
-                    .ForContext("requestErrorId", errorId);
+                    .ForContext("requestErrorId", errorId)
+                    .ForContext("exception", ex);
 
                 requestLogger.Error(ex, "An unhandled exception occured with message: " +
                                         "{message} at {method} {requestPath}",
@@ -106,12 +107,7 @@ namespace REstate.Web
                     {
                         StatusCode = HttpStatusCode.InternalServerError,
                         ReasonPhrase = $"RequestErrorId: {errorId}",
-                        ContentType = "text/plain",
-                        Contents = stream =>
-                        {
-                            stream.Write(reasonPhraseBytes, 0, reasonPhraseBytes.Length);
-                            stream.Flush();
-                        },
+                        ContentType = "text/plain"
                     };
 
                 return new Response

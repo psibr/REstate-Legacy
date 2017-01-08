@@ -23,8 +23,7 @@ namespace REstate.Engine
             IRepositoryContextFactory repositoryContextFactory,
             DotGraphCartographer cartographer,
             string apiKey,
-            string machineName,
-            string machineInstanceId,
+            string machineId,
             IDictionary<State, StateConfiguration> stateMappings)
         {
             _connectorFactoryResolver = connectorFactoryResolver;
@@ -32,15 +31,13 @@ namespace REstate.Engine
             _cartographer = cartographer;
 
             ApiKey = apiKey;
-            MachineInstanceId = machineInstanceId;
-            MachineDefinitionId = machineName;
+            MachineId = machineId;
 
             StateMappings = stateMappings;
         }
 
         protected string ApiKey { get; }
-        public string MachineInstanceId { get; }
-        public string MachineDefinitionId { get; }
+        public string MachineId { get; }
 
         public Task<InstanceRecord> FireAsync(
             Trigger trigger, 
@@ -52,13 +49,13 @@ namespace REstate.Engine
 
         public async Task<InstanceRecord> FireAsync(
             Trigger trigger,
-            string contentType, string payload, string lastCommitTag,
+            string contentType, string payload, Guid? lastCommitTag,
             CancellationToken cancellationToken)
         {
             using (var dataContext = _repositoryContextFactory.OpenContext(ApiKey))
             {
-                var currentState = await dataContext.MachineInstances
-                    .GetInstanceStateAsync(MachineInstanceId, cancellationToken).ConfigureAwait(false);
+                var currentState = await dataContext.Machines
+                    .GetMachineStateAsync(MachineId, cancellationToken).ConfigureAwait(false);
 
                 var stateConfig = StateMappings[currentState];
 
@@ -78,11 +75,11 @@ namespace REstate.Engine
                     }
                 }
 
-                currentState = await dataContext.MachineInstances.SetInstanceStateAsync(
-                    MachineInstanceId,
+                currentState = await dataContext.Machines.SetMachineStateAsync(
+                    MachineId,
                     transition.ResultantStateName, 
                     trigger.TriggerName, 
-                    lastCommitTag ?? currentState.CommitTag, 
+                    lastCommitTag ?? Guid.Parse(currentState.CommitTag), 
                     cancellationToken).ConfigureAwait(false);
 
                 stateConfig = StateMappings[currentState];
@@ -104,10 +101,10 @@ namespace REstate.Engine
                         if(stateConfig.OnEntry.FailureTransition != null)
                         {
                             await FireAsync(
-                                new Trigger(MachineDefinitionId, stateConfig.OnEntry.FailureTransition.TriggerName), 
+                                new Trigger(stateConfig.OnEntry.FailureTransition.TriggerName), 
                                 contentType, 
                                 payload, 
-                                currentState.CommitTag, 
+                                Guid.Parse(currentState.CommitTag), 
                                 cancellationToken).ConfigureAwait(false);
                         }
 
@@ -137,7 +134,7 @@ namespace REstate.Engine
                     return true;
                 
                 //No match, move one level up the tree
-                configuration = StateMappings[new State(MachineDefinitionId, configuration.ParentStateName)];
+                configuration = StateMappings[new State(configuration.ParentStateName)];
             }
 
             return false;
@@ -149,10 +146,9 @@ namespace REstate.Engine
 
             using (var dataContext = _repositoryContextFactory.OpenContext(ApiKey))
             {
-                currentState = await dataContext.MachineInstances
-                    .GetInstanceStateAsync(MachineInstanceId, cancellationToken)
+                currentState = await dataContext.Machines
+                    .GetMachineStateAsync(MachineId, cancellationToken)
                     .ConfigureAwait(false);
-
             }
 
             return currentState;
@@ -164,7 +160,7 @@ namespace REstate.Engine
 
             var configuration = StateMappings[currentState];
 
-            return configuration.Transitions.Select(t => new Trigger(MachineDefinitionId, t.TriggerName)).ToList();
+            return configuration.Transitions.Select(t => new Trigger(t.TriggerName)).ToList();
         }
 
         public override string ToString()

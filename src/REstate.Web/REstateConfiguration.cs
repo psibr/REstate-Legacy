@@ -1,10 +1,5 @@
 namespace REstate.Web
 {
-    public class RootConfig
-    {
-        public REstateConfiguration REstateConfiguration { get; set; }
-    }
-
     public class REstateConfiguration
     {
         public ConnectionStrings ConnectionStrings { get; set; }

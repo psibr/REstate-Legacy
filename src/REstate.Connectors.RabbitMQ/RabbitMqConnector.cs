@@ -60,8 +60,7 @@ namespace REstate.Engine.Connectors.RabbitMq
 
                     properties.Headers = properties.Headers ?? new Dictionary<string, object>();
 
-                    properties.Headers.Add("MachineInstanceId", machineInstance.MachineInstanceId);
-                    properties.Headers.Add("MachineDefinitionId", machineInstance.MachineDefinitionId);
+                    properties.Headers.Add("MachineId", machineInstance.MachineId);
 
                     try
                     {

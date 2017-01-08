@@ -6,10 +6,10 @@ namespace REstateClient
 {
     public interface IConfigurationSession : IAuthenticatedSession, IInstancesSession
     {
-        Task<Machine> DefineStateMachineAsync(Machine configuration, CancellationToken cancellationToken);
+        Task<Schematic> CreateSchematicAsync(Schematic configuration, CancellationToken cancellationToken);
 
-        Task<string> GetMachineDiagramAsync(string machineName, CancellationToken cancellationToken);
+        Task<string> GetSchematicDiagramAsync(string schematicName, CancellationToken cancellationToken);
 
-        Task<Machine> GetMachineAsync(string machineName, CancellationToken cancellationToken);
+        Task<Schematic> GetSchematicAsync(string schematicName, CancellationToken cancellationToken);
     }
 }

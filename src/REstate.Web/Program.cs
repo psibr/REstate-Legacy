@@ -11,7 +11,7 @@ namespace REstate.Web
     using Microsoft.Extensions.Configuration;
     using Nancy.Owin;
     using OwinJwtAndCookie;
-    using Repositories.Core.Susanoo;
+    using REstate.Engine.Repositories.MSSQL;
     using REstate.Auth;
     using REstate.Auth.Repositories.MSSQL;
     using Scheduler;

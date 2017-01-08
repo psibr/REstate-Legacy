@@ -10,7 +10,7 @@ namespace REstate.Scheduling
 
         }
 
-        public ChronoTrigger(IDictionary<string, string> configuration)
+        protected ChronoTrigger(IDictionary<string, string> configuration)
         {
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
@@ -61,8 +61,15 @@ namespace REstate.Scheduling
 
         public long Delay { get; set; }
 
-        public string LastCommitTag { get; set; }
+        public Guid LastCommitTag { get; set; }
 
         public bool VerifyCommitTag { get; set; } = true;
+
+
+        public static ChronoTrigger FromConfiguration(IDictionary<string, string> configuration)
+        {
+            return new ChronoTrigger(configuration);
+        }
     }
+
 }

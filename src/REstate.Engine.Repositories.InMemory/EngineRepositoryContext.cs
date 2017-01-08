@@ -9,10 +9,10 @@ namespace REstate.Engine.Repositories.InMemory
         {
             ApiKey = apiKey;
 
-            var repo = new MachineConfigurationRepository(this, stringSerializer);
+            var repo = new EngineRepository(this, stringSerializer);
 
+            Schematics = repo;
             Machines = repo;
-            MachineInstances = repo;
         }
 
         public IEngineRepositoryContext Root => this;
@@ -30,8 +30,8 @@ namespace REstate.Engine.Repositories.InMemory
         {
         }
 
-        public IMachineConfigurationRepository Machines { get; }
+        public ISchematicRepository Schematics { get; }
 
-        public IMachineInstancesRepository MachineInstances { get; }
+        public IMachineRepository Machines { get; }
     }
 }

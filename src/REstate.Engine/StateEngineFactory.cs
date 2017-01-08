@@ -1,4 +1,5 @@
 ﻿using REstate.Engine.Repositories;
+using REstate.Logging;
 
 namespace REstate.Engine
 {
@@ -9,15 +10,20 @@ namespace REstate.Engine
 
         private readonly StringSerializer _StringSerializer;
 
+        private readonly IPlatformLogger _Logger;
+
         public StateEngineFactory(
             IStateMachineFactory stateMachineFactory,
             IRepositoryContextFactory repositoryContextFactory,
-            StringSerializer stringSerializer)
+            StringSerializer stringSerializer,
+            IPlatformLogger logger)
         {
             _StateMachineFactory = stateMachineFactory;
             _RepositoryContextFactory = repositoryContextFactory;
 
             _StringSerializer = stringSerializer;
+
+            _Logger = logger;
         }
 
         public StateEngine GetStateEngine(string apiKey)
@@ -26,6 +32,7 @@ namespace REstate.Engine
                 _StateMachineFactory,
                 _RepositoryContextFactory,
                 _StringSerializer,
+                _Logger,
                 apiKey);
         }
     }

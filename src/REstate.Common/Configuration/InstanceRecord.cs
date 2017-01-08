@@ -4,13 +4,9 @@ namespace REstate.Configuration
 {
     public class InstanceRecord
     {
-        public string MachineName { get; set; }
+        public string SchematicName { get; set; }
 
         public string StateName { get; set; }
-
-        public string TriggerName { get; set; }
-
-        public string Payload { get; set; }
 
         public string CommitTag { get; set; }
 
@@ -18,7 +14,7 @@ namespace REstate.Configuration
 
         public static implicit operator State(InstanceRecord record)
         {
-            return new State(record.MachineName, record.StateName, record.CommitTag);
+            return new State(record.StateName, Guid.Parse(record.CommitTag));
         }
     }
 }

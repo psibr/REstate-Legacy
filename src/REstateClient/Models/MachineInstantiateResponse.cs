@@ -2,6 +2,6 @@
 {
     internal class MachineInstantiateResponse
     {
-        public string MachineInstanceId { get; set; }
+        public string MachineId { get; set; }
     }
 }

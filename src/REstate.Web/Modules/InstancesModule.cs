@@ -30,11 +30,10 @@ namespace REstate.Web.Modules
             REstateConfiguration configuration,
             StateEngineFactory stateEngineFactory,
             IPlatformLogger logger)
-            : base(configuration, "/instances", claim => claim.Type == "claim" && claim.Value == "operator")
+            : base(configuration, "/machines", claim => claim.Type == "claim" && claim.Value == "operator")
         {
             Logger = logger;
             StateEngineFactory = stateEngineFactory;
-            
 
             GetMachineState();
 
@@ -44,103 +43,110 @@ namespace REstate.Web.Modules
 
             FireTrigger();
 
-            GetDiagramForInstance();
+            GetMachineDiagram();
 
-            GetDiagramChartForInstance();
+            GetMachineDrawing();
 
-            GetInstanceMetadata();
+            GetMachineMetadata();
 
-            DeleteInstance();
+            DeleteMachine();
         }
 
-        private void GetInstanceMetadata() =>
-            Get("/{MachineInstanceId}", async (parameters, ct) =>
+        private void GetMachineMetadata() =>
+            Get("/{MachineId}", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
-                string machineInstanceId = parameters.machineInstanceId;
+                string machineId = parameters.MachineId;
 
-                string metadata = await stateEngine.GetInstanceMetadataRaw(machineInstanceId, ct);
+                string metadata = await stateEngine.GetMachineMetadataRaw(machineId, ct);
 
                 return Negotiate
                     .WithMediaRangeResponse("application/json", Response.AsText(metadata ?? "{ }", "application/json"))
                     .WithAllowedMediaRange("application/json");
             });
 
-        private void GetDiagramForInstance() =>
-            Get("/{MachineInstanceId}/diagram", async (parameters, ct) =>
+        private void GetMachineDiagram() =>
+            Get("/{MachineId}/diagram", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
-                string machineInstanceId = parameters.machineInstanceId;
+                string machineId = parameters.MachineId;
 
                 IStateMachine machine = await stateEngine
-                    .GetInstance(machineInstanceId, ct);
+                    .GetMachine(machineId, ct);
 
                 return Negotiate
                     .WithMediaRangeResponse("text/plain", Response.AsText(machine.ToString(), "text/plain"))
                     .WithAllowedMediaRange("text/plain");
             });
 
-        private void GetDiagramChartForInstance() =>
-            Get("/{MachineInstanceId}/diagram/chart", async (parameters, ct) =>
+        private void GetMachineDrawing() =>
+            Get("/{MachineId}/drawing", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
-                string machineInstanceId = parameters.machineInstanceId;
+                string machineId = parameters.MachineId;
 
                 IStateMachine machine = await stateEngine
-                    .GetInstance(machineInstanceId, ct);
+                    .GetMachine(machineId, ct);
 
                 var encodedDiagram = System.Net.WebUtility.UrlEncode(machine.ToString());
 
                 return Response.AsRedirect($"https://chart.googleapis.com/chart?chl={encodedDiagram}&cht=gv", RedirectType.SeeOther);
             });
 
-        private void DeleteInstance() =>
-            Delete("/{MachineInstanceId}", async (parameters, ct) =>
+        private void DeleteMachine() =>
+            Delete("/{MachineId}", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
-                string machineInstanceId = parameters.machineInstanceId;
+                string machineId = parameters.MachineId;
 
-                await stateEngine.DeleteInstance(machineInstanceId, ct);
+                await stateEngine.DeleteMachine(machineId, ct);
 
                 return HttpStatusCode.Accepted;
             });
 
         private void FireTrigger() =>
-            Post("/{MachineInstanceId}/fire/{TriggerName}", async (parameters, ct) =>
+            Post("/{MachineId}/fire/{TriggerName}", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
                 
-                string machineInstanceId = parameters.MachineInstanceId;
+                string machineId = parameters.MachineId;
                 string triggerName = parameters.TriggerName;
-                var payload = this.Request.Body.AsString();
+                var payload = Request.Body.AsString();
                 
                 string contentType = null;
-                if(this.Request.Headers.Keys.Contains("Content-Type"))
-                    contentType = this.Request.Headers.ContentType;
+                if(Request.Headers.Keys.Contains("Content-Type"))
+                    contentType = Request.Headers.ContentType;
 
-                var commitTagHeaders = this.Request.Headers.Where(h => h.Key == "X-REstate-CommitTag");
+                var commitTagHeaders = Request.Headers.Where(h => h.Key == "X-REstate-CommitTag");
 
-                var commitTag = commitTagHeaders.Any() ? commitTagHeaders.First().Value.FirstOrDefault() : null;
+                var commitTagString = commitTagHeaders.Any() ? commitTagHeaders.First().Value.FirstOrDefault() : null;
+
+                Guid commitTagGuid;
+                Guid? commitTag = null;
+                if(Guid.TryParse(commitTagString, out commitTagGuid))
+                {
+                    commitTag = commitTagGuid;
+                }
 
                 InstanceRecord instanceRecord;
 
                 IStateMachine machine = await stateEngine
-                    .GetInstance(machineInstanceId, ct);
+                    .GetMachine(machineId, ct);
 
                 State resultantState;
                 try
                 {
                     resultantState = await machine.FireAsync(
-                        new Trigger(machine.MachineDefinitionId, triggerName),
+                        new Trigger(triggerName),
                         contentType,
                         payload,
                         commitTag,
@@ -169,7 +175,7 @@ namespace REstate.Web.Modules
                         .WithModel(new ReasonPhraseResponse { ReasonPhrase = ex.InnerExceptions.First().Message });
                 }
 
-                instanceRecord = await stateEngine.GetInstanceInfoAsync(parameters.MachineInstanceId, ct);
+                instanceRecord = await stateEngine.GetMachineInfoAsync(machineId, ct);
 
                 return Negotiate
                     .WithModel(instanceRecord)
@@ -177,20 +183,19 @@ namespace REstate.Web.Modules
             });
 
         private void GetAvailableTriggers() =>
-            Get("/{MachineInstanceId}/triggers", async (parameters, ct) =>
+            Get("/{MachineId}/triggers", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
-                string machineInstanceId = parameters.MachineInstanceId;
+                string machineId = parameters.MachineId;
 
                 var machine = await stateEngine
-                    .GetInstance(machineInstanceId, ct);
+                    .GetMachine(machineId, ct);
 
                 var permittedTriggers = (await machine.GetPermittedTriggersAsync(ct)).Select(trigger =>
                     new Responses.Trigger
                     {
-                        MachineName = trigger.MachineDefinitionId,
                         TriggerName = trigger.TriggerName
                     }).ToList();
 
@@ -200,19 +205,19 @@ namespace REstate.Web.Modules
             });
 
         private void IsInState() =>
-            Get("/{MachineInstanceId}/isinstate/{StateName}", async (parameters, ct) =>
+            Get("/{MachineId}/isinstate/{StateName}", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
-                string machineInstanceId = parameters.MachineInstanceId;
+                string machineId = parameters.MachineId;
                 string isInStateName = parameters.StateName;
 
                 var machine = await stateEngine
-                    .GetInstance(machineInstanceId, ct);
+                    .GetMachine(machineId, ct);
 
                 var isInState = await machine.IsInStateAsync(
-                    new State(machine.MachineDefinitionId, isInStateName), ct);
+                    new State(isInStateName), ct);
 
                 return Negotiate
                     .WithModel(new IsInStateResponse 
@@ -225,15 +230,15 @@ namespace REstate.Web.Modules
             });
 
         private void GetMachineState() =>
-            Get("/{MachineInstanceId}/state", async (parameters, ct) =>
+            Get("/{MachineId}/state", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
-                string machineInstanceId = parameters.MachineInstanceId;
+                string machineId = parameters.MachineId;
 
                 var instanceRecord = await stateEngine
-                    .GetInstanceInfoAsync(machineInstanceId, ct);
+                    .GetMachineInfoAsync(machineId, ct);
 
                 if (instanceRecord == null)
                     return new Response

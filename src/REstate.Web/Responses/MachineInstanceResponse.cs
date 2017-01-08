@@ -2,6 +2,6 @@
 {
     public class MachineInstanceResponse
     {
-        public string MachineInstanceId { get; set; }
+        public string MachineId { get; set; }
     }
 }

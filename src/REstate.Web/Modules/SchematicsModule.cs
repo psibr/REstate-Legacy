@@ -11,9 +11,9 @@ using static Nancy.Responses.RedirectResponse;
 namespace REstate.Web.Modules
 {
     /// <summary>
-    /// Machine Definitions configuration module.
+    /// Schematic configuration module.
     /// </summary>
-    public class MachineDefinitionsModule
+    public class SchematicsModule
         : SecuredModule
     {
         protected IPlatformLogger Logger { get; }
@@ -25,24 +25,24 @@ namespace REstate.Web.Modules
         /// <param name="configurationRepositoryContextFactory">The repository context factory.</param>
         /// <param name="stateMachineFactory">The state machine factory.</param>
         /// <param name="logger"></param>
-        public MachineDefinitionsModule(
+        public SchematicsModule(
             REstateConfiguration configuration,
             StateEngineFactory stateEngineFactory,
             IPlatformLogger logger)
-            : base(configuration, "/machines", claim => claim.Type == "claim" && claim.Value == "machineBuilder")
+            : base(configuration, "/schematics", claim => claim.Type == "claim" && claim.Value == "schematicBuilder")
         {
             Logger = logger;
             StateEngineFactory = stateEngineFactory;
 
-            GetMachine();
+            GetSchematic();
 
-            GetDiagramForDefinition();
+            GetSchematicDiagram();
 
-            GetDiagramChartForDefinition();
+            GetSchematicDrawing();
 
-            DefineStateMachine();
+            CreateSchematic();
 
-            ListMachines();
+            ListSchematics();
 
             InstantiateMachine();
 
@@ -51,28 +51,28 @@ namespace REstate.Web.Modules
 
         private void InstantiateMachine()
         {
-            Post("{MachineDefinitionId}/instantiate/", async (parameters, ct) =>
+            Post("{SchematicName}/instantiate/", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 var metadata = this.Bind<IDictionary<string, string>>();
 
-                string machineDefinitionId = parameters.MachineDefinitionId;
+                string schematicName = parameters.SchematicName;
 
-                var machineInstanceId = await stateEngine
-                    .InstantiateMachine(machineDefinitionId, metadata, ct);
+                var machineId = await stateEngine
+                    .InstantiateMachine(schematicName, metadata, ct);
 
                 return Negotiate
                     .WithModel(new MachineInstanceResponse
                         {
-                            MachineInstanceId = machineInstanceId
+                            MachineId = machineId
                         })
                     .WithAllowedMediaRange("application/json");
             });
         }
 
-        private void ListMachines()
+        private void ListSchematics()
         {
             Get("/", async (parameters, ct) =>
             {
@@ -80,22 +80,22 @@ namespace REstate.Web.Modules
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
                 return Negotiate
-                    .WithModel(await stateEngine.ListMachines(ct))
+                    .WithModel(await stateEngine.ListSchematics(ct))
                     .WithAllowedMediaRange("application/json");
             });
         }
 
-        private void DefineStateMachine()
+        private void CreateSchematic()
         {
             Post("/", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
-                var stateMachineConfiguration = this.Bind<Machine>();
+                var stateMachineConfiguration = this.Bind<Schematic>();
 
-                Machine newMachineConfiguration = await stateEngine
-                    .DefineStateMachine(stateMachineConfiguration, ct);
+                Schematic newMachineConfiguration = await stateEngine
+                    .CreateSchematic(stateMachineConfiguration, ct);
 
                 return Negotiate
                     .WithModel(newMachineConfiguration)
@@ -105,38 +105,56 @@ namespace REstate.Web.Modules
 
         private void PreviewDiagram()
         {
-            Post("/preview", (parameters) =>
+            Post("/preview/diagram", (parameters) =>
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
-                var stateMachineConfiguration = this.Bind<Machine>();
+                var stateMachineConfiguration = this.Bind<Schematic>();
 
-                var machine = stateEngine
+                var diagram = stateEngine
                     .PreviewDiagram(stateMachineConfiguration);
 
-                if (machine == null)
-                    throw new Exception("Unable to construct machine.");
+                if (diagram == null)
+                    throw new Exception("Unable to read schematic.");
                     
                 return Negotiate
-                    .WithMediaRangeResponse("text/plain", Response.AsText(machine.ToString(), "text/plain"))
+                    .WithMediaRangeResponse("text/plain", Response.AsText(diagram, "text/plain"))
                     .WithAllowedMediaRange("text/plain");
             });
         }
 
-        private void GetMachine()
+        private void PreviewDrawing()
         {
-            Get("/{MachineDefinitionId}", async (parameters, ct) =>
+            Post("/preview/drawing", (parameters) =>
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
-                string machineDefinitionId = parameters.MachineDefinitionId;
+                var stateMachineConfiguration = this.Bind<Schematic>();
+
+                var diagram = stateEngine
+                    .PreviewDiagram(stateMachineConfiguration);
+
+                var encodedDiagram = System.Net.WebUtility.UrlEncode(diagram);
+
+                return Response.AsRedirect($"https://chart.googleapis.com/chart?chl={encodedDiagram}&cht=gv", RedirectType.SeeOther);
+            });
+        }
+
+        private void GetSchematic()
+        {
+            Get("/{SchematicName}", async (parameters, ct) =>
+            {
+                var stateEngine = StateEngineFactory
+                    .GetStateEngine(Context.CurrentUser?.GetApiKey());
+
+                string schematicName = parameters.SchematicName;
 
                 try
                 {
-                    Machine configuration = await stateEngine
-                        .GetMachineDefinition(machineDefinitionId, ct);
+                    Schematic configuration = await stateEngine
+                        .GetSchematic(schematicName, ct);
 
                 return Negotiate
                     .WithModel(configuration)
@@ -150,17 +168,17 @@ namespace REstate.Web.Modules
             });
         }
 
-        private void GetDiagramForDefinition()
+        private void GetSchematicDiagram()
         {
-            Get("/{MachineDefinitionId}/diagram", async (parameters, ct) =>
+            Get("/{SchematicName}/diagram", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
-                string machineDefinitionId = parameters.MachineDefinitionId;
+                string schematicName = parameters.SchematicName;
 
                 string diagram = await stateEngine
-                    .GetDiagramForDefinition(machineDefinitionId, ct);
+                    .GetSchematicDiagram(schematicName, ct);
 
                 return Negotiate
                     .WithMediaRangeResponse("text/plain", Response.AsText(diagram, "text/plain"))
@@ -168,17 +186,17 @@ namespace REstate.Web.Modules
             });
         }
 
-        private void GetDiagramChartForDefinition()
+        private void GetSchematicDrawing()
         {
-            Get("/{MachineDefinitionId}/diagram/chart", async (parameters, ct) =>
+            Get("/{SchematicName}/drawing", async (parameters, ct) =>
             {
                 var stateEngine = StateEngineFactory
                     .GetStateEngine(Context.CurrentUser?.GetApiKey());
 
-                string machineDefinitionId = parameters.MachineDefinitionId;
+                string schematicName = parameters.SchematicName;
 
                 string diagram = await stateEngine
-                    .GetDiagramForDefinition(machineDefinitionId, ct);
+                    .GetSchematicDiagram(schematicName, ct);
 
                 var encodedDiagram = System.Net.WebUtility.UrlEncode(diagram);
 

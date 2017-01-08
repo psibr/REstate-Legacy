@@ -23,7 +23,7 @@ namespace REstate.Scheduler
 
         protected abstract Task<State> GetStateAsync(string machineInstanceId, CancellationToken cancellationToken);
 
-        protected abstract Task FireTriggerAsync(string machineInstanceId, string triggerName, string contentType, string payload, string lastCommitTag, CancellationToken cancellationToken);
+        protected abstract Task FireTriggerAsync(string machineInstanceId, string triggerName, string contentType, string payload, Guid? lastCommitTag, CancellationToken cancellationToken);
 
         protected async virtual Task Initialize(string apiKey)
         {
@@ -80,7 +80,7 @@ namespace REstate.Scheduler
                             try
                             {
                                 await FireTriggerAsync(chronoTrigger.MachineInstanceId,
-                                    chronoTrigger.TriggerName, chronoTrigger.ContentType, chronoTrigger.Payload, chronoTrigger.VerifyCommitTag ? chronoTrigger.LastCommitTag : null, cancellationToken);
+                                    chronoTrigger.TriggerName, chronoTrigger.ContentType, chronoTrigger.Payload, chronoTrigger.VerifyCommitTag ? (Guid?)chronoTrigger.LastCommitTag : null, cancellationToken);
 
                                 await scheduler.RemoveTriggerAsync(chronoTrigger, cancellationToken);
 

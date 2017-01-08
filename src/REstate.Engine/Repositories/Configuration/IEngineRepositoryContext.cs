@@ -5,8 +5,8 @@ namespace REstate.Engine.Repositories
     public interface IEngineRepositoryContext
         : IContextualRepository, IDisposable
     {
-        IMachineConfigurationRepository Machines { get; }
+        ISchematicRepository Schematics { get; }
 
-        IMachineInstancesRepository MachineInstances { get; }
+        IMachineRepository Machines { get; }
     }
 }

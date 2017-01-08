@@ -23,13 +23,13 @@ namespace REstate.Engine
             _cartographer = cartographer;
         }
 
-        public IStateMachine ConstructFromConfiguration(string apiKey, string machineInstanceId, Machine configuration)
+        public IStateMachine ConstructFromConfiguration(string apiKey, string machineInstanceId, Schematic configuration)
         {
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
 
             var stateMappings = configuration.StateConfigurations
-                .ToDictionary(stateConfig => new State(configuration.MachineName, stateConfig.StateName), stateConfig => stateConfig);
+                .ToDictionary(stateConfig => new State(stateConfig.StateName), stateConfig => stateConfig);
 
             foreach (var serviceState in configuration.ServiceStates ?? new ServiceState[0])
             {
@@ -58,7 +58,7 @@ namespace REstate.Engine
                     }
                 };
 
-                stateMappings.Add(new State(configuration.MachineName, parentStateConfiguration.StateName), parentStateConfiguration);
+                stateMappings.Add(new State(parentStateConfiguration.StateName), parentStateConfiguration);
 
                 if (!serviceState.DisableAcknowledgement)
                 {
@@ -107,8 +107,8 @@ namespace REstate.Engine
                         Transitions = null // Terminal state.
                     };
 
-                    stateMappings.Add(new State(configuration.MachineName, acceptedStateConfiguration.StateName), acceptedStateConfiguration);
-                    stateMappings.Add(new State(configuration.MachineName, rejectedStateConfiguration.StateName), rejectedStateConfiguration);
+                    stateMappings.Add(new State(acceptedStateConfiguration.StateName), acceptedStateConfiguration);
+                    stateMappings.Add(new State(rejectedStateConfiguration.StateName), rejectedStateConfiguration);
                 }
                 else
                 {
@@ -148,10 +148,10 @@ namespace REstate.Engine
                         }
                 };
 
-                stateMappings.Add(new State(configuration.MachineName, failureStateConfiguration.StateName), failureStateConfiguration);
+                stateMappings.Add(new State(failureStateConfiguration.StateName), failureStateConfiguration);
             }
 
-            var reStateMachine = new REstateMachine(_connectorFactoryResolver, _repositoryContextFactory, _cartographer, apiKey, configuration.MachineName, machineInstanceId, stateMappings);
+            var reStateMachine = new REstateMachine(_connectorFactoryResolver, _repositoryContextFactory, _cartographer, apiKey, machineInstanceId, stateMappings);
 
             return reStateMachine;
         }

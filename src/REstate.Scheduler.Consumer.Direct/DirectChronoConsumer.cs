@@ -2,6 +2,7 @@ using REstate.Engine;
 using REstate.Logging;
 using System.Threading;
 using System.Threading.Tasks;
+using System;
 
 namespace REstate.Scheduler.Consumer.Direct
 {
@@ -30,16 +31,16 @@ namespace REstate.Scheduler.Consumer.Direct
 
         protected async override Task<State> GetStateAsync(string machineInstanceId, CancellationToken cancellationToken)
         {
-            var record = await StateEngine.GetInstanceInfoAsync(machineInstanceId, cancellationToken).ConfigureAwait(false);
+            var record = await StateEngine.GetMachineInfoAsync(machineInstanceId, cancellationToken).ConfigureAwait(false);
 
-            return new State(record.MachineName, record.StateName, record.CommitTag);
+            return new State(record.StateName, Guid.Parse(record.CommitTag));
         }
 
-        protected async override Task FireTriggerAsync(string machineInstanceId, string triggerName, string contentType, string payload, string lastCommitTag, CancellationToken cancellationToken)
+        protected async override Task FireTriggerAsync(string machineInstanceId, string triggerName, string contentType, string payload, Guid? lastCommitTag, CancellationToken cancellationToken)
         {
-            var machine = await StateEngine.GetInstance(machineInstanceId, cancellationToken);
+            var machine = await StateEngine.GetMachine(machineInstanceId, cancellationToken);
 
-            await machine.FireAsync(new Trigger(machine.MachineDefinitionId, triggerName), contentType, payload, lastCommitTag, cancellationToken);
+            await machine.FireAsync(new Trigger(triggerName), contentType, payload, lastCommitTag, cancellationToken);
         }
     }
 }

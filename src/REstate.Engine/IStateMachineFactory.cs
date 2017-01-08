@@ -5,6 +5,6 @@ namespace REstate.Engine
     public interface IStateMachineFactory
     {
         IStateMachine ConstructFromConfiguration(string apiKey, string machineInstanceId,
-            Machine configuration);
+            Schematic configuration);
     }
 }
