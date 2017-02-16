@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>MSSQL repository for scheduler-level components of REstate a StateMachine-As-A-Service concept.</Description>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <Authors>Donovan (Ovan) Crone;Andrea Balfour</Authors>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>REstate.Scheduler.Repositories.MSSQL</AssemblyName>
+    <PackageId>REstate.Scheduler.Repositories.MSSQL</PackageId>
+    <PackageTags>StateMachine;SMAAS;SM-AAS</PackageTags>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\REstate.Common\REstate.Common.csproj" />
+    <ProjectReference Include="..\REstate.Scheduler\REstate.Scheduler.csproj" />
+    <ProjectReference Include="..\Susanoo.ConnectionPooling\Susanoo.ConnectionPooling.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Susanoo.Core" Version="3.3.2" />
+    <PackageReference Include="System.Collections" Version="4.0.11" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.1.0" />
+    <PackageReference Include="System.Linq" Version="4.1.0" />
+    <PackageReference Include="System.Runtime" Version="4.1.0" />
+    <PackageReference Include="System.Runtime.InteropServices" Version="4.1.0" />
+    <PackageReference Include="System.Threading.Tasks" Version="4.0.11" />
+  </ItemGroup>
+
+</Project>

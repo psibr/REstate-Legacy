@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <VersionPrefix>2.0.0</VersionPrefix>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>JwtAndCookie</AssemblyName>
+    <PackageId>JwtAndCookie</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="jose-jwt" Version="2.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="System.Security.Claims" Version="4.0.1" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.1.1" />
+    <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.2.0" />
+    <PackageReference Include="System.Security.Cryptography.Cng" Version="4.2.0" />
+    <PackageReference Include="System.Security.Cryptography.Csp" Version="4.0.0" />
+    <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.1.0" />
+  </ItemGroup>
+
+</Project>

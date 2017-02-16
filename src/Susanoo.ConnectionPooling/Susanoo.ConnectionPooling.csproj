@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>DatabaseManager factory pattern for Susanoo.</Description>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <Authors>Donovan (Ovan) Crone</Authors>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>Susanoo.ConnectionPooling</AssemblyName>
+    <PackageId>Susanoo.ConnectionPooling</PackageId>
+    <PackageTags>Susanoo</PackageTags>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Collections" Version="4.0.11" />
+    <PackageReference Include="System.Linq" Version="4.1.0" />
+    <PackageReference Include="System.Threading.Tasks" Version="4.0.11" />
+    <PackageReference Include="System.Runtime" Version="4.1.0" />
+    <PackageReference Include="Susanoo.Core" Version="3.3.2" />
+  </ItemGroup>
+
+</Project>

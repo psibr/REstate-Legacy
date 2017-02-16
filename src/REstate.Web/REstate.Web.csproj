@@ -1,0 +1,62 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <Description>REstate: a StateMachine-As-A-Service concept.</Description>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <Authors>Donovan (Ovan) Crone;Andrea Balfour</Authors>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>REstate.Web</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>REstate.Web</PackageId>
+    <PackageTags>StateMachine;SMAAS;SM-AAS</PackageTags>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
+    <PackageTargetFallback>$(PackageTargetFallback);portable-net45+win8+wp8+wpa81</PackageTargetFallback>
+    <RuntimeFrameworkVersion>1.0.3</RuntimeFrameworkVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Update="appconfig.json;REstate.pfx;web.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appconfig.json;REstate.pfx;web.config">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\REstate.Common\REstate.Common.csproj" />
+    <ProjectReference Include="..\REstate.Engine\REstate.Engine.csproj" />
+    <ProjectReference Include="..\REstate.Scheduler\REstate.Scheduler.csproj" />
+    <ProjectReference Include="..\REstate.Scheduler.Consumer.Direct\REstate.Scheduler.Consumer.Direct.csproj" />
+    <ProjectReference Include="..\REstate.Engine.Repositories.MSSQL\REstate.Engine.Repositories.MSSQL.csproj" />
+    <ProjectReference Include="..\REstate.Scheduler.Repositories.MSSQL\REstate.Scheduler.Repositories.MSSQL.csproj" />
+    <ProjectReference Include="..\REstate.Connectors.Scheduler.Direct\REstate.Connectors.Scheduler.Direct.csproj" />
+    <ProjectReference Include="..\REstate.Auth\REstate.Auth.csproj" />
+    <ProjectReference Include="..\REstate.Auth.Repositories.MSSQL\REstate.Auth.Repositories.MSSQL.csproj" />
+    <ProjectReference Include="..\JwtAndCookie\JwtAndCookie.csproj" />
+    <ProjectReference Include="..\REstate.Connectors.RabbitMQ\REstate.Connectors.RabbitMQ.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="2.3.0" />
+    <PackageReference Include="Serilog.Sinks.Logentries" Version="3.0.0-dev-00020" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="1.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Owin" Version="1.0.1" />
+    <PackageReference Include="Nancy" Version="2.0.0-barneyrubble" />
+    <PackageReference Include="Nancy.Authentication.Stateless" Version="2.0.0-barneyrubble" />
+    <PackageReference Include="Autofac" Version="4.1.1" />
+    <PackageReference Include="Nancy.Bootstrappers.Autofac" Version="2.0.0-Pre458" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="1.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.0.1" />
+    <PackageReference Include="Serilog.Sinks.Literate" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.AzureAppServicesIntegration" Version="1.0.0-preview1-final" />
+  </ItemGroup>
+
+</Project>
